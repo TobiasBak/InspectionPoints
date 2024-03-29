@@ -60,14 +60,16 @@ def get_handler(socket: Socket) -> callable:
 
 
 def send_to_all_web_clients(message: str):
-    # We need to use list() around connected web clients to prevent: RuntimeError: Set changed size during iteration
-    # The exception occurred when you refreshed the web and send a new command.
-    for websocket in list(_connected_web_clients):
-        if websocket.closed:
-            _connected_web_clients.remove(websocket)
-            continue
+    removed_clients = []
+
     for websocket in _connected_web_clients:
+        if websocket.closed:
+            removed_clients.append(websocket)
+            continue
         asyncio.create_task(websocket.send(message))
+
+    for websocket in removed_clients:
+        _connected_web_clients.remove(websocket)
 
 
 # To prevent circular dependencies
