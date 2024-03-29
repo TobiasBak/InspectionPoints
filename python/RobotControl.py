@@ -12,6 +12,7 @@ from SocketMessages import CommandMessage, AckResponse
 from ToolBox import escape_string
 from URIFY import URIFY_return_string, SOCKET_NAME
 from WebsocketNotifier import websocket_notifier
+from constants import ROBOT_FEEDBACK_PORT
 from undo.History import History
 from undo.State import State
 
@@ -89,7 +90,7 @@ def _start_interpreter_mode_and_connect_to_backend_socket():
     #  I thought the parameters on interpreter_mode would fix this. (clear_queue_on_enter, clear_on_end)
     sleep(1)
     apply_variables_to_robot(list_of_variables)  # Applying user variables to robot
-    open_socket()
+    connect_robot_to_feedback_socket()
 
     # Ensure that non-user inputted commands are not sent to the websocket.
     # We sleep, because the message has to be processed by the robot first.
@@ -151,8 +152,7 @@ def sanitize_dashboard_reads(response: str) -> str:
     return message.replace('\\n', '').replace(' ', '')
 
 
-def open_socket(host: str = gethostbyname(gethostname()), port: int = 8000):
-    # Todo: Port is duplicate in this method and in open_robot_server, fix it. Cannot import port from websocketProxy, circular imports
+def connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):
     send_command(f"socket_open(\"{host}\", {port}, {SOCKET_NAME})\n", get_interpreter_socket())
 
 
@@ -160,7 +160,7 @@ def apply_variables_to_robot(variables: list[VariableObject]):
     command = ""
     for variable in variables:
         if variable.variable_type == VariableTypes.String:
-            command += f"{variable.name} = \"{variable.value}\" "
+            command += f'{variable.name} = "{variable.value}" '
         else:
             command += f"{variable.name} = {variable.value} "
     send_command(command, get_interpreter_socket())

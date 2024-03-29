@@ -12,6 +12,7 @@ from RobotSocketMessages import parse_robot_message, CommandFinished, ReportStat
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
 from WebsocketNotifier import websocket_notifier
+from constants import ROBOT_FEEDBACK_PORT
 
 clients = dict()
 _START_BYTE: Final = b'\x02'
@@ -78,8 +79,7 @@ websocket_notifier.register_observer(send_to_all_web_clients)
 
 async def open_robot_server():
     host = '0.0.0.0'
-    port = 8000
-    srv = await asyncio.start_server(client_connected_cb, host=host, port=port)
+    srv = await asyncio.start_server(client_connected_cb, host=host, port=ROBOT_FEEDBACK_PORT)
     print(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         print('server listening for robot connections')
