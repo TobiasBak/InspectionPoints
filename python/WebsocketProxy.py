@@ -7,12 +7,10 @@ from typing import Final
 
 from websockets.server import serve
 
-from RobotControl import get_interpreter_socket, send_user_command, power_on_robot, brake_release_on_robot, \
-    get_robot_mode, start_interpreter_mode_and_connect_to_backend_socket, read_from_socket_till_end
+from RobotControl import get_interpreter_socket, send_user_command, get_robot_mode, start_robot
+from RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
-from RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
-from ToolBox import escape_string
 from WebsocketNotifier import websocket_notifier
 
 clients = dict()
@@ -166,9 +164,7 @@ async def start_webserver():
     ensure_polyscope_is_ready()
     print(f"Polyscope is ready. The robot mode is: {get_robot_mode()}")
 
-    power_on_robot()
-    brake_release_on_robot()
-    start_interpreter_mode_and_connect_to_backend_socket()
+    start_robot()
 
     interpreter_socket: Socket = get_interpreter_socket()
     print("Starting websocket server")
@@ -177,17 +173,17 @@ async def start_webserver():
 
 
 def ensure_polyscope_is_ready():
+    initial_startup_messages = ('', 'BOOTING')
+    starting_phases = ('NO_CONTROLLER', 'DISCONNECTED', 'UniversalRobotsDashboardServer')
+    sleep_time = 0.1
+
     robot_mode = get_robot_mode()
-    rerun = False
-    if robot_mode == '' or robot_mode == 'BOOTING':
+
+    while get_robot_mode() in initial_startup_messages:
         print(f"Polyscope is still starting: {robot_mode}")
-        rerun = True
+        sleep(sleep_time)
 
     # UniversalRobotsDashboardServer is a not documented state, but it is a state that the robot can be in
-    if robot_mode == 'NO_CONTROLLER' or robot_mode == 'DISCONNECTED' or robot_mode == 'UniversalRobotsDashboardServer':
+    while get_robot_mode() in starting_phases:
         print(f"Polyscope is in current state of starting: {robot_mode}")
-        rerun = True
-
-    if rerun:
-        sleep(0.1)
-        ensure_polyscope_is_ready()
+        sleep(sleep_time)

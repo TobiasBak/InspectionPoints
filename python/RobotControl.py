@@ -77,7 +77,13 @@ def start_interpreter_mode():
     print("Interpreter mode command sent")
 
 
-def start_interpreter_mode_and_connect_to_backend_socket():
+def start_robot():
+    _power_on_robot()
+    _brake_release_on_robot()
+    _start_interpreter_mode_and_connect_to_backend_socket()
+
+
+def _start_interpreter_mode_and_connect_to_backend_socket():
     start_interpreter_mode()
     # Todo: For some reason the robot needs a sleep here, otherwise open_socket does not work.
     #  I thought the parameters on interpreter_mode would fix this. (clear_queue_on_enter, clear_on_end)
@@ -98,12 +104,12 @@ def clear_interpreter_mode():
     print("Clear command sent")
 
 
-def power_on_robot():
+def _power_on_robot():
     dashboard_socket = get_dashboard_socket()
     send_command("power on", dashboard_socket)
 
 
-def brake_release_on_robot():
+def _brake_release_on_robot():
     dashboard_socket = get_dashboard_socket()
     send_command("brake release", dashboard_socket)
 
@@ -266,12 +272,12 @@ def ensure_state_recovery_if_broken(response: str, command: str, command_id=None
                 websocket_notifier.notify_observers(str(ack_response))
 
             unlock_protective_stop()
-            start_interpreter_mode_and_connect_to_backend_socket()
+            _start_interpreter_mode_and_connect_to_backend_socket()
             return send_command(command, get_interpreter_socket(), ensure_recovery=True, command_id=command_id)
 
         if safety_status == "NORMAL" and robot_mode == "RUNNING" and running == "false":  # Todo read from history instead of dashboard
             print(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
-            start_interpreter_mode_and_connect_to_backend_socket()
+            _start_interpreter_mode_and_connect_to_backend_socket()
             # If the error causing this if to be true is array out of bounds.
             # Then the command is acknowledged but the command_finished is not since the robot
             # goes into an invalid state after it has acknowledged the command that was actually invalid.
