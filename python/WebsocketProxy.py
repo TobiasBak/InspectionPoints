@@ -116,8 +116,6 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
     while True:
         data = await reader.read(4096)
-        if data:
-            print(f"BACKEND recieved data from client: {data}")
 
         if data == _EMPTY_BYTE:
             print('Received EOF. Client disconnected.')

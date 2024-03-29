@@ -63,7 +63,6 @@ def _urify_string(string: str) -> str:
 
 
 def create_socket_send_string_variable(string_to_send: str) -> str:
-    print(repr(string_to_send))
     if string_to_send == "":
         return ""
 
