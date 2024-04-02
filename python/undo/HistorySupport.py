@@ -3,7 +3,7 @@ import asyncio
 from rtde.serialize import DataObject
 
 from RobotControl import get_interpreter_socket, send_command
-from RobotSocketMessages import ReportState
+from RobotSocketMessages import ReportState, CommandFinished
 from SocketMessages import RobotState
 from undo.History import History
 from undo.State import State, StateType
@@ -58,7 +58,7 @@ register_all_variables()
 
 
 def read_variable_state():
-    print("Reading variable state")
+    # print("Reading variable state")
     interpreter_socket = get_interpreter_socket()
     read_commands = _variable_registry.generate_read_commands()
     report_state = ReportState(read_commands)
@@ -96,4 +96,8 @@ def handle_report_state(reported_state: ReportState):
     state = create_state_from_report_state(reported_state)
     history = History.get_history()
     history.append_state(state)
-    print(f"Received state: {state}")
+
+
+def handle_command_finished(command_finished: CommandFinished):
+    history = History.get_history()
+    history.close_command(command_finished)

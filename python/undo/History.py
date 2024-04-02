@@ -1,5 +1,6 @@
 from typing import Self
 
+from RobotSocketMessages import CommandFinished
 from SocketMessages import CommandMessage
 from undo.CommandStates import CommandStates
 from undo.State import State
@@ -22,6 +23,20 @@ class History(object):
             # raise ValueError("There is no active command state.")
         self.active_command_state.append_state(state)
 
+    def _max_command_id(self) -> int:
+        return max(self.command_state_history.keys())
+
+    def _next_command_id(self, from_index: int) -> int:
+        """This requires that there is a command id greater than from_index.
+        Otherwise, an error is raised.
+        See _max_command_id() for the maximum command id."""
+        iterator = sorted(self.command_state_history.keys())
+        for i in iterator:
+            if i > from_index:
+                return i
+
+        raise ValueError(f"Could not find a command id greater than {from_index}")
+
     def new_command(self, command: CommandMessage) -> None:
         self.command_state_history[command.get_id()] = CommandStates(command)
         max_id = max(self.command_state_history.keys())
@@ -30,8 +45,20 @@ class History(object):
                              f"The highest id is {max_id} and the provided id is {command.get_id()}"
                              f"The command with that id is"
                              f" {self.command_state_history[max_id].user_command.data.command}")
-        self.active_command_state = self.command_state_history[command.get_id()]
+        if self.active_command_state is None or self.active_command_state.is_closed:
+            self.active_command_state = self.command_state_history[command.get_id()]
         print(f"New command added to history: {command.get_id()} length: {len(self.command_state_history)}")
+
+    def close_command(self, command_finished: CommandFinished) -> None:
+        if self.active_command_state is None:
+            raise ValueError("There is no active command state, but it was attempted to close a command anyway.")
+        command_state = self.command_state_history[command_finished.data.id]
+        command_state.close()
+        if self._max_command_id() > command_finished.data.id:
+            next_id = self._next_command_id(command_finished.data.id)
+            self.active_command_state = self.command_state_history[next_id]
+        elif self._max_command_id() < command_finished.data.id:
+            raise ValueError(f"Command id {command_finished.data.id} is greater than the maximum command id.")
 
     def debug_print(self) -> None:
         debug_string = f"History: length={len(self.command_state_history)}\n"

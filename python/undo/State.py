@@ -44,10 +44,11 @@ class State:
 
     def __eq__(self, other: Self) -> bool:
         match other:
-            case State(other_state):
-                if len(self.state) != len(other_state):
+            case State():
+                other_state_list = other.state
+                if len(self.state) != len(other_state_list):
                     return False
-                for self_state, other_state in zip(self.state, other_state):
+                for self_state, other_state in zip(self.state, other_state_list):
                     if self_state != other_state:
                         return False
                 return True

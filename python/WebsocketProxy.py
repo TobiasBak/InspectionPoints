@@ -12,7 +12,7 @@ from SocketMessages import AckResponse, RobotState
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, \
     UndoStatus
 from RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
-from undo.HistorySupport import handle_report_state, start_read_loop
+from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
 
 clients = dict()
 _START_BYTE: Final = b'\x02'
@@ -148,15 +148,13 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
 def message_from_robot_received(message: bytes):
     decoded_message = message.decode()
-    print(f"Message from robot: {decoded_message}")
+    # print(f"Message from robot: {decoded_message}")
     robot_message = parse_robot_message(decoded_message)
-    print(f"Robot message: {robot_message}")
     match robot_message:
         case CommandFinished():
-            print("Message decoded to be a CommandFinished")
+            handle_command_finished(robot_message)
             send_to_all_web_clients(str(robot_message))
         case ReportState():
-            print(f"Messaged decoded to be a ReportState: {robot_message}")
             handle_report_state(robot_message)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")

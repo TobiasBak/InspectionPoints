@@ -10,7 +10,6 @@ from SocketMessages import CommandMessage
 from ToolBox import escape_string, time_print
 from URIFY import URIFY_return_string
 from undo.History import History
-from undo.State import State
 
 POLYSCOPE_IP = "polyscope"
 

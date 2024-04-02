@@ -11,7 +11,8 @@ class CommandStates:
 
     def append_state(self, state: State):
         if state.state_type not in self.previous_states:
-            self.states.append(state)
+            print(f"state appended because it is the first state of its type: {state.state_type}.")
+            self._append_state(state)
             return
 
         from_index, from_state = self.previous_states[state.state_type]
@@ -19,15 +20,15 @@ class CommandStates:
         if self.is_closed and from_state != state:
             raise ValueError("The states differ after the command has been closed.")
 
-        previous_state_representation = (len(self.states) - 1, state)
-
         if from_state.has_un_collapsible_difference(state):
-            self.states.append(state)
-            self.previous_states[state.state_type] = previous_state_representation
+            self._append_state(state)
         elif from_state != state:
             self.states.pop(from_index)
-            self.states.append(state)
-            self.previous_states[state.state_type] = previous_state_representation
+            self._append_state(state)
+
+    def _append_state(self, state: State):
+        self.states.append(state)
+        self.previous_states[state.state_type] = (len(self.states) - 1, state)
 
     def close(self):
         self.is_closed = True
