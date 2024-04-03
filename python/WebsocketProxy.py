@@ -54,7 +54,7 @@ def get_handler(socket: Socket) -> callable:
                 case _:
                     raise ValueError(f"Unknown message type: {message}")
 
-            await websocket.send(str_response)
+            send_to_all_web_clients(str_response)
 
     return echo
 
