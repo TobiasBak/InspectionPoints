@@ -20,6 +20,8 @@ _EMPTY_BYTE: Final = b''
 
 _connected_web_clients = set()
 
+_new_client = False
+
 
 def handle_command_message(message: CommandMessage, socket: Socket) -> str:
     command_string = message.data.command
@@ -36,9 +38,24 @@ def handle_undo_message(message: UndoMessage) -> str:
     return str(response)
 
 
+def handle_new_client():
+    print("New client connected")
+    global _new_client
+    _new_client = True
+
+
+def has_new_client() -> bool:
+    global _new_client
+    if _new_client:
+        _new_client = False
+        return True
+    return False
+
+
 def get_handler(socket: Socket) -> callable:
     async def echo(websocket):
         _connected_web_clients.add(websocket)
+        handle_new_client()
         async for message in websocket:
             print(f"Received message: {message}")
 

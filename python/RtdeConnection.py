@@ -29,7 +29,7 @@ from rtde import rtde_config, rtde
 from rtde.serialize import DataObject
 from SocketMessages import RobotState
 from RobotControl import POLYSCOPE_IP
-from WebsocketProxy import send_to_all_web_clients
+from WebsocketProxy import send_to_all_web_clients, has_new_client
 from undo.History import History
 from undo.State import State
 
@@ -65,6 +65,9 @@ async def start_rtde_loop():
     while True:
         try:
             new_state = con.receive()
+            if has_new_client():
+                # await call_listeners(new_state)
+                print("New client connected has new client")
             if state_is_new(new_state, previous_state):
                 await call_listeners(new_state)
                 previous_state = new_state
