@@ -1,8 +1,8 @@
 import socket  # for socket
+from socket import gethostbyname, gethostname
 from socket import socket as Socket
 from time import sleep
 from typing import Callable
-from socket import gethostbyname, gethostname
 
 import select
 

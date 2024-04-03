@@ -86,8 +86,14 @@ async def open_robot_server():
     print(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         print('server listening for robot connections')
-        #connect_to_robot_server(gethostbyname(gethostname()), port)
+        await asyncio.create_task(start_read_loop())
         await srv.serve_forever()
+
+
+def connect_to_robot_server(host: str, port: int):
+    send_command(f"socket_open(\"{host}\", {port})\n", get_interpreter_socket())
+    sleep(1)
+    print(f"Manual delayed read resulted in: {read_from_socket(get_interpreter_socket())}")  # Use peername as client ID
 
 
 def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter):
