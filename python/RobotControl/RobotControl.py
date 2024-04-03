@@ -180,6 +180,7 @@ def send_command(command: str, on_socket: Socket, ensure_recovery=False, command
     on_socket.send(command.encode())
     result = read_from_socket(on_socket)
 
+    # TODO: Remove this responsibility from the send_command function
     if ensure_recovery:
         result = ensure_state_recovery_if_broken(result, command, command_id)
 
@@ -217,30 +218,36 @@ def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
 
 # Contains spaces before string, because when the string message recieved is split, it will be split by :
 class ResponseMessages(Enum):
-    Invalid_state = " Program is in an invalid state"
-    Ack = "ack"
-    Too_many_commands = " Too many interpreted messages"
-    Compile_error = " Compile error"
-    Syntax_error = " Syntax error"
+    Invalid_state = "Program is in an invalid state"  # This will be checked before sending the users command
+    Too_many_commands = "Too many interpreted messages"  # This is the only one that will be in the "return path/chain"
+    Compile_error = "Compile error"  # These will be "disregarded in checking the safe result, since they will always be returned
+    Syntax_error = "Syntax error"  # Same as the one above
+
+
+class ResponseCodes(Enum):
+    ACK = "ack"
+    DISCARD = "discard"
 
 
 def ensure_state_recovery_if_broken(response: str, command: str, command_id=None) -> str:
+    """ This method will be extracted out into a wrapper function in a file named something like safeSendCommandToRobot"""
     out = response
     if out == "nothing":
         raise ValueError("Response from robot is nothing. This is not expected.")
 
     response_array = response.split(":")
-    response_1 = response_array[0]
-    response_2 = response_array[1]
+    response_code = response_array[0]
+    response_message = response_array[1]
+    response_message = response_message[1:] if response_message[0] == " " else response_message
 
-    if response_1 == ResponseMessages.Ack.value:
+    if response_code == ResponseCodes.ACK.value:
         return out
 
-    if response_2 == ResponseMessages.Compile_error.value or response_2 == ResponseMessages.Syntax_error.value:
+    if response_message == ResponseMessages.Compile_error.value or response_message == ResponseMessages.Syntax_error.value:
         return out
 
     # If the robot has interpreted too many commands.
-    if response_2 == ResponseMessages.Too_many_commands.value:
+    if response_message == ResponseMessages.Too_many_commands.value:
         print(f"\t\t\tToo many commands detected. Attempting to fix the state.")
         clear_interpreter_mode()
         # Todo: Apply the variables defined by user. Through what the history object has stored.
@@ -248,7 +255,8 @@ def ensure_state_recovery_if_broken(response: str, command: str, command_id=None
         return send_command(command, get_interpreter_socket())  # Resend command since it was lost.
 
     # If the robot is in an invalid state.
-    if response_2 == ResponseMessages.Invalid_state.value:
+    if response_message == ResponseMessages.Invalid_state.value:
+        # TODO: check this before sending the command to the robot, and extract this to a separate function
         # If the robot is invalid state, we recover state without resending command,
         # since the user still needs the correct feedback.
         safety_status = get_safety_status()
