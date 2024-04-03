@@ -203,7 +203,10 @@ list_of_variables.append(VariableObject("__test2__", VariableTypes.String, "f"))
 
 def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
     command_message = command.data.command
+    test_history(command)
+
     response_from_command = send_command(command_message, on_socket, ensure_recovery=True, command_id=command.data.id)
+
 
     finish_command = CommandFinished(command.data.id, command_message, tuple(list_of_variables))
     string_command = finish_command.dump_ur_string()
@@ -211,7 +214,6 @@ def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
     wrapping = URIFY_return_string(string_command)
     send_command(wrapping, on_socket, ensure_recovery=True, command_id=command.data.id)
 
-    test_history(command)
 
     return response_from_command[:-2]  # Removes \n from the end of the response
 
@@ -307,7 +309,7 @@ def ensure_state_recovery_if_broken(response: str, command: str, command_id=None
 def test_history(command):
     history = History()
     history.new_command(command)
-    history.active_command_state().append_state(State())
+    # history.active_command_state().append_state(State())
     history.debug_print()
 
 

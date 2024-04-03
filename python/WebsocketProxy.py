@@ -7,12 +7,12 @@ from typing import Final
 
 from websockets.server import serve
 
-from RobotControl.RobotControl import get_interpreter_socket, send_user_command, get_robot_mode, start_robot
+from RobotControl.RobotControl import send_command, get_interpreter_socket, send_user_command, get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
-from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
+from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
 
 clients = dict()
 _START_BYTE: Final = b'\x02'
@@ -41,14 +41,14 @@ def get_handler(socket: Socket) -> callable:
     async def echo(websocket):
         _connected_web_clients.add(websocket)
         async for message in websocket:
-            print(f"Received message: {message}")
+            # print(f"Received message: {message}")
 
             message = parse_message(message)
 
             match message:
                 case CommandMessage():
                     str_response = handle_command_message(message, socket)
-                    print(f"Message is a CommandMessage")
+                    # print(f"Message is a CommandMessage")
                 case UndoMessage():
                     str_response = handle_undo_message(message)
                     print(f"Message is an UndoMessage")
@@ -83,6 +83,7 @@ async def open_robot_server():
     print(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         print('server listening for robot connections')
+        connect_to_robot_server(gethostbyname(gethostname()), port)
         await srv.serve_forever()
 
 
@@ -148,14 +149,14 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
 def message_from_robot_received(message: bytes):
     decoded_message = message.decode()
-    print(f"Message from robot: {decoded_message}")
+    # print(f"Message from robot: {decoded_message}")
     robot_message = parse_robot_message(decoded_message)
-    print(f"Robot message: {robot_message}")
     match robot_message:
         case CommandFinished():
+            handle_command_finished(robot_message)
             send_to_all_web_clients(str(robot_message))
         case ReportState():
-            print(f"Messaged decoded to be a ReportState: {robot_message.dump()}")
+            handle_report_state(robot_message)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
 
