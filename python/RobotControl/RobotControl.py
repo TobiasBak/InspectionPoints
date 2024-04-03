@@ -306,8 +306,9 @@ def ensure_state_recovery_if_broken(response: str, command: str, command_id=None
 
 
 def test_history(command):
-    history = History()
+    history = History.get_history()
     history.new_command(command)
+    print(f"new command saved {history.active_command_state}")
     # history.active_command_state().append_state(State())
     history.debug_print()
 

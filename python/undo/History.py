@@ -1,6 +1,6 @@
 from typing import Self
 
-from RobotSocketMessages import CommandFinished
+from RobotControl.RobotSocketMessages import CommandFinished
 from SocketMessages import CommandMessage
 from undo.CommandStates import CommandStates
 from undo.State import State
@@ -51,6 +51,7 @@ class History(object):
 
     def close_command(self, command_finished: CommandFinished) -> None:
         if self.active_command_state is None:
+            self.debug_print()
             raise ValueError("There is no active command state, but it was attempted to close a command anyway.")
         command_state = self.command_state_history[command_finished.data.id]
         command_state.close()
@@ -62,6 +63,7 @@ class History(object):
 
     def debug_print(self) -> None:
         debug_string = f"History: length={len(self.command_state_history)}\n"
+        debug_string += f"==Active command state: {self.active_command_state}\n"
         for key, value in self.command_state_history.items():
             debug_string += f"\tKey: {key}, Value: {value}\n"
         print(debug_string)
