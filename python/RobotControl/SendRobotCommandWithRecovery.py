@@ -5,7 +5,6 @@ from RobotControl.RobotControl import send_command, get_safety_status, \
 from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.StateRecovery import list_of_variables, States, recover_state
 from SocketMessages import CommandMessage
-from ToolBox import escape_string
 from URIFY import URIFY_return_string
 from undo.History import History
 
@@ -27,9 +26,29 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
     result = send_command(command, on_socket)
 
     # TODO: Remove this responsibility from the send_command function
-    ensure_state_recovery_if_broken(result, command, command_id)
+    out = result
+    if out == "nothing":
+        raise ValueError("Response from robot is nothing. This is not expected.")
 
-    return result
+    response_array = result.split(":")
+    response_code = response_array[0]
+
+    if response_code == ResponseCodes.ACK.value:
+        return out
+
+    response_message = response_array[1]
+    response_message = response_message[1:] if response_message[0] == " " else response_message
+
+    if response_message == ResponseMessages.Compile_error.value or response_message == ResponseMessages.Syntax_error.value:
+        return out
+
+    # We are in an invalid state, find out which one and recover
+    robot_state: States = get_state_of_robot(response_message)
+    if robot_state is not None:
+        print(f"\t\tRobot state before fixing: {robot_state}")
+        recover_state(robot_state, command, command_id)
+
+    return out
 
 
 def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
@@ -57,33 +76,6 @@ def get_state_of_robot(response_message: str) -> States | None:
     if safety_status == "NORMAL" and robot_mode == "RUNNING" and running == "false":
         return States.Invalid_state
     return None
-
-
-def ensure_state_recovery_if_broken(response: str, command: str, command_id=None) -> str:
-    """ This method will be extracted out into a wrapper function in a file named something like safeSendCommandToRobot"""
-    out = response
-    print(f"\t\t\tEnsuring state: {out}")
-    if out == "nothing":
-        raise ValueError("Response from robot is nothing. This is not expected.")
-
-    response_array = response.split(":")
-    response_code = response_array[0]
-    response_message = response_array[1]
-    response_message = response_message[1:] if response_message[0] == " " else response_message
-
-    if response_code == ResponseCodes.ACK.value:
-        return out
-
-    if response_message == ResponseMessages.Compile_error.value or response_message == ResponseMessages.Syntax_error.value:
-        return out
-
-    # If the robot has interpreted too many commands.
-    robot_state: States = get_state_of_robot(response_message)
-    print(f"Robot state before fixing: {robot_state}")
-    if robot_state is not None:
-        recover_state(robot_state, command, command_id)
-
-    return out
 
 
 def test_history(command):
