@@ -8,7 +8,6 @@ from SocketMessages import CommandMessage
 from ToolBox import escape_string
 from URIFY import URIFY_return_string
 from undo.History import History
-from undo.State import State
 
 
 class ResponseMessages(Enum):
@@ -26,7 +25,6 @@ class ResponseCodes(Enum):
 def send_command_with_recovery(command: str, on_socket: Socket, command_id=None):
     """Command_id is important if a message containing the error should be sent back to the frontend."""
     result = send_command(command, on_socket)
-    print(f"send_command_with_recovery method: Result: {escape_string(result)}")
 
     # TODO: Remove this responsibility from the send_command function
     ensure_state_recovery_if_broken(result, command, command_id)
@@ -42,17 +40,18 @@ def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
 
     finish_command = CommandFinished(command.data.id, command_message, tuple(list_of_variables))
     string_command = finish_command.dump_ur_string()
-    print(f"send_user_command method: String command: {escape_string(string_command)}")
     wrapping = URIFY_return_string(string_command)
     send_command_with_recovery(wrapping, on_socket, command_id=command.data.id)
 
     return response_from_command[:-2]  # Removes \n from the end of the response
 
 
-def get_state_of_robot() -> States | None:
+def get_state_of_robot(response_message: str) -> States | None:
     safety_status = get_safety_status()
     robot_mode = get_robot_mode()
     running = get_running()
+    if response_message == ResponseMessages.Too_many_commands:
+        return States.Too_many_commands
     if safety_status == "PROTECTIVE_STOP":
         return States.Protective_stop
     if safety_status == "NORMAL" and robot_mode == "RUNNING" and running == "false":
@@ -63,6 +62,7 @@ def get_state_of_robot() -> States | None:
 def ensure_state_recovery_if_broken(response: str, command: str, command_id=None) -> str:
     """ This method will be extracted out into a wrapper function in a file named something like safeSendCommandToRobot"""
     out = response
+    print(f"\t\t\tEnsuring state: {out}")
     if out == "nothing":
         raise ValueError("Response from robot is nothing. This is not expected.")
 
@@ -78,13 +78,15 @@ def ensure_state_recovery_if_broken(response: str, command: str, command_id=None
         return out
 
     # If the robot has interpreted too many commands.
-    robot_state: States = get_state_of_robot()
-    recover_state(robot_state, command, command_id)
+    robot_state: States = get_state_of_robot(response_message)
+    print(f"Robot state before fixing: {robot_state}")
+    if robot_state is not None:
+        recover_state(robot_state, command, command_id)
 
     return out
 
 
 def test_history(command):
-    history = History()
+    history = History.get_history()
     history.new_command(command)
     history.debug_print()

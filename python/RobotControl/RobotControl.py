@@ -178,16 +178,23 @@ def sanitize_command(command: str) -> str:
 def send_command(command: str, on_socket: Socket) -> str:
     """Returns the ack_response from the robot. The ack_response is a string."""
     command = sanitize_command(command)
-    print(f"Sending the following command: '{escape_string(command)}'")
+    #print(f"Sending the following command: '{escape_string(command)}'")
     on_socket.send(command.encode())
-    out = read_from_socket(on_socket)
+    result = read_from_socket(on_socket)
+    out = ""
+    count = 1
+    while result != "nothing" and count < 2:
+        out += result
+        # time_print(f"Received {count}: {escape_string(result)}")
+        result = read_from_socket(on_socket)
+        count += 1
     return escape_string(out)
 
 
 def read_from_socket(socket: Socket) -> str:
     ready_to_read, ready_to_write, in_error = select.select([socket], [], [], 0.1)
     if ready_to_read:
-        message = socket.recv(2048)
+        message = socket.recv(4096)
 
         try:
             return message.decode()
