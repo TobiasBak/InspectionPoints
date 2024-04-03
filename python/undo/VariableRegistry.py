@@ -1,4 +1,4 @@
-from RobotSocketMessages import VariableObject
+from RobotControl.RobotSocketMessages import VariableObject
 from undo.StateVariable import CodeStateVariable, RtdeStateVariable
 
 

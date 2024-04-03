@@ -1,4 +1,4 @@
-from RobotControl import send_command, get_interpreter_socket, send_user_command
+from RobotControl.RobotControl import send_command, get_interpreter_socket
 from socket import socket as Socket
 
 

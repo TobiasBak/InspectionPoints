@@ -7,7 +7,7 @@ from socket import gethostbyname, gethostname
 
 import select
 
-from RobotSocketMessages import CommandFinished, VariableObject, VariableTypes
+from RobotControl.RobotSocketMessages import CommandFinished, VariableObject, VariableTypes
 from SocketMessages import CommandMessage, AckResponse
 from ToolBox import escape_string
 from URIFY import URIFY_return_string, SOCKET_NAME

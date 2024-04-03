@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
-from RobotSocketMessages import VariableObject, VariableTypes
+from RobotControl.RobotSocketMessages import VariableObject, VariableTypes
 from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder
 
 

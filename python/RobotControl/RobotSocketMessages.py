@@ -1,7 +1,7 @@
 import json
 from enum import Enum, auto
 
-from RobotSocketVariableTypes import VariableTypes
+from RobotControl.RobotSocketVariableTypes import VariableTypes
 from URIFY import URIFY_return_string
 
 

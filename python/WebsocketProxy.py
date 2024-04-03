@@ -7,8 +7,8 @@ from typing import Final
 
 from websockets.server import serve
 
-from RobotControl import get_interpreter_socket, send_user_command, get_robot_mode, start_robot
-from RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
+from RobotControl.RobotControl import get_interpreter_socket, send_user_command, get_robot_mode, start_robot
+from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
 from WebsocketNotifier import websocket_notifier

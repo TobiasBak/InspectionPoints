@@ -28,7 +28,7 @@ from rtde import rtde_config, rtde
 from rtde.serialize import DataObject
 from websockets.server import serve, WebSocketServerProtocol
 from SocketMessages import RobotState
-from RobotControl import POLYSCOPE_IP
+from RobotControl.RobotControl import POLYSCOPE_IP
 
 ROBOT_HOST = POLYSCOPE_IP
 ROBOT_PORT = 30004

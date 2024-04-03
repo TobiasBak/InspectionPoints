@@ -1,4 +1,4 @@
-from RobotSocketVariableTypes import VariableTypes
+from RobotControl.RobotSocketVariableTypes import VariableTypes
 
 SOCKET_NAME = '\"abcd\"'  # We use a specific name in the so the user can open his own socket without specifying name
 

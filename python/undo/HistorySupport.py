@@ -1,7 +1,7 @@
 import asyncio
 
-from RobotControl import get_interpreter_socket, send_command
-from RobotSocketMessages import ReportState
+from RobotControl.RobotControl import get_interpreter_socket, send_command
+from RobotControl.RobotSocketMessages import ReportState
 from undo.VariableRegistry import VariableRegistry
 
 _variable_registry = VariableRegistry()
