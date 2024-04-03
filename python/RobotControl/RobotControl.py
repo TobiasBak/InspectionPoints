@@ -206,11 +206,13 @@ def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
 
     response_from_command = send_command(command_message, on_socket, ensure_recovery=True, command_id=command.data.id)
 
+
     finish_command = CommandFinished(command.data.id, command_message, tuple(list_of_variables))
     string_command = finish_command.dump_ur_string()
     print(f"send_user_command method: String command: {escape_string(string_command)}")
     wrapping = URIFY_return_string(string_command)
     send_command(wrapping, on_socket, ensure_recovery=True, command_id=command.data.id)
+
 
     return response_from_command[:-2]  # Removes \n from the end of the response
 

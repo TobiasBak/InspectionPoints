@@ -13,7 +13,7 @@ from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinishe
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus, AckResponse
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
-from undo.HistorySupport import handle_report_state, handle_command_finished
+from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
 
 clients = dict()
 _START_BYTE: Final = b'\x02'
@@ -84,7 +84,7 @@ async def open_robot_server():
     print(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         print('server listening for robot connections')
-        connect_to_robot_server(gethostbyname(gethostname()), ROBOT_FEEDBACK_PORT)
+        await asyncio.create_task(start_read_loop())
         await srv.serve_forever()
 
 
