@@ -1,14 +1,21 @@
+from enum import Enum, auto
 from typing import Self
 
 from undo.StateValue import StateValue
 
 
+class StateType(Enum):
+    code_state = auto()
+    rtde_state = auto()
+
+
 class State:
-    def __init__(self, state: list[StateValue] = None):
+    def __init__(self, state_type: StateType, state: list[StateValue] = None):
+        self.state_type = state_type
         self.state = state
 
     def __str__(self):
-        return self.state
+        return str(self.state) if len(self.state) > 0 else "Empty State"
 
     def __repr__(self):
         return self.__str__()
@@ -21,6 +28,10 @@ class State:
         return output
 
     def has_un_collapsible_difference(self, other: Self) -> bool:
+        if self.state is None:
+            print("self.state is None")
+            return False
+
         # Sort variables by name or reference to their StateVariable
         if len(self.state) != len(other.state):
             return True
@@ -33,10 +44,11 @@ class State:
 
     def __eq__(self, other: Self) -> bool:
         match other:
-            case State(other_state):
-                if len(self.state) != len(other_state):
+            case State():
+                other_state_list = other.state
+                if len(self.state) != len(other_state_list):
                     return False
-                for self_state, other_state in zip(self.state, other_state):
+                for self_state, other_state in zip(self.state, other_state_list):
                     if self_state != other_state:
                         return False
                 return True
