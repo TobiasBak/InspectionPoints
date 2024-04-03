@@ -1,5 +1,4 @@
 import socket  # for socket
-from enum import Enum
 from socket import socket as Socket
 from time import sleep
 from typing import Callable
@@ -7,14 +6,11 @@ from socket import gethostbyname, gethostname
 
 import select
 
-from RobotControl.RobotSocketMessages import CommandFinished, VariableObject, VariableTypes
-from SocketMessages import CommandMessage, AckResponse
+from RobotControl.RobotSocketMessages import VariableObject
+from RobotControl.RobotSocketVariableTypes import VariableTypes
 from ToolBox import escape_string
-from URIFY import URIFY_return_string, SOCKET_NAME
-from WebsocketNotifier import websocket_notifier
+from URIFY import SOCKET_NAME
 from constants import ROBOT_FEEDBACK_PORT
-from undo.History import History
-from undo.State import State
 
 POLYSCOPE_IP = "polyscope"
 _DASHBOARD_PORT = 29999
@@ -82,6 +78,24 @@ def start_robot():
     _power_on_robot()
     _brake_release_on_robot()
     _start_interpreter_mode_and_connect_to_backend_socket()
+    apply_variables_to_robot(list_of_variables)
+
+
+# This is a list of variables that are sent to the robot for it to sent it back to the proxy.
+list_of_variables: list[VariableObject] = list()
+list_of_variables.append(VariableObject("__test__", VariableTypes.Integer, 2))
+list_of_variables.append(VariableObject("__test2__", VariableTypes.String, "f"))
+
+
+def apply_variables_to_robot(variables: list[VariableObject]):
+    command = ""
+    for variable in variables:
+        if variable.variable_type == VariableTypes.String:
+            command += f'{variable.name} = "{variable.value}" '
+        else:
+            command += f"{variable.name} = {variable.value} "
+    send_command(command, get_interpreter_socket())
+    print(f"\t\tVariables applied to robot: {command}")
 
 
 def _start_interpreter_mode_and_connect_to_backend_socket():
@@ -89,7 +103,6 @@ def _start_interpreter_mode_and_connect_to_backend_socket():
     # Todo: For some reason the robot needs a sleep here, otherwise open_socket does not work.
     #  I thought the parameters on interpreter_mode would fix this. (clear_queue_on_enter, clear_on_end)
     sleep(1)
-    apply_variables_to_robot(list_of_variables)  # Applying user variables to robot
     connect_robot_to_feedback_socket()
 
     # Ensure that non-user inputted commands are not sent to the websocket.
@@ -156,161 +169,19 @@ def connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), p
     send_command(f"socket_open(\"{host}\", {port}, {SOCKET_NAME})\n", get_interpreter_socket())
 
 
-def apply_variables_to_robot(variables: list[VariableObject]):
-    command = ""
-    for variable in variables:
-        if variable.variable_type == VariableTypes.String:
-            command += f'{variable.name} = "{variable.value}" '
-        else:
-            command += f"{variable.name} = {variable.value} "
-    send_command(command, get_interpreter_socket())
-    print(f"\t\tVariables applied to robot: {command}")
-
-
 def sanitize_command(command: str) -> str:
     command = command.replace('\n', ' ')
     command += "\n"  # Add a trailing \n character
     return command
 
 
-def send_command(command: str, on_socket: Socket, ensure_recovery=False, command_id=None) -> str:
+def send_command(command: str, on_socket: Socket) -> str:
     """Returns the ack_response from the robot. The ack_response is a string."""
     command = sanitize_command(command)
     print(f"Sending the following command: '{escape_string(command)}'")
     on_socket.send(command.encode())
-    result = read_from_socket(on_socket)
-
-    # TODO: Remove this responsibility from the send_command function
-    if ensure_recovery:
-        result = ensure_state_recovery_if_broken(result, command, command_id)
-
-    out = ""
-    count = 1
-    while result != "nothing" and count < 2:
-        out += result
-        # time_print(f"Received {count}: {escape_string(result)}")
-        result = read_from_socket(on_socket)
-        count += 1
-
+    out = read_from_socket(on_socket)
     return escape_string(out)
-
-
-# This is a list of variables that are sent to the robot for it to sent it back to the proxy.
-list_of_variables: list[VariableObject] = list()
-list_of_variables.append(VariableObject("__test__", VariableTypes.Integer, 2))
-list_of_variables.append(VariableObject("__test2__", VariableTypes.String, "f"))
-
-
-def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
-    command_message = command.data.command
-    test_history(command)
-
-    response_from_command = send_command(command_message, on_socket, ensure_recovery=True, command_id=command.data.id)
-
-
-    finish_command = CommandFinished(command.data.id, command_message, tuple(list_of_variables))
-    string_command = finish_command.dump_ur_string()
-    print(f"send_user_command method: String command: {escape_string(string_command)}")
-    wrapping = URIFY_return_string(string_command)
-    send_command(wrapping, on_socket, ensure_recovery=True, command_id=command.data.id)
-
-
-    return response_from_command[:-2]  # Removes \n from the end of the response
-
-
-# Contains spaces before string, because when the string message recieved is split, it will be split by :
-class ResponseMessages(Enum):
-    Invalid_state = "Program is in an invalid state"  # This will be checked before sending the users command
-    Too_many_commands = "Too many interpreted messages"  # This is the only one that will be in the "return path/chain"
-    Compile_error = "Compile error"  # These will be "disregarded in checking the safe result, since they will always be returned
-    Syntax_error = "Syntax error"  # Same as the one above
-
-
-class ResponseCodes(Enum):
-    ACK = "ack"
-    DISCARD = "discard"
-
-
-def ensure_state_recovery_if_broken(response: str, command: str, command_id=None) -> str:
-    """ This method will be extracted out into a wrapper function in a file named something like safeSendCommandToRobot"""
-    out = response
-    if out == "nothing":
-        raise ValueError("Response from robot is nothing. This is not expected.")
-
-    response_array = response.split(":")
-    response_code = response_array[0]
-    response_message = response_array[1]
-    response_message = response_message[1:] if response_message[0] == " " else response_message
-
-    if response_code == ResponseCodes.ACK.value:
-        return out
-
-    if response_message == ResponseMessages.Compile_error.value or response_message == ResponseMessages.Syntax_error.value:
-        return out
-
-    # If the robot has interpreted too many commands.
-    if response_message == ResponseMessages.Too_many_commands.value:
-        print(f"\t\t\tToo many commands detected. Attempting to fix the state.")
-        clear_interpreter_mode()
-        # Todo: Apply the variables defined by user. Through what the history object has stored.
-        apply_variables_to_robot(list_of_variables)  # Temporary fix
-        return send_command(command, get_interpreter_socket())  # Resend command since it was lost.
-
-    # If the robot is in an invalid state.
-    if response_message == ResponseMessages.Invalid_state.value:
-        # TODO: check this before sending the command to the robot, and extract this to a separate function
-        # If the robot is invalid state, we recover state without resending command,
-        # since the user still needs the correct feedback.
-        safety_status = get_safety_status()
-        robot_mode = get_robot_mode()
-        running = get_running()
-        print(f"\t\t\tResponse from robot: '{response}'")
-        print(f"\t\t\tSafety status: '{safety_status}'")
-
-        print(f"\t\t\tRobot mode: '{robot_mode}'")
-
-        print(f"\t\t\tRunning: '{running}'")
-        print(f"\t\t\tInvalid state detected. Attempting to fix the state.")
-
-        if safety_status == "PROTECTIVE_STOP":
-            print(f"\t\t\tRobot is in protective stop. Attempting to unlock.")
-            print(f"\t\t\tCommand id: {command_id}")
-            if command_id is not None:
-                # Todo: We need ssh to see the logs for optimal feedback
-                ack_response = AckResponse(command_id, command,
-                                           f"discard: Command caused protective stop. Please investigate the cause before continuuing. Unlocking in 5 seconds. \n")
-                websocket_notifier.notify_observers(str(ack_response))
-
-            unlock_protective_stop()
-            _start_interpreter_mode_and_connect_to_backend_socket()
-            return send_command(command, get_interpreter_socket(), ensure_recovery=True, command_id=command_id)
-
-        if safety_status == "NORMAL" and robot_mode == "RUNNING" and running == "false":  # Todo read from history instead of dashboard
-            print(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
-            _start_interpreter_mode_and_connect_to_backend_socket()
-            # If the error causing this if to be true is array out of bounds.
-            # Then the command is acknowledged but the command_finished is not since the robot
-            # goes into an invalid state after it has acknowledged the command that was actually invalid.
-            # Therefore, we need to resend the commandfinished message.
-            print(f"\t\t\tCommand id: {command_id}")
-            if command_id is not None:
-                # Todo: We need ssh to see the logs for optimal feedback
-                ack_response = AckResponse(command_id, command,
-                                           f"discard: Command caused invalid state. Can be due to following reasons:\n"
-                                           f"1. array out of bounds.\n"
-                                           f"2. Reassigning variable to new type.\n"
-                                           f"3. Error occurred in the program. Did you write a proper command?\n")
-                websocket_notifier.notify_observers(str(ack_response))
-            return send_command(command, get_interpreter_socket(), ensure_recovery=True, command_id=command_id)
-
-    return out
-
-
-def test_history(command):
-    history = History()
-    history.new_command(command)
-    # history.active_command_state().append_state(State())
-    history.debug_print()
 
 
 def read_from_socket(socket: Socket) -> str:

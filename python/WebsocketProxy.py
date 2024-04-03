@@ -7,8 +7,11 @@ from typing import Final
 
 from websockets.server import serve
 
-from RobotControl.RobotControl import send_command, get_interpreter_socket, send_user_command, get_robot_mode, start_robot
+from RobotControl.RobotControl import get_interpreter_socket, get_robot_mode, start_robot
+from RobotControl.RobotControl import send_command, get_interpreter_socket, get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
+from RobotControl.SendRobotCommandWithRecovery import send_user_command
+from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
@@ -83,7 +86,7 @@ async def open_robot_server():
     print(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         print('server listening for robot connections')
-        connect_to_robot_server(gethostbyname(gethostname()), port)
+        #connect_to_robot_server(gethostbyname(gethostname()), port)
         await srv.serve_forever()
 
 

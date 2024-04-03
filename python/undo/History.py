@@ -1,6 +1,6 @@
 from typing import Self
 
-from RobotSocketMessages import CommandFinished
+from RobotControl.RobotSocketMessages import CommandFinished
 from SocketMessages import CommandMessage
 from undo.CommandStates import CommandStates
 from undo.State import State
