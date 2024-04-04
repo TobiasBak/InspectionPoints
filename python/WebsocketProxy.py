@@ -43,7 +43,6 @@ def handle_undo_message(message: UndoMessage) -> str:
 
 
 def handle_new_client():
-    print("New client connected")
     global _new_client
     _new_client = True
 

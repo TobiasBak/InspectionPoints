@@ -69,7 +69,6 @@ async def start_rtde_loop():
             new_state = con.receive()
             if has_new_client():
                 await call_listeners(new_state)
-                print("New client connected has new client")
             if state_is_new(new_state, previous_state):
                 await call_listeners(new_state)
                 previous_state = new_state
@@ -83,7 +82,6 @@ def states_are_equal(obj1: DataObject, obj2: DataObject):
 
 
 async def send_state_through_websocket(state: DataObject) -> None:
-    print(f"Sending state: {state}")
     websocket_notifier.notify_observers(str(RobotState(state)))
 
 
