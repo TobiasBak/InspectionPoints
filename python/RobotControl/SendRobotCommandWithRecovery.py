@@ -69,7 +69,7 @@ def get_state_of_robot(response_message: str) -> States | None:
     safety_status = get_safety_status()
     robot_mode = get_robot_mode()
     running = get_running()
-    if response_message == ResponseMessages.Too_many_commands:
+    if response_message == ResponseMessages.Too_many_commands.value:
         return States.Too_many_commands
     if safety_status == "PROTECTIVE_STOP":
         return States.Protective_stop
