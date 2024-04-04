@@ -21,7 +21,7 @@ class ResponseCodes(Enum):
     DISCARD = "discard"
 
 
-def send_command_with_recovery(command: str, on_socket: Socket, command_id=None):
+def send_command_with_recovery(command: str, on_socket: Socket, command_id=None) -> str:
     """Command_id is important if a message containing the error should be sent back to the frontend."""
     result = send_command(command, on_socket)
 
@@ -48,19 +48,29 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
         print(f"\t\tRobot state before fixing: {robot_state}")
         recover_state(robot_state, command, command_id)
 
+    out = "" # Since we do not want to return the response to the frontend
+
     return out
 
 
+def send_command_finished(command_id: int, command_message: str, on_socket: Socket):
+    finish_command = CommandFinished(command_id, command_message, tuple(list_of_variables))
+    string_command = finish_command.dump_ur_string()
+    wrapping = URIFY_return_string(string_command)
+    send_command_with_recovery(wrapping, on_socket, command_id=command_id)
+
+
 def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
+    command_id = command.data.id
     command_message = command.data.command
     test_history(command)
 
     response_from_command = send_command_with_recovery(command_message, on_socket, command_id=command.data.id)
 
-    finish_command = CommandFinished(command.data.id, command_message, tuple(list_of_variables))
-    string_command = finish_command.dump_ur_string()
-    wrapping = URIFY_return_string(string_command)
-    send_command_with_recovery(wrapping, on_socket, command_id=command.data.id)
+    send_command_finished(command_id, command_message, on_socket)
+
+    if response_from_command is None:
+        return ""
 
     return response_from_command[:-2]  # Removes \n from the end of the response
 

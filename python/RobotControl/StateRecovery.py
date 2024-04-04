@@ -18,7 +18,7 @@ def recover_state(state: States, command: str, command_id: int | None):
         case States.Invalid_state:
             recover_from_invalid_state(command, command_id)
         case States.Too_many_commands:
-            recover_from_too_many_commands(command)
+            recover_from_too_many_commands(command, command_id)
         case States.Protective_stop:
             recover_from_protective_stop(command, command_id)
         case _:
@@ -40,11 +40,14 @@ def recover_from_invalid_state(command: str, command_id: int | None):
     send_command(command, get_interpreter_socket())
 
 
-def recover_from_too_many_commands(command: str):
+def recover_from_too_many_commands(command: str, command_id: int | None):
     print(f"\t\t\tToo many commands detected. Attempting to fix the state.")
     clear_interpreter_mode()
     apply_variables_to_robot(list_of_variables)  # Temporary fix
-    send_command(command, get_interpreter_socket())  # Resend command since it was lost.
+    result = send_command(command, get_interpreter_socket())  # Resend command since it was lost.
+    if command_id is not None:
+        ack_response = AckResponse(command_id, command, result)
+        websocket_notifier.notify_observers(str(ack_response))
 
 
 def recover_from_protective_stop(command: str, command_id: int | None):

@@ -1,4 +1,5 @@
 import asyncio
+import re
 from asyncio import StreamReader, StreamWriter, Task
 from socket import gethostbyname, gethostname
 from socket import socket as Socket
@@ -8,8 +9,8 @@ from typing import Final
 from websockets.server import serve
 
 from RobotControl.RobotControl import get_interpreter_socket, get_robot_mode, start_robot
-from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
-from RobotControl.SendRobotCommandWithRecovery import send_user_command
+from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes
+from RobotControl.SendRobotCommandWithRecovery import send_user_command, send_command_finished
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
 from WebsocketNotifier import websocket_notifier
@@ -27,6 +28,10 @@ _connected_web_clients = set()
 def handle_command_message(message: CommandMessage, socket: Socket) -> str:
     command_string = message.data.command
     result = send_user_command(message, socket)
+    print(f"Result from send_user_command: {result}")
+    if result == "":
+        print(f"String was empty: {result}")
+        return ""
     response = AckResponse(message.data.id, command_string, result)
     str_response = str(response)
     print(f"Sending response: {str_response}")
@@ -57,7 +62,8 @@ def get_handler(socket: Socket) -> callable:
                 case _:
                     raise ValueError(f"Unknown message type: {message}")
 
-            await websocket.send(str_response)
+            if str_response != "":
+                await websocket.send(str_response)
 
     return echo
 
@@ -89,12 +95,6 @@ async def open_robot_server():
         await srv.serve_forever()
 
 
-def connect_to_robot_server(host: str, port: int):
-    send_command(f"socket_open(\"{host}\", {port})\n", get_interpreter_socket())
-    sleep(1)
-    print(f"Manual delayed read resulted in: {read_from_socket(get_interpreter_socket())}")  # Use peername as client ID
-
-
 def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter):
     # Use peername as client ID
     print("########### We got a customer<<<<<<<<<<<<<")
@@ -118,16 +118,76 @@ def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter
     clients[client_id] = task
 
 
+client_buffers = {}
+
+
 async def client_task(reader: StreamReader, writer: StreamWriter):
     client_addr = writer.get_extra_info('peername')
     print('Start echoing back to {}'.format(client_addr))
+
+    # Initialize buffer for this client
+    client_buffers.setdefault(client_addr, bytearray())
+
+    try:
+        while True:
+            data = await reader.read(4096)
+            # print(f"Received data: {data}")
+            if not data:
+                break
+            # Append received data to client's buffer
+            client_buffers[client_addr].extend(data)
+
+            # Schedule processing of the received data asynchronously
+            asyncio.create_task(process_data(client_addr))
+    except KeyError:
+        print(f"KeyError: {client_addr} not found in client_buffers. Client disconnected.")
+        return
+    finally:
+        # Cleanup when client disconnects
+        print(str(client_buffers))
+        # del client_buffers[client_addr]
+        print(f"Client disconnected: {client_addr}")
+
+
+async def process_data(addr):
+    # Asynchronously process data from client's buffer
     extra_data = []
 
+    # Process the data (replace with your actual processing logic)
     while True:
-        data = await reader.read(4096)
+        try:
+            data = client_buffers[addr][:1024]
+            del client_buffers[addr][:1024]
+        except KeyError:
+            # print(f"KeyError: {addr} not found in client_buffers. Client disconnected.")
+            return
 
-        if data == _EMPTY_BYTE:
-            print('Received EOF. Client disconnected.')
+        # print(f"Received data: {data}")
+
+        if data == _EMPTY_BYTE and not extra_data:
+            return
+
+        if data == _EMPTY_BYTE and extra_data:
+            # We have extra data and the rest was lost
+            fucked_data = extra_data.decode()
+            # Regular expression pattern to extract "type", "id", and "data.command"
+            pattern = r'"type":\s*"([^"]+)".*?"id":\s*(\d+).*?"command":\s*"([^"]+)'
+
+            # Use re.search to find the pattern in the string
+            match = re.search(pattern, fucked_data)
+
+            # If match is found, extract the values
+            if match:
+                message_type = match.group(1)
+                id_value = int(match.group(2))
+                command = match.group(3)
+                match message_type:
+                    case RobotSocketMessageTypes.Command_finished.name:
+                        send_command_finished(id_value, command, get_interpreter_socket())
+
+            else:
+                print("Pattern not found in the message.")
+
             return
 
         if extra_data:
@@ -141,6 +201,7 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
         if _END_BYTE not in data:
             extra_data = data
+            print(f"Extra data: {extra_data}")
         else:
             # Split the data into messages within the data
             list_of_data = data.split(_END_BYTE)
@@ -157,13 +218,14 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
 def message_from_robot_received(message: bytes):
     decoded_message = message.decode()
-    # print(f"Message from robot: {decoded_message}")
     robot_message = parse_robot_message(decoded_message)
     match robot_message:
         case CommandFinished():
+            # print(f"Handling command finished: {robot_message}")
             handle_command_finished(robot_message)
             send_to_all_web_clients(str(robot_message))
         case ReportState():
+            # print(f"Handling report state: {robot_message}")
             handle_report_state(robot_message)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")

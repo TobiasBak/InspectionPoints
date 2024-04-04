@@ -2,8 +2,9 @@ import asyncio
 
 from rtde.serialize import DataObject
 
-from RobotControl.RobotControl import get_interpreter_socket, send_command
+from RobotControl.RobotControl import get_interpreter_socket
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
+from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 
 from SocketMessages import RobotState
 from undo.History import History
@@ -13,7 +14,7 @@ from undo.VariableRegistry import VariableRegistry, register_all_code_variables,
 
 _variable_registry = VariableRegistry()
 
-READ_FREQUENCY_HZ = 1
+READ_FREQUENCY_HZ = 10
 READ_PERIOD = 1 / READ_FREQUENCY_HZ
 
 
@@ -63,7 +64,7 @@ def read_variable_state():
     interpreter_socket = get_interpreter_socket()
     read_commands = _variable_registry.generate_read_commands()
     report_state = ReportState(read_commands)
-    send_command(report_state.dump_string_post_urify(), interpreter_socket)
+    send_command_with_recovery(report_state.dump_string_post_urify(), interpreter_socket)
 
 
 async def start_read_loop():

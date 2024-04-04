@@ -18,7 +18,7 @@ class History(object):
 
     def append_state(self, state: State) -> None:
         if self.active_command_state is None:
-            print("There is no active command state.")
+            # print("There is no active command state.")
             return
             # raise ValueError("There is no active command state.")
         self.active_command_state.append_state(state)
