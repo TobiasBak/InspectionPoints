@@ -27,11 +27,11 @@ from typing import Callable, Coroutine
 
 from rtde import rtde_config, rtde
 from rtde.serialize import DataObject
-from websockets.server import serve, WebSocketServerProtocol
 
 from SocketMessages import RobotState
 from RobotControl.RobotControl import POLYSCOPE_IP
-from WebsocketProxy import send_to_all_web_clients, has_new_client
+from WebsocketNotifier import websocket_notifier
+from WebsocketProxy import has_new_client
 from undo.History import History
 from undo.HistorySupport import create_state_from_rtde_state
 
@@ -68,7 +68,7 @@ async def start_rtde_loop():
         try:
             new_state = con.receive()
             if has_new_client():
-                # await call_listeners(new_state)
+                await call_listeners(new_state)
                 print("New client connected has new client")
             if state_is_new(new_state, previous_state):
                 await call_listeners(new_state)
@@ -84,7 +84,7 @@ def states_are_equal(obj1: DataObject, obj2: DataObject):
 
 async def send_state_through_websocket(state: DataObject) -> None:
     print(f"Sending state: {state}")
-    send_to_all_web_clients(str(RobotState(state)))
+    websocket_notifier.notify_observers(str(RobotState(state)))
 
 
 def state_is_new(new_state: DataObject | None, old_state: DataObject | None):
