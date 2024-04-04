@@ -8,6 +8,10 @@ from typing import Final
 
 from websockets.server import serve
 
+from RobotControl.RobotControl import get_interpreter_socket, get_robot_mode, start_robot, send_command, \
+    read_from_socket
+from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
+from RobotControl.SendRobotCommandWithRecovery import send_user_command
 from RobotControl.RobotControl import get_interpreter_socket, get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes
 from RobotControl.SendRobotCommandWithRecovery import send_user_command, send_command_finished
@@ -24,13 +28,13 @@ _EMPTY_BYTE: Final = b''
 
 _connected_web_clients = set()
 
+_new_client = False
+
 
 def handle_command_message(message: CommandMessage, socket: Socket) -> str:
     command_string = message.data.command
     result = send_user_command(message, socket)
-    print(f"Result from send_user_command: {result}")
     if result == "":
-        print(f"String was empty: {result}")
         return ""
     response = AckResponse(message.data.id, command_string, result)
     str_response = str(response)
@@ -44,9 +48,23 @@ def handle_undo_message(message: UndoMessage) -> str:
     return str(response)
 
 
+def handle_new_client():
+    global _new_client
+    _new_client = True
+
+
+def has_new_client() -> bool:
+    global _new_client
+    if _new_client:
+        _new_client = False
+        return True
+    return False
+
+
 def get_handler(socket: Socket) -> callable:
     async def echo(websocket):
         _connected_web_clients.add(websocket)
+        handle_new_client()
         async for message in websocket:
             # print(f"Received message: {message}")
 
@@ -63,7 +81,7 @@ def get_handler(socket: Socket) -> callable:
                     raise ValueError(f"Unknown message type: {message}")
 
             if str_response != "":
-                await websocket.send(str_response)
+                send_to_all_web_clients(str_response)
 
     return echo
 
@@ -153,7 +171,6 @@ async def process_data(addr):
     # Asynchronously process data from client's buffer
     extra_data = []
 
-    # Process the data (replace with your actual processing logic)
     while True:
         try:
             data = client_buffers[addr][:1024]
@@ -201,7 +218,6 @@ async def process_data(addr):
 
         if _END_BYTE not in data:
             extra_data = data
-            print(f"Extra data: {extra_data}")
         else:
             # Split the data into messages within the data
             list_of_data = data.split(_END_BYTE)
@@ -221,11 +237,9 @@ def message_from_robot_received(message: bytes):
     robot_message = parse_robot_message(decoded_message)
     match robot_message:
         case CommandFinished():
-            # print(f"Handling command finished: {robot_message}")
             handle_command_finished(robot_message)
             send_to_all_web_clients(str(robot_message))
         case ReportState():
-            # print(f"Handling report state: {robot_message}")
             handle_report_state(robot_message)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")

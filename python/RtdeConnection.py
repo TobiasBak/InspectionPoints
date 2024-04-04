@@ -27,10 +27,11 @@ from typing import Callable, Coroutine
 
 from rtde import rtde_config, rtde
 from rtde.serialize import DataObject
-from websockets.server import serve, WebSocketServerProtocol
 
 from SocketMessages import RobotState
 from RobotControl.RobotControl import POLYSCOPE_IP
+from WebsocketNotifier import websocket_notifier
+from WebsocketProxy import has_new_client
 from undo.History import History
 from undo.HistorySupport import create_state_from_rtde_state
 
@@ -41,13 +42,8 @@ config_filename = "rtde_configuration.xml"
 conf = rtde_config.ConfigFile(config_filename)
 state_names, state_types = conf.get_recipe("state")
 
-RTDE_WEBSOCKET_HOST = "0.0.0.0"
-RTDE_WEBSOCKET_PORT = 8001
-
 TRANSMIT_FREQUENCY_IN_HERTZ = 60
 SLEEP_TIME = 1 / TRANSMIT_FREQUENCY_IN_HERTZ
-
-_ROBOT_STATE: DataObject | None = None
 
 type ListenerFunction = Callable[[DataObject], Coroutine[None, None, None]]
 listeners: list[ListenerFunction] = []
@@ -64,50 +60,40 @@ async def start_rtde_loop():
     if not con.send_start():
         sys.exit()
 
-    global _ROBOT_STATE
+    register_listener(send_state_through_websocket)
+
+    previous_state = None
 
     while True:
-        await asyncio.sleep(SLEEP_TIME)
         try:
-            _ROBOT_STATE = con.receive()
+            new_state = con.receive()
+            if has_new_client():
+                await call_listeners(new_state)
+            if state_is_new(new_state, previous_state):
+                await call_listeners(new_state)
+                previous_state = new_state
         except rtde.RTDEException as e:
             print(f"Error in recieve_rtde_data: {e}")
+        await asyncio.sleep(SLEEP_TIME)
 
 
 def states_are_equal(obj1: DataObject, obj2: DataObject):
     return obj1.__dict__ == obj2.__dict__
 
 
-def get_handler() -> callable:
-    async def handler(websocket: WebSocketServerProtocol):
-        # Connecting to RTDE interface
-        local_robot_state: DataObject | None = None
+async def send_state_through_websocket(state: DataObject) -> None:
+    websocket_notifier.notify_observers(str(RobotState(state)))
 
-        async def send_state_through_websocket(state: DataObject):
-            if state is None:
-                return
-            await websocket.send(str(RobotState(state)))
 
-        register_listener(send_state_through_websocket)
+def state_is_new(new_state: DataObject | None, old_state: DataObject | None):
+    if old_state is None and new_state is not None:
+        return True
+    if old_state is None and new_state is None:
+        return False
+    if states_are_equal(old_state, new_state):
+        return False
 
-        while True:
-            await asyncio.sleep(SLEEP_TIME)
-
-            if local_robot_state is None and _ROBOT_STATE is not None:
-                local_robot_state = _ROBOT_STATE
-                await call_listeners(_ROBOT_STATE)
-                continue
-
-            if local_robot_state is None and _ROBOT_STATE is None:
-                continue
-
-            if states_are_equal(local_robot_state, _ROBOT_STATE):
-                continue
-
-            local_robot_state = _ROBOT_STATE
-            await call_listeners(_ROBOT_STATE)
-
-    return handler
+    return True
 
 
 def register_listener(listener: ListenerFunction):
@@ -125,9 +111,3 @@ register_listener(log_state)
 async def call_listeners(with_state: DataObject):
     for listener in listeners:
         await listener(with_state)
-
-
-async def start_RTDE_websocket():
-    print("Starting RTDE Websocket")
-    async with serve(get_handler(), RTDE_WEBSOCKET_HOST, RTDE_WEBSOCKET_PORT):
-        await asyncio.Future()  # run forever
