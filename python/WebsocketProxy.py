@@ -7,11 +7,14 @@ from typing import Final
 
 from websockets.server import serve
 
-from RobotControl import send_command, get_interpreter_socket, read_from_socket, send_user_command
-from SocketMessages import AckResponse, RobotState
-from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, \
-    UndoStatus
-from RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
+from RobotControl.RobotControl import get_interpreter_socket, get_robot_mode, start_robot
+from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState
+from RobotControl.SendRobotCommandWithRecovery import send_user_command
+from SocketMessages import AckResponse
+from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
+from WebsocketNotifier import websocket_notifier
+from constants import ROBOT_FEEDBACK_PORT
+from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
 
 clients = dict()
 _START_BYTE: Final = b'\x02'
@@ -57,14 +60,14 @@ def get_handler(socket: Socket) -> callable:
         _connected_web_clients.add(websocket)
         handle_new_client()
         async for message in websocket:
-            print(f"Received message: {message}")
+            # print(f"Received message: {message}")
 
             message = parse_message(message)
 
             match message:
                 case CommandMessage():
                     str_response = handle_command_message(message, socket)
-                    print(f"Message is a CommandMessage")
+                    # print(f"Message is a CommandMessage")
                 case UndoMessage():
                     str_response = handle_undo_message(message)
                     print(f"Message is an UndoMessage")
@@ -77,28 +80,36 @@ def get_handler(socket: Socket) -> callable:
 
 
 def send_to_all_web_clients(message: str):
+    removed_clients = []
+
     for websocket in _connected_web_clients:
         if websocket.closed:
-            _connected_web_clients.remove(websocket)
+            removed_clients.append(websocket)
             continue
         asyncio.create_task(websocket.send(message))
+
+    for websocket in removed_clients:
+        _connected_web_clients.remove(websocket)
+
+
+# To prevent circular dependencies
+websocket_notifier.register_observer(send_to_all_web_clients)
 
 
 async def open_robot_server():
     host = '0.0.0.0'
-    port = 8000
-    srv = await asyncio.start_server(client_connected_cb, host=host, port=port)
+    srv = await asyncio.start_server(client_connected_cb, host=host, port=ROBOT_FEEDBACK_PORT)
     print(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         print('server listening for robot connections')
-        connect_to_robot_server(gethostbyname(gethostname()), port)
+        await asyncio.create_task(start_read_loop())
         await srv.serve_forever()
 
 
 def connect_to_robot_server(host: str, port: int):
     send_command(f"socket_open(\"{host}\", {port})\n", get_interpreter_socket())
     sleep(1)
-    print(f"Manual delayed read resulted in: {read_from_socket(get_interpreter_socket())}")
+    print(f"Manual delayed read resulted in: {read_from_socket(get_interpreter_socket())}")  # Use peername as client ID
 
 
 def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter):
@@ -114,7 +125,7 @@ def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter
         try:  # Retrieve the result and ignore whatever returned, since it's just cleaning
             fu.result()
         except Exception as e:
-            pass
+            raise e
         # Remove the client from client records
         del clients[client_id]
 
@@ -130,7 +141,7 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
     extra_data = []
 
     while True:
-        data = await reader.read(16)
+        data = await reader.read(4096)
 
         if data == _EMPTY_BYTE:
             print('Received EOF. Client disconnected.')
@@ -163,21 +174,42 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
 def message_from_robot_received(message: bytes):
     decoded_message = message.decode()
-    print(f"Message from robot: {decoded_message}")
+    # print(f"Message from robot: {decoded_message}")
     robot_message = parse_robot_message(decoded_message)
-    print(f"Robot message: {robot_message}")
     match robot_message:
         case CommandFinished():
+            handle_command_finished(robot_message)
             send_to_all_web_clients(str(robot_message))
         case ReportState():
-            print(f"Messaged decoded to be a ReportState: {robot_message.dump()}")
+            handle_report_state(robot_message)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
 
 
 async def start_webserver():
-    print("Connecting to interpreter")
+    ensure_polyscope_is_ready()
+    print(f"Polyscope is ready. The robot mode is: {get_robot_mode()}")
+
+    start_robot()
+
     interpreter_socket: Socket = get_interpreter_socket()
     print("Starting websocket server")
     async with serve(get_handler(interpreter_socket), "0.0.0.0", 8767):
         await asyncio.Future()  # run forever
+
+
+def ensure_polyscope_is_ready():
+    initial_startup_messages = ('', 'BOOTING')
+    starting_phases = ('NO_CONTROLLER', 'DISCONNECTED', 'UniversalRobotsDashboardServer')
+    sleep_time = 0.1
+
+    robot_mode = get_robot_mode()
+
+    while get_robot_mode() in initial_startup_messages:
+        print(f"Polyscope is still starting: {robot_mode}")
+        sleep(sleep_time)
+
+    # UniversalRobotsDashboardServer is a not documented state, but it is a state that the robot can be in
+    while get_robot_mode() in starting_phases:
+        print(f"Polyscope is in current state of starting: {robot_mode}")
+        sleep(sleep_time)

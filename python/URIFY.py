@@ -1,4 +1,6 @@
-from RobotSocketVariableTypes import VariableTypes
+from RobotControl.RobotSocketVariableTypes import VariableTypes
+
+SOCKET_NAME = '\"abcd\"'  # We use a specific name in the so the user can open his own socket without specifying name
 
 
 def URIFY_return_string(string_to_urify: str) -> str:
@@ -13,7 +15,7 @@ def URIFY_return_string(string_to_urify: str) -> str:
     :return: The URIFYed string that can be sent to the robot
     """
 
-    out = " socket_send_byte(2) "  # Start byte
+    out = f" socket_send_byte(2, {SOCKET_NAME})"  # Start byte
 
     list_of_strings = string_to_urify.split('\\"\\"')
 
@@ -29,7 +31,7 @@ def URIFY_return_string(string_to_urify: str) -> str:
         else:
             out += create_socket_send_string_variable(list_of_strings[i])
 
-    out += " socket_send_byte(3) "  # End byte
+    out += f" socket_send_byte(3, {SOCKET_NAME}) "  # End byte
     return out
 
 
@@ -48,13 +50,17 @@ def _urify_string(string: str) -> str:
         urified_string += create_quote_send()
 
     for part in between_quotes:
+        # We want to send strings if empty string
+        # This is due to a="Hi" resulting in "a=\\"Hi\\"" before urify_string is called.
         if part == "":
+            urified_string += create_quote_send()
             continue
 
         urified_string += create_quote_send()
         urified_string += create_socket_send_string(part)
 
     return urified_string
+
 
 def create_socket_send_string_variable(string_to_send: str) -> str:
     if string_to_send == "":
@@ -72,17 +78,19 @@ def create_socket_send_string_variable(string_to_send: str) -> str:
         case _:
             pass
 
-    out = f" socket_send_string({string_to_send}) "
+    out = f" socket_send_string({string_to_send}, {SOCKET_NAME}) "
 
     if wrap_in_quotes:
         out = create_quote_send() + out + create_quote_send()
 
     return out
+
+
 def create_socket_send_string(string_to_send: str) -> str:
     if string_to_send == "":
         return ""
-    return f" socket_send_string(\"{string_to_send}\") "
+    return f" socket_send_string(\"{string_to_send}\", {SOCKET_NAME}) "
 
 
 def create_quote_send() -> str:
-    return " socket_send_byte(34) "
+    return f" socket_send_byte(34, {SOCKET_NAME}) "

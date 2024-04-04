@@ -1,4 +1,4 @@
-from RobotSocketMessages import VariableObject
+from RobotControl.RobotSocketMessages import VariableObject
 from undo.StateVariable import CodeStateVariable, RtdeStateVariable
 
 
@@ -6,9 +6,11 @@ class VariableRegistry:
     def __init__(self):
         self._code_variables: list[CodeStateVariable] = []
         self._rtde_variables: list[RtdeStateVariable] = []
+        self._code_variable_dict: dict[str, CodeStateVariable] = {}
 
     def register_code_variable(self, variable: CodeStateVariable) -> None:
         self._code_variables.append(variable)
+        self._code_variable_dict[variable.name] = variable
 
     def register_rtde_variable(self, variable: RtdeStateVariable) -> None:
         self._rtde_variables.append(variable)
@@ -25,3 +27,33 @@ class VariableRegistry:
 
     def get_code_variables(self) -> list[CodeStateVariable]:
         return self._code_variables
+
+    def get_code_variable_dict(self) -> dict[str, CodeStateVariable]:
+        return self._code_variable_dict
+
+    def get_rtde_variables(self) -> list[RtdeStateVariable]:
+        return self._rtde_variables
+
+
+def register_all_code_variables(in_registry: VariableRegistry):
+    variables = [
+        CodeStateVariable("test", "__test__"),
+        CodeStateVariable("test2", "__test2__")
+    ]
+
+    for variable in variables:
+        in_registry.register_code_variable(variable)
+
+
+def register_all_rtde_variables(in_registry: VariableRegistry):
+    variables = [
+        RtdeStateVariable("safety status", "safety_status"),
+        RtdeStateVariable("runtime state", "runtime_state"),
+        RtdeStateVariable("robot mode", "robot_mode"),
+        RtdeStateVariable("joints", "joints", False),
+        RtdeStateVariable("tcp", "tcp"),
+        RtdeStateVariable("payload", "payload"),
+    ]
+
+    for variable in variables:
+        in_registry.register_rtde_variable(variable)
