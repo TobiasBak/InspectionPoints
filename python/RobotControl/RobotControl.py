@@ -24,6 +24,7 @@ def create_get_socket_function() -> Callable[[str, int], Socket]:
 
     def inner_get_socket(ip: str, port: int) -> Socket | None:
         if (ip, port) in inner_socket_bank:
+            print(f"Returning cached socket for {ip}:{port} | {inner_socket_bank[(ip, port)]}")
             return inner_socket_bank[(ip, port)]
         try:
             my_socket: Socket = Socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -42,6 +43,7 @@ def create_get_socket_function() -> Callable[[str, int], Socket]:
 
         my_socket.setblocking(False)
         inner_socket_bank[(ip, port)] = my_socket
+        print(f"Returning socket {ip}:{port} | {my_socket}")
         return my_socket
 
     return inner_get_socket
@@ -120,11 +122,13 @@ def clear_interpreter_mode():
 
 def _power_on_robot():
     dashboard_socket = get_dashboard_socket()
+    print(f"Sending power on command to robot with the following socket: {dashboard_socket}")
     send_command("power on", dashboard_socket)
 
 
 def _brake_release_on_robot():
     dashboard_socket = get_dashboard_socket()
+    print(f"Sending brake release command to robot with the following socket: {dashboard_socket}")
     send_command("brake release", dashboard_socket)
 
 
