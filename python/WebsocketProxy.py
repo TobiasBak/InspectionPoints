@@ -1,4 +1,5 @@
 import asyncio
+import json
 import re
 from asyncio import StreamReader, StreamWriter, Task
 from socket import gethostbyname, gethostname
@@ -132,57 +133,30 @@ def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter
     clients[client_id] = task
 
 
-client_buffers = {}
-
-
 async def client_task(reader: StreamReader, writer: StreamWriter):
     client_addr = writer.get_extra_info('peername')
     print('Start echoing back to {}'.format(client_addr))
-
-    # Initialize buffer for this client
-    client_buffers.setdefault(client_addr, bytearray())
-
-    try:
-        while True:
-            data = await reader.read(4096)
-            # print(f"Received data: {data}")
-            if not data:
-                break
-            # Append received data to client's buffer
-            client_buffers[client_addr].extend(data)
-
-            # Schedule processing of the received data asynchronously
-            asyncio.create_task(process_data(client_addr))
-    except KeyError:
-        print(f"KeyError: {client_addr} not found in client_buffers. Client disconnected.")
-        return
-    finally:
-        # Cleanup when client disconnects
-        print(str(client_buffers))
-        # del client_buffers[client_addr]
-        print(f"Client disconnected: {client_addr}")
-
-
-async def process_data(addr):
-    # Asynchronously process data from client's buffer
     extra_data = []
 
     while True:
-        try:
-            data = client_buffers[addr][:1024]
-            del client_buffers[addr][:1024]
-        except KeyError:
-            # print(f"KeyError: {addr} not found in client_buffers. Client disconnected.")
-            return
+        data = await reader.read(4096)
+        print(f"Received data: {data}")
 
-        # print(f"Received data: {data}")
+        if data == _EMPTY_BYTE:
+            print('Received empty byte')
+            continue
+            # return
 
-        if data == _EMPTY_BYTE and not extra_data:
-            return
-
-        if data == _EMPTY_BYTE and extra_data:
+        # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
+        if data[0] == _START_BYTE[0] and extra_data:
+            # We have extra data that needs to be recovered and processed
+            print(f"New message but extra data: {extra_data}")
             # We have extra data and the rest was lost
             fucked_data = extra_data.decode()
+
+            # Clean extra data
+            extra_data = []
+
             # Regular expression pattern to extract "type", "id", and "data.command"
             pattern = r'"type":\s*"([^"]+)".*?"id":\s*(\d+).*?"command":\s*"([^"]+)'
 
@@ -196,23 +170,22 @@ async def process_data(addr):
                 command = match.group(3)
                 match message_type:
                     case RobotSocketMessageTypes.Command_finished.name:
-                        send_command_finished(id_value, command, get_interpreter_socket())
+                        # send_command_finished(id_value, command, get_interpreter_socket())
+                        print(f"Command finished: id: '{id_value}' Command: '{command}'")
 
             else:
                 print("Pattern not found in the message.")
 
-            return
+            continue
 
         if extra_data:
             data = extra_data + data
             extra_data = []
 
-        # Check if the data received starts with the start byte
-        # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
-        if data[0] != _START_BYTE[0]:
-            print(f"Something is WRONG. Data not started with start byte: {data}")
+        print(f"Processing data: {data}")
 
         if _END_BYTE not in data:
+            print(f"End byte not in data, extra_data is set to data: {data}")
             extra_data = data
         else:
             # Split the data into messages within the data
@@ -223,6 +196,11 @@ async def process_data(addr):
                 extra_data = list_of_data.pop()
 
             for message in list_of_data:
+                # If message contains multiple start bytes, discard message
+                if message.count(_START_BYTE) > 1:
+                    print(f"Discarding message because of multiple start bytes: {message}")
+                    continue
+
                 if message:
                     message = message[1:]  # remove the start byte
                     message_from_robot_received(message)
@@ -230,15 +208,26 @@ async def process_data(addr):
 
 def message_from_robot_received(message: bytes):
     decoded_message = message.decode()
-    robot_message = parse_robot_message(decoded_message)
-    match robot_message:
-        case CommandFinished():
-            handle_command_finished(robot_message)
-            send_to_all_web_clients(str(robot_message))
-        case ReportState():
-            handle_report_state(robot_message)
-        case _:
-            raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
+    # print(f"Decoded message before parsing: {decoded_message}")
+
+    run = True
+
+    try:
+        json.loads(decoded_message)
+    except json.JSONDecodeError:
+        print(f"\t\t\tMessage is not valid json: {decoded_message}")
+        run = False
+
+    if run:
+        robot_message = parse_robot_message(decoded_message)
+        match robot_message:
+            case CommandFinished():
+                handle_command_finished(robot_message)
+                send_to_all_web_clients(str(robot_message))
+            case ReportState():
+                handle_report_state(robot_message)
+            case _:
+                raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
 
 
 async def start_webserver():
