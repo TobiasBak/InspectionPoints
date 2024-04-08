@@ -143,9 +143,8 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
         print(f"Received data: {data}")
 
         if data == _EMPTY_BYTE:
-            print('Received empty byte')
+            # print('Received empty byte')
             continue
-            # return
 
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
         if data[0] == _START_BYTE[0] and extra_data:
@@ -170,8 +169,8 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
                 command = match.group(3)
                 match message_type:
                     case RobotSocketMessageTypes.Command_finished.name:
-                        # send_command_finished(id_value, command, get_interpreter_socket())
-                        print(f"Command finished: id: '{id_value}' Command: '{command}'")
+                        send_command_finished(id_value, command, get_interpreter_socket())
+                        print(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
 
             else:
                 print("Pattern not found in the message.")
@@ -182,7 +181,7 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
             data = extra_data + data
             extra_data = []
 
-        print(f"Processing data: {data}")
+        # print(f"Processing data: {data}")
 
         if _END_BYTE not in data:
             print(f"End byte not in data, extra_data is set to data: {data}")
@@ -206,17 +205,20 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
                     message_from_robot_received(message)
 
 
+def is_json(myjson):
+    try:
+        json.loads(myjson)
+    except ValueError as e:
+        return False
+    return True
+
+
 def message_from_robot_received(message: bytes):
     decoded_message = message.decode()
-    # print(f"Decoded message before parsing: {decoded_message}")
+    print(f"Decoded message before parsing: {decoded_message}")
 
+    # run = is_json(decoded_message)
     run = True
-
-    try:
-        json.loads(decoded_message)
-    except json.JSONDecodeError:
-        print(f"\t\t\tMessage is not valid json: {decoded_message}")
-        run = False
 
     if run:
         robot_message = parse_robot_message(decoded_message)
