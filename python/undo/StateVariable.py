@@ -1,7 +1,11 @@
 from abc import ABC
 
 from RobotControl.RobotSocketMessages import VariableObject, VariableTypes
+from custom_logging import LogConfig
 from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class StateVariable(ABC):

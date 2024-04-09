@@ -1,5 +1,9 @@
 from SocketMessages import CommandMessage
+from custom_logging import LogConfig
 from undo.State import State, StateType
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class CommandStates:
@@ -11,7 +15,7 @@ class CommandStates:
 
     def append_state(self, state: State):
         if state.state_type not in self.previous_states:
-            print(f"state appended because it is the first state of its type: {state.state_type}.")
+            recurring_logger.debug(f"state appended because it is the first state of its type: {state.state_type}.")
             self._append_state(state)
             return
 

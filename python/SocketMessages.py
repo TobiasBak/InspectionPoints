@@ -4,6 +4,11 @@ from enum import Enum, auto
 
 from rtde.serialize import DataObject
 
+from custom_logging import LogConfig
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
+
 
 class MessageType(Enum):
     Command = auto()

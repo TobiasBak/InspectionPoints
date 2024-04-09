@@ -1,4 +1,8 @@
+from custom_logging import LogConfig
 from undo.StateVariable import StateVariable
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class StateValue:

@@ -1,4 +1,8 @@
 from RobotControl.RobotSocketVariableTypes import VariableTypes
+from custom_logging import LogConfig
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 SOCKET_NAME = '\"abcd\"'  # We use a specific name in the so the user can open his own socket without specifying name
 

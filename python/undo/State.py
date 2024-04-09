@@ -1,7 +1,11 @@
 from enum import Enum, auto
 from typing import Self
 
+from custom_logging import LogConfig
 from undo.StateValue import StateValue
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class StateType(Enum):
@@ -29,7 +33,7 @@ class State:
 
     def has_un_collapsible_difference(self, other: Self) -> bool:
         if self.state is None:
-            print("self.state is None")
+            recurring_logger.warn("self.state is None")
             return False
 
         # Sort variables by name or reference to their StateVariable

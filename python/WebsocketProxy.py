@@ -15,7 +15,11 @@ from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
+from custom_logging import LogConfig
 from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 clients = dict()
 _START_BYTE: Final = b'\x02'
@@ -32,13 +36,13 @@ def handle_command_message(message: CommandMessage, socket: Socket) -> str:
     result = send_user_command(message, socket)
     response = AckResponse(message.data.id, command_string, result)
     str_response = str(response)
-    print(f"Sending response: {str_response}")
+    recurring_logger.debug(f"Sending response: {str_response}")
     return str_response
 
 
 def handle_undo_message(message: UndoMessage) -> str:
     response = UndoResponseMessage(message.data.id, UndoStatus.Success)
-    print(f"Sending response: {response}")
+    recurring_logger.debug(f"Sending response: {response}")
     return str(response)
 
 
@@ -70,7 +74,7 @@ def get_handler(socket: Socket) -> callable:
                     # print(f"Message is a CommandMessage")
                 case UndoMessage():
                     str_response = handle_undo_message(message)
-                    print(f"Message is an UndoMessage")
+                    recurring_logger.debug(f"Message is an UndoMessage")
                 case _:
                     raise ValueError(f"Unknown message type: {message}")
 
@@ -99,9 +103,9 @@ websocket_notifier.register_observer(send_to_all_web_clients)
 async def open_robot_server():
     host = '0.0.0.0'
     srv = await asyncio.start_server(client_connected_cb, host=host, port=ROBOT_FEEDBACK_PORT)
-    print(f"ip_address of this container: {gethostbyname(gethostname())}")
+    non_recurring_logger.info(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
-        print('server listening for robot connections')
+        non_recurring_logger.info('server listening for robot connections')
         await asyncio.create_task(start_read_loop())
         await srv.serve_forever()
 
@@ -109,19 +113,20 @@ async def open_robot_server():
 def connect_to_robot_server(host: str, port: int):
     send_command(f"socket_open(\"{host}\", {port})\n", get_interpreter_socket())
     sleep(1)
-    print(f"Manual delayed read resulted in: {read_from_socket(get_interpreter_socket())}")  # Use peername as client ID
+    # Use peername as client ID
+    non_recurring_logger.info(f"Manual delayed read resulted in: {read_from_socket(get_interpreter_socket())}")
 
 
 def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter):
     # Use peername as client ID
-    print("########### We got a customer<<<<<<<<<<<<<")
+    non_recurring_logger.info("########### We got a customer<<<<<<<<<<<<<")
     client_id = client_writer.get_extra_info('peername')
 
-    print('Client connected: {}'.format(client_id))
+    non_recurring_logger.info(f'Client connected: {client_id}')
 
     # Define the cleanup function here
     def client_cleanup(fu: Task[None]):
-        print('Cleaning up client {}'.format(client_id))
+        non_recurring_logger.warn('Cleaning up client {}'.format(client_id))
         try:  # Retrieve the result and ignore whatever returned, since it's just cleaning
             fu.result()
         except Exception as e:
@@ -137,14 +142,14 @@ def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter
 
 async def client_task(reader: StreamReader, writer: StreamWriter):
     client_addr = writer.get_extra_info('peername')
-    print('Start echoing back to {}'.format(client_addr))
+    non_recurring_logger.info(f'Start echoing back to {client_addr}')
     extra_data = []
 
     while True:
         data = await reader.read(4096)
 
         if data == _EMPTY_BYTE:
-            print('Received EOF. Client disconnected.')
+            non_recurring_logger.warn('Received EOF. Client disconnected.')
             return
 
         if extra_data:
@@ -154,7 +159,7 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
         # Check if the data received starts with the start byte
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
         if data[0] != _START_BYTE[0]:
-            print(f"Something is WRONG. Data not started with start byte: {data}")
+            recurring_logger.error(f"Something is WRONG. Data not started with start byte: {data}")
 
         if _END_BYTE not in data:
             extra_data = data
@@ -188,12 +193,12 @@ def message_from_robot_received(message: bytes):
 
 async def start_webserver():
     ensure_polyscope_is_ready()
-    print(f"Polyscope is ready. The robot mode is: {get_robot_mode()}")
+    non_recurring_logger.info(f"Polyscope is ready. The robot mode is: {get_robot_mode()}")
 
     start_robot()
 
     interpreter_socket: Socket = get_interpreter_socket()
-    print("Starting websocket server")
+    recurring_logger.info("Starting websocket server")
     async with serve(get_handler(interpreter_socket), "0.0.0.0", 8767):
         await asyncio.Future()  # run forever
 
@@ -206,10 +211,10 @@ def ensure_polyscope_is_ready():
     robot_mode = get_robot_mode()
 
     while get_robot_mode() in initial_startup_messages:
-        print(f"Polyscope is still starting: {robot_mode}")
+        recurring_logger.info(f"Polyscope is still starting: {robot_mode}")
         sleep(sleep_time)
 
     # UniversalRobotsDashboardServer is a not documented state, but it is a state that the robot can be in
     while get_robot_mode() in starting_phases:
-        print(f"Polyscope is in current state of starting: {robot_mode}")
+        recurring_logger.info(f"Polyscope is in current state of starting: {robot_mode}")
         sleep(sleep_time)

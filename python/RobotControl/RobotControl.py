@@ -11,12 +11,16 @@ from RobotControl.RobotSocketVariableTypes import VariableTypes
 from ToolBox import escape_string
 from URIFY import SOCKET_NAME
 from constants import ROBOT_FEEDBACK_PORT
+from custom_logging import LogConfig
 
 POLYSCOPE_IP = "polyscope"
 _DASHBOARD_PORT = 29999
 _PRIMARY_PORT = 30001
 _SECONDARY_PORT = 30002
 _INTERPRETER_PORT = 30020
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 def create_get_socket_function() -> Callable[[str, int], Socket]:
@@ -27,16 +31,16 @@ def create_get_socket_function() -> Callable[[str, int], Socket]:
             return inner_socket_bank[(ip, port)]
         try:
             my_socket: Socket = Socket(socket.AF_INET, socket.SOCK_STREAM)
-            print(f"Socket successfully created for {ip}:{port}")
+            non_recurring_logger.debug(f"Socket successfully created for {ip}:{port}")
         except socket.error as err:
-            print(f"socket creation failed with error {err}")
+            non_recurring_logger.error(f"socket creation failed with error {err}")
             return
 
         try:
             my_socket.connect((ip, port))
-            print(f"Socket connected to {ip}:{port}")
+            non_recurring_logger.debug(f"Socket connected to {ip}:{port}")
         except ConnectionRefusedError:
-            print(f"Connection to {ip}:{port} refused - retrying in 1 second")
+            non_recurring_logger.info(f"Connection to {ip}:{port} refused - retrying in 1 second")
             sleep(1)
             return get_socket(ip, port)
 
@@ -71,12 +75,15 @@ def start_interpreter_mode():
     clear_queue_on_enter = "clearQueueOnEnter = True"
     clear_on_end = "clearOnEnd = True"
     send_command(f"interpreter_mode({clear_queue_on_enter}, {clear_on_end})", secondary_socket)
-    print("Interpreter mode command sent")
+    non_recurring_logger.debug("Interpreter mode command sent")
 
 
 def start_robot():
+    non_recurring_logger.debug("Power on robot")
     _power_on_robot()
+    non_recurring_logger.info("Brake release robot")
     _brake_release_on_robot()
+    non_recurring_logger.info("Start interpreter mode and connect to backend socket")
     _start_interpreter_mode_and_connect_to_backend_socket()
     apply_variables_to_robot(list_of_variables)
 
@@ -95,7 +102,7 @@ def apply_variables_to_robot(variables: list[VariableObject]):
         else:
             command += f"{variable.name} = {variable.value} "
     send_command(command, get_interpreter_socket())
-    print(f"\t\tVariables applied to robot: {command}")
+    non_recurring_logger.debug(f"\t\tVariables applied to robot: {command}")
 
 
 def _start_interpreter_mode_and_connect_to_backend_socket():
@@ -110,12 +117,12 @@ def _start_interpreter_mode_and_connect_to_backend_socket():
     # I have tested values below 0.5, but they did not give reliable results.
     sleep(0.5)
     delayed_read = read_from_socket_till_end(get_interpreter_socket())
-    print(f"Delayed read: {escape_string(delayed_read)}")
+    non_recurring_logger.debug(f"Delayed read: {escape_string(delayed_read)}")
 
 
 def clear_interpreter_mode():
     send_command("clear_interpreter()", get_interpreter_socket())
-    print("Clear command sent")
+    recurring_logger.info("Clear command sent")
 
 
 def _power_on_robot():
@@ -134,10 +141,10 @@ def unlock_protective_stop():
 
     result = get_value_from_dashboard("unlock protective stop")
     if result == "Protectivestopreleasing":
-        print("Protective stop releasing")
+        non_recurring_logger.warn("Protective stop releasing")
         return
     else:
-        print(f"Unlock protective stop result: {result}")
+        non_recurring_logger.info(f"Unlock protective stop result: {result}")
 
     unlock_protective_stop()  # If release fails, try again
 
@@ -201,7 +208,7 @@ def read_from_socket(socket: Socket) -> str:
         except UnicodeDecodeError as e:
             # Intentionally not returning anything.
             # Returning nothing if a decode error occurs.
-            print(f"Error decoding message: {e}")
+            recurring_logger.error(f"Error decoding message: {e}")
 
     return "nothing"
 
@@ -216,7 +223,7 @@ def read_from_socket_till_end(socket: Socket) -> str:
 
 
 if __name__ == '__main__':
-    print("Starting RobotControl.py")
+    non_recurring_logger.info("Starting RobotControl.py")
     interpreter_socket: Socket = get_interpreter_socket()
 
     interpreter_socket.close()
