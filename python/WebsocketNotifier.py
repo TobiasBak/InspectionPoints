@@ -1,5 +1,10 @@
 from typing import Callable
 
+from custom_logging import LogConfig
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
+
 
 class WebsocketNotifier:
     """
@@ -9,6 +14,7 @@ class WebsocketNotifier:
 
     It can also be used by other functions to be notified whenever a message is sent to the clients.
     """
+
     def __init__(self):
         self._observers = []
 
@@ -26,5 +32,3 @@ class WebsocketNotifier:
 
 
 websocket_notifier = WebsocketNotifier()
-
-

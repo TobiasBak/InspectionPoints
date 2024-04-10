@@ -1,10 +1,13 @@
 import json
 from enum import Enum, auto
 
-
 from URIFY import URIFY_return_string
 
 from RobotControl.RobotSocketVariableTypes import VariableTypes
+from custom_logging import LogConfig
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class RobotSocketMessageTypes(Enum):
@@ -36,7 +39,7 @@ class VariableObject:
         }
 
     def __str__(self):
-        print(f"stringing: {self.dump()['value']}")
+        non_recurring_logger.debug(f"stringing: {self.dump()['value']}")
         return json.dumps(self.dump())
 
 

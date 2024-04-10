@@ -6,7 +6,11 @@ from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.StateRecovery import list_of_variables, States, recover_state
 from SocketMessages import CommandMessage
 from URIFY import URIFY_return_string
+from custom_logging import LogConfig
 from undo.History import History
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class ResponseMessages(Enum):
@@ -21,7 +25,7 @@ class ResponseCodes(Enum):
     DISCARD = "discard"
 
 
-def send_command_with_recovery(command: str, on_socket: Socket, command_id=None):
+def send_command_with_recovery(command: str, on_socket: Socket, command_id=None) -> str:
     """Command_id is important if a message containing the error should be sent back to the frontend."""
     result = send_command(command, on_socket)
 
@@ -31,6 +35,10 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
         raise ValueError("Response from robot is nothing. This is not expected.")
 
     response_array = result.split(":")
+    if len(response_array) < 2:
+        recurring_logger.debug(f"Response array: {response_array}")
+        raise ValueError("Response from robot is not in the expected format.")
+    
     response_code = response_array[0]
 
     if response_code == ResponseCodes.ACK.value:
@@ -45,22 +53,32 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
     # We are in an invalid state, find out which one and recover
     robot_state: States = get_state_of_robot(response_message)
     if robot_state is not None:
-        print(f"\t\tRobot state before fixing: {robot_state}")
+        recurring_logger.info(f"\t\tRobot state before fixing: {robot_state}")
         recover_state(robot_state, command, command_id)
+
+    out = "" # Since we do not want to return the response to the frontend
 
     return out
 
 
+def send_command_finished(command_id: int, command_message: str, on_socket: Socket):
+    finish_command = CommandFinished(command_id, command_message, tuple(list_of_variables))
+    string_command = finish_command.dump_ur_string()
+    wrapping = URIFY_return_string(string_command)
+    send_command_with_recovery(wrapping, on_socket, command_id=command_id)
+
+
 def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
+    command_id = command.data.id
     command_message = command.data.command
     test_history(command)
 
     response_from_command = send_command_with_recovery(command_message, on_socket, command_id=command.data.id)
 
-    finish_command = CommandFinished(command.data.id, command_message, tuple(list_of_variables))
-    string_command = finish_command.dump_ur_string()
-    wrapping = URIFY_return_string(string_command)
-    send_command_with_recovery(wrapping, on_socket, command_id=command.data.id)
+    send_command_finished(command_id, command_message, on_socket)
+
+    if response_from_command is None:
+        return ""
 
     return response_from_command[:-2]  # Removes \n from the end of the response
 
@@ -69,7 +87,7 @@ def get_state_of_robot(response_message: str) -> States | None:
     safety_status = get_safety_status()
     robot_mode = get_robot_mode()
     running = get_running()
-    if response_message == ResponseMessages.Too_many_commands:
+    if response_message == ResponseMessages.Too_many_commands.value:
         return States.Too_many_commands
     if safety_status == "PROTECTIVE_STOP":
         return States.Protective_stop
