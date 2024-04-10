@@ -194,6 +194,7 @@ def send_command(command: str, on_socket: Socket) -> str:
         # time_print(f"Received {count}: {escape_string(result)}")
         result = read_from_socket(on_socket)
         count += 1
+    recurring_logger.debug(f"Result from robot: {escape_string(out)}")
     return escape_string(out)
 
 

@@ -28,6 +28,7 @@ class ResponseCodes(Enum):
 def send_command_with_recovery(command: str, on_socket: Socket, command_id=None) -> str:
     """Command_id is important if a message containing the error should be sent back to the frontend."""
     result = send_command(command, on_socket)
+    recurring_logger.debug(f"Result from robot: {result}")
 
     # TODO: Remove this responsibility from the send_command function
     out = result
