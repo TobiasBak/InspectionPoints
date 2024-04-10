@@ -16,6 +16,7 @@ from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoRespo
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
 from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
+from undo.UndoHandler import handle_undo_message
 
 clients = dict()
 _START_BYTE: Final = b'\x02'
@@ -34,12 +35,6 @@ def handle_command_message(message: CommandMessage, socket: Socket) -> str:
     str_response = str(response)
     print(f"Sending response: {str_response}")
     return str_response
-
-
-def handle_undo_message(message: UndoMessage) -> str:
-    response = UndoResponseMessage(message.data.id, UndoStatus.Success)
-    print(f"Sending response: {response}")
-    return str(response)
 
 
 def handle_new_client():
