@@ -2,8 +2,12 @@ from typing import Self
 
 from RobotControl.RobotSocketMessages import CommandFinished
 from SocketMessages import CommandMessage
+from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
 from undo.State import State
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class History(object):
@@ -18,7 +22,7 @@ class History(object):
 
     def append_state(self, state: State) -> None:
         if self.active_command_state is None:
-            # print("There is no active command state.")
+            recurring_logger.info("There is no active command state.")
             return
             # raise ValueError("There is no active command state.")
         self.active_command_state.append_state(state)
@@ -47,7 +51,8 @@ class History(object):
                              f" {self.command_state_history[max_id].user_command.data.command}")
         if self.active_command_state is None or self.active_command_state.is_closed:
             self.active_command_state = self.command_state_history[command.get_id()]
-        print(f"New command added to history: {command.get_id()} length: {len(self.command_state_history)}")
+        recurring_logger.debug(
+            f"New command added to history: {command.get_id()} length: {len(self.command_state_history)}")
 
     def close_command(self, command_finished: CommandFinished) -> None:
         if self.active_command_state is None:
@@ -66,7 +71,7 @@ class History(object):
         debug_string += f"==Active command state: {self.active_command_state}\n"
         for key, value in self.command_state_history.items():
             debug_string += f"\tKey: {key}, Value: {value}\n"
-        print(debug_string)
+        recurring_logger.debug(debug_string)
 
     @classmethod
     def get_history(cls):

@@ -7,10 +7,14 @@ from RobotControl.RobotSocketMessages import ReportState, CommandFinished
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 
 from SocketMessages import RobotState
+from custom_logging import LogConfig
 from undo.History import History
 from undo.State import State, StateType
 from undo.StateValue import StateValue
 from undo.VariableRegistry import VariableRegistry, register_all_code_variables, register_all_rtde_variables
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 _variable_registry = VariableRegistry()
 

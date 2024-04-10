@@ -6,7 +6,11 @@ from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.StateRecovery import list_of_variables, States, recover_state
 from SocketMessages import CommandMessage
 from URIFY import URIFY_return_string
+from custom_logging import LogConfig
 from undo.History import History
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class ResponseMessages(Enum):
@@ -49,7 +53,7 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
     # We are in an invalid state, find out which one and recover
     robot_state: States = get_state_of_robot(response_message)
     if robot_state is not None:
-        print(f"\t\tRobot state before fixing: {robot_state}")
+        recurring_logger.info(f"\t\tRobot state before fixing: {robot_state}")
         recover_state(robot_state, command, command_id)
 
     out = "" # Since we do not want to return the response to the frontend

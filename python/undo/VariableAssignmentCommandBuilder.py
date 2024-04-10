@@ -1,5 +1,10 @@
 from enum import Enum
 
+from custom_logging import LogConfig
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
+
 
 class AssignmentStrategies(Enum):
     FUNCTION_CALL = 1

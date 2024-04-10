@@ -32,6 +32,7 @@ from SocketMessages import RobotState
 from RobotControl.RobotControl import POLYSCOPE_IP
 from WebsocketNotifier import websocket_notifier
 from WebsocketProxy import has_new_client
+from custom_logging import LogConfig
 from undo.History import History
 from undo.HistorySupport import create_state_from_rtde_state
 
@@ -47,6 +48,8 @@ SLEEP_TIME = 1 / TRANSMIT_FREQUENCY_IN_HERTZ
 
 type ListenerFunction = Callable[[DataObject], Coroutine[None, None, None]]
 listeners: list[ListenerFunction] = []
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
 
 
 async def start_rtde_loop():
@@ -73,7 +76,7 @@ async def start_rtde_loop():
                 await call_listeners(new_state)
                 previous_state = new_state
         except rtde.RTDEException as e:
-            print(f"Error in recieve_rtde_data: {e}")
+            recurring_logger.error(f"Error in recieve_rtde_data: {e}")
         await asyncio.sleep(SLEEP_TIME)
 
 
