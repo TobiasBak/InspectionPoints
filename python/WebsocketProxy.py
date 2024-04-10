@@ -67,16 +67,16 @@ def get_handler(socket: Socket) -> callable:
 
                 message = parse_message(message)
 
-            match message:
-                case CommandMessage():
-                    str_response = handle_command_message(message, socket)
-                    # print(f"Message is a CommandMessage")
-                case UndoMessage():
-                    str_response = handle_undo_message(message)
-                    handle_undo_request(message.data.id)
-                    recurring_logger.debug(f"Message is an UndoMessage")
-                case _:
-                    raise ValueError(f"Unknown message type: {message}")
+                match message:
+                    case CommandMessage():
+                        str_response = handle_command_message(message, socket)
+                        # print(f"Message is a CommandMessage")
+                    case UndoMessage():
+                        str_response = handle_undo_message(message)
+                        handle_undo_request(message.data.id)
+                        recurring_logger.debug(f"Message is an UndoMessage")
+                    case _:
+                        raise ValueError(f"Unknown message type: {message}")
 
                 if str_response != "":
                     send_to_all_web_clients(str_response)
@@ -147,7 +147,6 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
         data = await reader.read(4096)
 
         if data == _EMPTY_BYTE:
-            non_recurring_logger.warn('Received EOF. Client disconnected.')
             continue
 
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
