@@ -28,7 +28,7 @@ class State:
         output = ""
         for state_value in self.state:
             output += state_value.get_apply_command()
-            output += "\n"
+        output += "\n"
         return output
 
     def has_un_collapsible_difference(self, other: Self) -> bool:
