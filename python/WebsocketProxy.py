@@ -16,7 +16,7 @@ from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoRespo
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
 from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
-from undo.UndoHandler import handle_undo_message
+from undo.UndoHandler import handle_undo_message, handle_undo_request
 
 clients = dict()
 _START_BYTE: Final = b'\x02'
@@ -65,6 +65,7 @@ def get_handler(socket: Socket) -> callable:
                     # print(f"Message is a CommandMessage")
                 case UndoMessage():
                     str_response = handle_undo_message(message)
+                    handle_undo_request(message.data.id)
                     print(f"Message is an UndoMessage")
                 case _:
                     raise ValueError(f"Unknown message type: {message}")
