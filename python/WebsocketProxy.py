@@ -59,12 +59,13 @@ def has_new_client() -> bool:
 
 def get_handler(socket: Socket) -> callable:
     async def echo(websocket):
-        _connected_web_clients.add(websocket)
-        handle_new_client()
-        async for message in websocket:
-            # print(f"Received message: {message}")
+        try:
+            _connected_web_clients.add(websocket)
+            handle_new_client()
+            async for message in websocket:
+                # print(f"Received message: {message}")
 
-            message = parse_message(message)
+                message = parse_message(message)
 
             match message:
                 case CommandMessage():
@@ -77,9 +78,11 @@ def get_handler(socket: Socket) -> callable:
                 case _:
                     raise ValueError(f"Unknown message type: {message}")
 
-            if str_response != "":
-                send_to_all_web_clients(str_response)
-
+                if str_response != "":
+                    send_to_all_web_clients(str_response)
+        except Exception as e:
+            recurring_logger.error(f"Error in websocket handler: {e}")
+            raise e
     return echo
 
 
