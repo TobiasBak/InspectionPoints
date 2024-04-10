@@ -7,7 +7,7 @@ recurring_level = logging.INFO
 non_recurring_level = logging.DEBUG
 """This level defines the level that will be logged in the console"""
 
-_log_folder = "custom_logging"
+_log_folder = "logs"
 
 recurring_filename = _log_folder + "/" + "recurring.log"
 """This is the filename for the recurring log file"""

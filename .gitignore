@@ -163,3 +163,4 @@ cython_debug/
 */node_modules/
 interpreter-examples/interpreter-examples/
 /urprograms
+logs/
