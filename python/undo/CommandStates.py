@@ -22,11 +22,8 @@ class CommandStates:
         from_index, from_state = self.previous_states[state.state_type]
         recurring_logger.debug(f"from_index: {from_index}, from_state: {from_state}")
 
-        if self.is_closed:  # and from_state != state
+        if self.is_closed:
             return
-            # recurring_logger.error(f"Command is closed, but the states differ after the command has been closed."
-            #                        f" from_state: {from_state}, state: {state}")
-            # raise ValueError("The states differ after the command has been closed.")
 
         if from_state.has_un_collapsible_difference(state):
             self._append_state(state)
