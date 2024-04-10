@@ -98,7 +98,6 @@ def send_to_all_web_clients(message: str):
         asyncio.create_task(websocket.send(message))
         recurring_logger.debug(f"Message sent to webclient: {message}")
 
-
     for websocket in removed_clients:
         _connected_web_clients.remove(websocket)
 
@@ -150,38 +149,15 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
         if data == _EMPTY_BYTE:
             non_recurring_logger.warn('Received EOF. Client disconnected.')
-            return
-            # print('Received empty byte')
             continue
 
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
         if data[0] == _START_BYTE[0] and extra_data:
             # We have extra data that needs to be recovered and processed
-            recurring_logger.debug(f"Fucked data: {extra_data}")
-            # We have extra data and the rest was lost
-            fucked_data = extra_data.decode()
+            await recover_mangled_data(extra_data)
 
-            # Clean extra data
+            # Clean extra data, since the extra data was mangled
             extra_data = []
-
-            # Regular expression pattern to extract "type", "id", and "data.command"
-            pattern = r'"type":\s*"([^"]+)".*?"id":\s*(\d+).*?"command":\s*"([^"]+)'
-
-            # Use re.search to find the pattern in the string
-            match = re.search(pattern, fucked_data)
-
-            # If match is found, extract the values
-            if match:
-                message_type = match.group(1)
-                id_value = int(match.group(2))
-                command = match.group(3)
-                match message_type:
-                    case RobotSocketMessageTypes.Command_finished.name:
-                        send_command_finished(id_value, command, get_interpreter_socket())
-                        recurring_logger.debug(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
-
-            else:
-                recurring_logger.debug("Pattern not found in the message.")
 
             continue
 
@@ -214,6 +190,27 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
                 if message:
                     message = message[1:]  # remove the start byte
                     message_from_robot_received(message)
+
+
+async def recover_mangled_data(extra_data: bytes) -> None:
+    recurring_logger.debug(f"Fucked data: {extra_data}")
+    # We have extra data and the rest was lost
+    fucked_data = extra_data.decode()
+    # Regular expression pattern to extract "type", "id", and "data.command"
+    pattern = r'"type":\s*"([^"]+)".*?"id":\s*(\d+).*?"command":\s*"([^"]+)'
+    # Use re.search to find the pattern in the string
+    match = re.search(pattern, fucked_data)
+    # If match is found, extract the values
+    if match:
+        message_type = match.group(1)
+        id_value = int(match.group(2))
+        command = match.group(3)
+        match message_type:
+            case RobotSocketMessageTypes.Command_finished.name:
+                send_command_finished(id_value, command, get_interpreter_socket())
+                recurring_logger.debug(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
+    else:
+        recurring_logger.debug("Pattern not found in the message.")
 
 
 def is_json(myjson):

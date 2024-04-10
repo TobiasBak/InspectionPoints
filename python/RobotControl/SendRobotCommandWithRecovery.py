@@ -36,7 +36,7 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
 
     response_array = result.split(":")
     if len(response_array) < 2:
-        print(f"Response array: {response_array}")
+        recurring_logger.debug(f"Response array: {response_array}")
         raise ValueError("Response from robot is not in the expected format.")
     
     response_code = response_array[0]
