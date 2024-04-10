@@ -18,7 +18,7 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 _variable_registry = VariableRegistry()
 
-READ_FREQUENCY_HZ = 10
+READ_FREQUENCY_HZ = 5
 READ_PERIOD = 1 / READ_FREQUENCY_HZ
 
 
@@ -99,11 +99,13 @@ def create_state_from_report_state(report_state: ReportState) -> State:
 
 
 def handle_report_state(reported_state: ReportState):
+    recurring_logger.debug(f"Handling report state: {reported_state}")
     state = create_state_from_report_state(reported_state)
     history = History.get_history()
     history.append_state(state)
 
 
 def handle_command_finished(command_finished: CommandFinished):
+    recurring_logger.debug(f"Handling command finished: {command_finished}")
     history = History.get_history()
     history.close_command(command_finished)

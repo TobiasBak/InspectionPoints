@@ -94,7 +94,10 @@ def send_to_all_web_clients(message: str):
         if websocket.closed:
             removed_clients.append(websocket)
             continue
+        recurring_logger.debug(f"Sending message to webclient: {message}")
         asyncio.create_task(websocket.send(message))
+        recurring_logger.debug(f"Message sent to webclient: {message}")
+
 
     for websocket in removed_clients:
         _connected_web_clients.remove(websocket)
@@ -154,7 +157,7 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
         if data[0] == _START_BYTE[0] and extra_data:
             # We have extra data that needs to be recovered and processed
-            print(f"New message but extra data: {extra_data}")
+            recurring_logger.debug(f"Fucked data: {extra_data}")
             # We have extra data and the rest was lost
             fucked_data = extra_data.decode()
 
@@ -175,10 +178,10 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
                 match message_type:
                     case RobotSocketMessageTypes.Command_finished.name:
                         send_command_finished(id_value, command, get_interpreter_socket())
-                        print(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
+                        recurring_logger.debug(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
 
             else:
-                print("Pattern not found in the message.")
+                recurring_logger.debug("Pattern not found in the message.")
 
             continue
 

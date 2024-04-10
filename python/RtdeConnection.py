@@ -106,6 +106,7 @@ def register_listener(listener: ListenerFunction):
 async def log_state(state: DataObject):
     history = History.get_history()
     history.append_state(create_state_from_rtde_state(state))
+    recurring_logger.debug(f"State logged: {state}")
 
 
 register_listener(log_state)
@@ -114,3 +115,4 @@ register_listener(log_state)
 async def call_listeners(with_state: DataObject):
     for listener in listeners:
         await listener(with_state)
+    recurring_logger.debug(f"All listeners called with state: {with_state}")

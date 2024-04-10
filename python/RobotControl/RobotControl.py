@@ -28,7 +28,6 @@ def create_get_socket_function() -> Callable[[str, int], Socket]:
 
     def inner_get_socket(ip: str, port: int) -> Socket | None:
         if (ip, port) in inner_socket_bank:
-            print(f"Returning cached socket for {ip}:{port} | {inner_socket_bank[(ip, port)]}")
             return inner_socket_bank[(ip, port)]
         try:
             my_socket: Socket = Socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -47,7 +46,6 @@ def create_get_socket_function() -> Callable[[str, int], Socket]:
 
         my_socket.setblocking(False)
         inner_socket_bank[(ip, port)] = my_socket
-        print(f"Returning socket {ip}:{port} | {my_socket}")
         return my_socket
 
     return inner_get_socket
@@ -129,13 +127,11 @@ def clear_interpreter_mode():
 
 def _power_on_robot():
     dashboard_socket = get_dashboard_socket()
-    print(f"Sending power on command to robot with the following socket: {dashboard_socket}")
     send_command("power on", dashboard_socket)
 
 
 def _brake_release_on_robot():
     dashboard_socket = get_dashboard_socket()
-    print(f"Sending brake release command to robot with the following socket: {dashboard_socket}")
     send_command("brake release", dashboard_socket)
 
 
@@ -189,7 +185,6 @@ def sanitize_command(command: str) -> str:
 def send_command(command: str, on_socket: Socket) -> str:
     """Returns the ack_response from the robot. The ack_response is a string."""
     command = sanitize_command(command)
-    #print(f"Sending the following command: '{escape_string(command)}'")
     on_socket.send(command.encode())
     result = read_from_socket(on_socket)
     out = ""
@@ -199,7 +194,6 @@ def send_command(command: str, on_socket: Socket) -> str:
         # time_print(f"Received {count}: {escape_string(result)}")
         result = read_from_socket(on_socket)
         count += 1
-    print(f"Feedback on send: {escape_string(out)}")
     return escape_string(out)
 
 
