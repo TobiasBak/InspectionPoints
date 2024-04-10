@@ -228,18 +228,19 @@ def message_from_robot_received(message: bytes):
     decoded_message = message.decode()
     recurring_logger.debug(f"Decoded message before parsing: {decoded_message}")
 
-    run = is_json(decoded_message)
+    if not is_json(decoded_message):
+        recurring_logger.debug(f"Message is not json: {decoded_message}")
+        return
 
-    if run:
-        robot_message = parse_robot_message(decoded_message)
-        match robot_message:
-            case CommandFinished():
-                handle_command_finished(robot_message)
-                send_to_all_web_clients(str(robot_message))
-            case ReportState():
-                handle_report_state(robot_message)
-            case _:
-                raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
+    robot_message = parse_robot_message(decoded_message)
+    match robot_message:
+        case CommandFinished():
+            handle_command_finished(robot_message)
+            send_to_all_web_clients(str(robot_message))
+        case ReportState():
+            handle_report_state(robot_message)
+        case _:
+            raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
 
 
 async def start_webserver():
