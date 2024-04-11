@@ -182,10 +182,23 @@ def sanitize_command(command: str) -> str:
     return command
 
 
+_extremely_randomized_command = f' FKSUYFCGSHILU213Y4387RGFBEI87 = "KFJSHEUIFYGEWIURG3" '
+
+
 def send_command(command: str, on_socket: Socket) -> str:
     """Returns the ack_response from the robot. The ack_response is a string."""
+    running_on_interpreter = on_socket == get_interpreter_socket() and "clear_interpreter()" not in command
+
+    if running_on_interpreter:
+        recurring_logger.debug(f"Modifying command: {escape_string(command)}")
+        command += _extremely_randomized_command
+
     command = sanitize_command(command)
+    recurring_logger.debug(f"Sending command to robot: {escape_string(command)}")
+
     on_socket.send(command.encode())
+    recurring_logger.debug(f"Command sent to robot: {escape_string(command)}")
+
     result = read_from_socket(on_socket)
     out = ""
     count = 1
@@ -194,6 +207,15 @@ def send_command(command: str, on_socket: Socket) -> str:
         # time_print(f"Received {count}: {escape_string(result)}")
         result = read_from_socket(on_socket)
         count += 1
+
+    if running_on_interpreter:
+        recurring_logger.debug(f"Running while loop until end: {escape_string(out)}")
+        while _extremely_randomized_command not in out:
+            out += read_from_socket(on_socket)
+
+        out = out.replace(_extremely_randomized_command, "")
+        recurring_logger.debug(f"replacing randomized with empty strings: {escape_string(out)}")
+
     recurring_logger.debug(f"Result from robot: {escape_string(out)}")
     return escape_string(out)
 
