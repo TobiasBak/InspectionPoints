@@ -72,10 +72,24 @@ def read_variable_state():
     send_command_with_recovery(report_state.dump_string_post_urify(), interpreter_socket)
 
 
+_read_report_state = False
+
+
+def stop_read_report_state():
+    global _read_report_state
+    _read_report_state = False
+
+
+def start_read_report_state():
+    global _read_report_state
+    _read_report_state = True
+
+
 async def start_read_loop():
     try:
         while True:
-            read_variable_state()
+            if _read_report_state:
+                read_variable_state()
             await asyncio.sleep(READ_PERIOD)
     except Exception as e:
         recurring_logger.error(f"Error in start_read_loop: {e}")

@@ -4,6 +4,7 @@ from SocketMessages import UndoMessage, UndoResponseMessage, UndoStatus
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
 from undo.History import History
+from undo.HistorySupport import stop_read_report_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 
@@ -58,5 +59,6 @@ def remove_undone_command_states(command_ids: list[int]) -> None:
 def handle_undo_request(command_id: int) -> None:
     command_states_keys = get_reversed_list_of_command_keys(command_id)
     command_states = find_command_states_to_undo(command_states_keys)
+    stop_read_report_state()
     undo_command_states(command_states)
     remove_undone_command_states(command_states_keys)
