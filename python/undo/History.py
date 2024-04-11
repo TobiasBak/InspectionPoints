@@ -28,6 +28,9 @@ class History(object):
         self.active_command_state.append_state(state)
         recurring_logger.debug(f"we made it out from trying to append to the active command state.")
 
+    def pop_command_state_from_history(self, command_id: int) -> CommandStates:
+        return self.command_state_history.pop(command_id)
+
     def _max_command_id(self) -> int:
         return max(self.command_state_history.keys())
 
