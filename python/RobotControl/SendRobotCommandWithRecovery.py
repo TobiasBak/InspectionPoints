@@ -51,7 +51,6 @@ def send_command_with_recovery(command: str, command_id=None) -> str:
             add_new_variable(variable_definition)
         return out
 
-
     response_message = response_array[1]
     response_message = response_message[1:] if response_message[0] == " " else response_message
 
@@ -76,9 +75,6 @@ def send_command_finished(command_id: int, command_message: str):
     send_command_with_recovery(wrapping, command_id=command_id)
 
 
-
-
-
 def get_state_of_robot(response_message: str) -> States | None:
     safety_status = get_safety_status()
     robot_mode = get_robot_mode()
@@ -90,6 +86,3 @@ def get_state_of_robot(response_message: str) -> States | None:
     if safety_status == "NORMAL" and robot_mode == "RUNNING" and running == "false":
         return States.Invalid_state
     return None
-
-
-
