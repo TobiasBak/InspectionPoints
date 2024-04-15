@@ -57,6 +57,7 @@ async def start_rtde_loop():
     con.send_output_setup(state_names, state_types)
     # start data synchronization
     if not con.send_start():
+        recurring_logger.error("Unable to start synchronization")
         sys.exit()
 
     register_listener(send_state_through_websocket)
@@ -71,7 +72,7 @@ async def start_rtde_loop():
             if state_is_new(new_state, previous_state):
                 await call_listeners(new_state)
                 previous_state = new_state
-        except rtde.RTDEException as e:
+        except Exception as e:
             recurring_logger.error(f"Error in recieve_rtde_data: {e}")
         await asyncio.sleep(SLEEP_TIME)
 

@@ -1,6 +1,7 @@
 from RobotControl.RobotSocketMessages import VariableObject
 from custom_logging import LogConfig
 from undo.StateVariable import CodeStateVariable, RtdeStateVariable
+from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder, AssignmentStrategies
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -41,8 +42,14 @@ class VariableRegistry:
 
 def register_all_code_variables(in_registry: VariableRegistry):
     variables = [
-        CodeStateVariable("test", "__test__"),
-        CodeStateVariable("test2", "__test2__")
+        CodeStateVariable("test", "__test__",
+                          command_for_changing=
+                          VariableAssignmentCommandBuilder("__test__",
+                                                           AssignmentStrategies.VARIABLE_ASSIGNMENT)),
+        CodeStateVariable("test2", "__test2__",
+                          command_for_changing=
+                          VariableAssignmentCommandBuilder("__test2__",
+                                                           AssignmentStrategies.VARIABLE_ASSIGNMENT))
     ]
 
     for variable in variables:
@@ -51,12 +58,14 @@ def register_all_code_variables(in_registry: VariableRegistry):
 
 def register_all_rtde_variables(in_registry: VariableRegistry):
     variables = [
-        RtdeStateVariable("safety status", "safety_status"),
-        RtdeStateVariable("runtime state", "runtime_state"),
-        RtdeStateVariable("robot mode", "robot_mode"),
-        RtdeStateVariable("joints", "joints", False),
-        RtdeStateVariable("tcp", "tcp"),
-        RtdeStateVariable("payload", "payload"),
+        # RtdeStateVariable("safety status", "safety_status"),
+        # RtdeStateVariable("runtime state", "runtime_state"),
+        # RtdeStateVariable("robot mode", "robot_mode"),
+        RtdeStateVariable("joints", "joints", False,
+                          VariableAssignmentCommandBuilder("movej",
+                                                           AssignmentStrategies.FUNCTION_CALL)),
+        # RtdeStateVariable("tcp", "tcp"),
+        # RtdeStateVariable("payload", "payload"),
     ]
 
     for variable in variables:
