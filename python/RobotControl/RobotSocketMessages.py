@@ -44,16 +44,15 @@ class VariableObject:
 
 
 class CommandFinishedData:
-    def __init__(self, id: int, command: str, variables: tuple[VariableObject, ...]):
+    def __init__(self, id: int, command: str):
         self.id = id
         self.command = command
-        self.variables = variables
 
 
 class CommandFinished:
-    def __init__(self, id: int, command: str, variables: tuple[VariableObject, ...]):
+    def __init__(self, id: int, command: str):
         self.type = RobotSocketMessageTypes.Command_finished
-        self.data: CommandFinishedData = CommandFinishedData(id, command, variables)
+        self.data: CommandFinishedData = CommandFinishedData(id, command)
 
     # Issue later should handle the case where the command contains a comment
     def command_contains_comment(self):
@@ -67,18 +66,17 @@ class CommandFinished:
 
         return json.dumps(self.dump())
 
-    def dump(self, ur_prep=False):
+    def dump(self):
         return {
             "type": self.type.name,
             "data": {
                 "id": self.data.id,
-                "command": self.data.command,
-                "variables": [variable.dump(ur_prep) for variable in self.data.variables]
+                "command": self.data.command
             }
         }
 
     def dump_ur_string(self):
-        return json.dumps(self.dump(True))
+        return json.dumps(self.dump())
 
 
 class ReportState:
@@ -133,10 +131,8 @@ def parse_robot_message(message: str) -> CommandFinished | ReportState:
             'data': {
                 'id': id,
                 'command': command,
-                'variables': variable_list
             }
         }:
-            parsed_variable_list = parse_list_to_variable_objects(variable_list)
-            return CommandFinished(id, command, tuple(parsed_variable_list))
+            return CommandFinished(id, command)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage type: {parsed}")
