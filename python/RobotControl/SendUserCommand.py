@@ -1,6 +1,6 @@
 from RobotControl.RobotSocketMessages import CommandFinished, VariableObject
 from RobotControl.RobotSocketVariableTypes import VariableTypes
-from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
+from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery, send_command_finished
 from SocketMessages import CommandMessage
 from URIFY import URIFY_return_string
 from undo.History import History
@@ -21,13 +21,6 @@ def send_user_command(command: CommandMessage) -> str:
         return ""
 
     return response_from_command[:-2]  # Removes \n from the end of the response
-
-
-def send_command_finished(command_id: int, command_message: str):
-    finish_command = CommandFinished(command_id, command_message)
-    string_command = finish_command.dump_ur_string()
-    wrapping = URIFY_return_string(string_command)
-    send_command_with_recovery(wrapping, command_id=command_id)
 
 
 def test_history(command):

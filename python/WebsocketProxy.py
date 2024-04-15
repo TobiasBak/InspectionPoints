@@ -128,12 +128,13 @@ def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter
         try:  # Retrieve the result and ignore whatever returned, since it's just cleaning
             fu.result()
         except Exception as e:
-            print(f"Client cleaned up, Exception: {e}")
+            non_recurring_logger(f"Client cleaned up, Exception: {e}")
             raise e
         # Remove the client from client records
         del clients[client_id]
 
     task = asyncio.ensure_future(client_task(client_reader, client_writer))
+    non_recurring_logger.debug(f"Task created for client: {client_id}")
     task.add_done_callback(client_cleanup)
     # Add the client and the task to client records
     clients[client_id] = task
@@ -146,10 +147,11 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
     while True:
         data = await reader.read(4096)
-        print(f"Data received: {data}")
 
         if data == _EMPTY_BYTE:
-            continue
+            # non_recurring_logger.debug("Empty data received")
+            return # Connection closed
+            # continue
 
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
         if data[0] == _START_BYTE[0] and extra_data:
@@ -230,7 +232,6 @@ def message_from_robot_received(message: bytes):
         return
 
     robot_message = parse_robot_message(decoded_message)
-    print(f"Robot message: {robot_message}")
     match robot_message:
         case CommandFinished():
             handle_command_finished(robot_message)

@@ -5,7 +5,8 @@ from RobotControl.RobotControl import send_command, clear_interpreter_mode, \
 from SocketMessages import AckResponse
 from WebsocketNotifier import websocket_notifier
 from custom_logging import LogConfig
-from undo.HistorySupport import get_latest_code_state
+from undo.HistorySupport import get_latest_code_state, get_latest_active_command_state, \
+    find_variable_definition_in_command, delete_latest_new_variables, get_variable_registry
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -36,6 +37,12 @@ def recover_from_invalid_state(command: str, command_id: int | None):
     send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
     if command_id is not None:
         # Todo: We need ssh to see the logs for optimal feedback
+
+        actual_command_that_caused_invalid_state = get_latest_active_command_state().get_user_command().data.command
+        list_of_definitions = find_variable_definition_in_command(actual_command_that_caused_invalid_state)
+        delete_latest_new_variables(list_of_definitions)
+
+        non_recurring_logger.debug(f"Removing variable definition: {list_of_definitions}")
         ack_response = AckResponse(command_id, "",
                                    f"discard: Command caused invalid state. Can be due to following reasons:\n"
                                    f"1. array out of bounds.\n"

@@ -2,10 +2,12 @@ import re
 from enum import Enum
 from RobotControl.RobotControl import send_command, get_safety_status, \
     get_robot_mode, get_running, get_interpreter_socket
+from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.StateRecovery import States, recover_state
+from URIFY import URIFY_return_string
 from custom_logging import LogConfig
 from undo.History import History
-from undo.HistorySupport import register_new_variables
+from undo.HistorySupport import find_variable_definition_in_command, add_new_variable, get_variable_registry
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -40,10 +42,15 @@ def send_command_with_recovery(command: str, command_id=None) -> str:
 
     response_code = response_array[0]
 
+    _variable_definitions = []
+
     if response_code == ResponseCodes.ACK.value:
         # If we get an ack, we need to get all the multiple variable definitions and single them out
-        register_new_variables(command)
+        _variable_definitions = find_variable_definition_in_command(command)
+        for variable_definition in _variable_definitions:
+            add_new_variable(variable_definition)
         return out
+
 
     response_message = response_array[1]
     response_message = response_message[1:] if response_message[0] == " " else response_message
@@ -62,26 +69,14 @@ def send_command_with_recovery(command: str, command_id=None) -> str:
     return out
 
 
-def send_command_finished(command_id: int, command_message: str, on_socket: Socket):
+def send_command_finished(command_id: int, command_message: str):
     finish_command = CommandFinished(command_id, command_message)
     string_command = finish_command.dump_ur_string()
     wrapping = URIFY_return_string(string_command)
-    send_command_with_recovery(wrapping, on_socket, command_id=command_id)
+    send_command_with_recovery(wrapping, command_id=command_id)
 
 
-def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
-    command_id = command.data.id
-    command_message = command.data.command
-    test_history(command)
 
-    response_from_command = send_command_with_recovery(command_message, on_socket, command_id=command.data.id)
-
-    send_command_finished(command_id, command_message, on_socket)
-
-    if response_from_command is None:
-        return ""
-
-    return response_from_command[:-2]  # Removes \n from the end of the response
 
 
 def get_state_of_robot(response_message: str) -> States | None:

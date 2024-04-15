@@ -11,11 +11,12 @@ class VariableRegistry:
     def __init__(self):
         self._code_variables: list[CodeStateVariable] = []
         self._rtde_variables: list[RtdeStateVariable] = []
-        self._code_variable_dict: dict[str, CodeStateVariable] = {}
 
     def register_code_variable(self, variable: CodeStateVariable) -> None:
         self._code_variables.append(variable)
-        self._code_variable_dict[variable.name] = variable
+
+    def remove_code_variable(self, variable: CodeStateVariable) -> None:
+        self._code_variables.remove(variable)
 
     def register_rtde_variable(self, variable: RtdeStateVariable) -> None:
         self._rtde_variables.append(variable)
@@ -33,27 +34,14 @@ class VariableRegistry:
     def get_code_variables(self) -> list[CodeStateVariable]:
         return self._code_variables
 
-    def get_code_variable_dict(self) -> dict[str, CodeStateVariable]:
-        return self._code_variable_dict
-
     def get_rtde_variables(self) -> list[RtdeStateVariable]:
         return self._rtde_variables
 
+    def __str__(self):
+        return f"Code variables: {self._code_variables}, RTDE variables: {self._rtde_variables}"
 
-def register_all_code_variables(in_registry: VariableRegistry):
-    # variables = [
-    #     CodeStateVariable("test", "__test__",
-    #                       command_for_changing=
-    #                       VariableAssignmentCommandBuilder("__test__",
-    #                                                        AssignmentStrategies.VARIABLE_ASSIGNMENT)),
-    #     CodeStateVariable("test2", "__test2__",
-    #                       command_for_changing=
-    #                       VariableAssignmentCommandBuilder("__test2__",
-    #                                                        AssignmentStrategies.VARIABLE_ASSIGNMENT_STRING))
-    # ]
-
-    for variable in variables:
-        in_registry.register_code_variable(variable)
+    def __repr__(self):
+        return self.__str__()
 
 
 def register_all_rtde_variables(in_registry: VariableRegistry):

@@ -39,3 +39,9 @@ class CodeStateVariable(StateVariable):
         "This must be the urscript code that is necessary to return a value for this variable."
         # TODO: Correct typing on the variableTypes.string
         self.socket_representation = VariableObject(name, VariableTypes.String, command_for_reading)
+
+    def __str__(self):
+        return f"{self.name} "
+
+    def __repr__(self):
+        return self.__str__()

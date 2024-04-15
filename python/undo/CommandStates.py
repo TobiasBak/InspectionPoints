@@ -13,8 +13,10 @@ class CommandStates:
         self.is_closed = False
         self.previous_states: dict[StateType, tuple[int, State]] = {}
 
+    def get_user_command(self):
+        return self.user_command
+
     def append_state(self, state: State):
-        print(f"Appending state: {state}")
         if state.state_type not in self.previous_states:
             recurring_logger.debug(f"state appended because it is the first state of its type: {state.state_type}.")
             self._append_state(state)
