@@ -62,6 +62,28 @@ def send_command_with_recovery(command: str, command_id=None) -> str:
     return out
 
 
+def send_command_finished(command_id: int, command_message: str, on_socket: Socket):
+    finish_command = CommandFinished(command_id, command_message)
+    string_command = finish_command.dump_ur_string()
+    wrapping = URIFY_return_string(string_command)
+    send_command_with_recovery(wrapping, on_socket, command_id=command_id)
+
+
+def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
+    command_id = command.data.id
+    command_message = command.data.command
+    test_history(command)
+
+    response_from_command = send_command_with_recovery(command_message, on_socket, command_id=command.data.id)
+
+    send_command_finished(command_id, command_message, on_socket)
+
+    if response_from_command is None:
+        return ""
+
+    return response_from_command[:-2]  # Removes \n from the end of the response
+
+
 def get_state_of_robot(response_message: str) -> States | None:
     safety_status = get_safety_status()
     robot_mode = get_robot_mode()
