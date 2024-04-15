@@ -19,7 +19,10 @@ pre code {
 
 pre{
     margin-bottom: 0;
-    border-bottom-color: var(--border-color);
-    border-bottom-style: solid;
-    border-bottom-width: .25em;
+}
+
+.responseWrapper p:first-child {
+    border-top-color: var(--border-color);
+    border-top-style: solid;
+    border-top-width: .25em;
 }
