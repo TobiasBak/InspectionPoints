@@ -7,7 +7,7 @@ from RobotControl.RobotSocketMessages import ReportState, CommandFinished
 from SocketMessages import RobotState
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
-from undo.History import History
+from undo.History import History, CommandStateHistory
 from undo.State import State, StateType
 from undo.StateValue import StateValue
 from undo.StateVariable import CodeStateVariable
@@ -136,7 +136,7 @@ def handle_command_finished(command_finished: CommandFinished):
     history.close_command(command_finished)
 
 
-def get_command_state_history():
+def get_command_state_history() -> CommandStateHistory:
     return History.get_history().get_command_state_history()
 
 
