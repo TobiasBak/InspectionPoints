@@ -1,6 +1,18 @@
 import logging
+from decouple import config
 
-ROBOT_FEEDBACK_PORT = 8000
+
+ROBOT_FEEDBACK_PORT: int = config("ROBOT_FEEDBACK_PORT", default=8000)
+ROBOT_FEEDBACK_HOST: str = config("ROBOT_FEEDBACK_HOST", default="proxy")
+ROBOT_IP: str = config("ROBOT_IP", default="polyscope")
+
+DASHBOARD_PORT = 29999
+PRIMARY_PORT = 30001
+SECONDARY_PORT = 30002
+RTDE_PORT = 30004
+INTERPRETER_PORT = 30020
+
+RTDE_CONFIG_FILE: str = config("RTDE_CONFIG_FILE", default="rtde_configuration.xml")
 
 recurring_level = logging.INFO
 """This level defines the level that will be logged in the console"""

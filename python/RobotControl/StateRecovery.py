@@ -30,7 +30,7 @@ def recover_state(state: States, command: str, command_id: int | None):
 
 
 def recover_from_invalid_state(command: str, command_id: int | None):
-    recurring_logger.warn(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
+    recurring_logger.warning(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
     _start_interpreter_mode_and_connect_to_backend_socket()
     apply_variables_to_robot(list_of_variables)  # Temporary fix
     if command_id is not None:
@@ -55,7 +55,7 @@ def recover_from_too_many_commands(command: str, command_id: int | None):
 
 
 def recover_from_protective_stop(command: str, command_id: int | None):
-    recurring_logger.warn(f"\t\t\tRobot is in protective stop. Attempting to unlock; Command id: {command_id}")
+    recurring_logger.warning(f"\t\t\tRobot is in protective stop. Attempting to unlock; Command id: {command_id}")
     if command_id is not None:
         # Todo: We need ssh to see the logs for optimal feedback
         ack_response = AckResponse(command_id, command,
