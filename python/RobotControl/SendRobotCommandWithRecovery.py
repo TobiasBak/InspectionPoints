@@ -1,3 +1,4 @@
+import re
 from enum import Enum
 from socket import socket as Socket
 from RobotControl.RobotControl import send_command, get_safety_status, \
@@ -8,6 +9,7 @@ from SocketMessages import CommandMessage
 from URIFY import URIFY_return_string
 from custom_logging import LogConfig
 from undo.History import History
+from undo.HistorySupport import register_new_variables
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -38,10 +40,12 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
     if len(response_array) < 2:
         recurring_logger.debug(f"Response array: {response_array}")
         raise ValueError("Response from robot is not in the expected format.")
-    
+
     response_code = response_array[0]
 
     if response_code == ResponseCodes.ACK.value:
+        # If we get an ack, we need to get all the multiple variable definitions and single them out
+        register_new_variables(command)
         return out
 
     response_message = response_array[1]
@@ -56,7 +60,7 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
         recurring_logger.info(f"\t\tRobot state before fixing: {robot_state}")
         recover_state(robot_state, command, command_id)
 
-    out = "" # Since we do not want to return the response to the frontend
+    out = ""  # Since we do not want to return the response to the frontend
 
     return out
 

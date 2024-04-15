@@ -17,7 +17,8 @@ from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoRespo
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
 from custom_logging import LogConfig
-from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
+from undo.HistorySupport import handle_report_state, handle_command_finished
+from undo.ReadVariableState import start_read_loop
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -151,7 +152,6 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
         data = await reader.read(4096)
 
         if data == _EMPTY_BYTE:
-            non_recurring_logger.warn('Received EOF. Client disconnected.')
             continue
 
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
