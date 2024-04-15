@@ -17,7 +17,7 @@ def read_variable_state():
     send_command_with_recovery(report_state.dump_string_post_urify())
 
 
-_read_report_state = False
+_read_report_state = True
 
 
 def stop_read_report_state():

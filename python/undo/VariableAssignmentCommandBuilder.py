@@ -25,6 +25,7 @@ class VariableAssignmentCommandBuilder:
         elif self.strategy == AssignmentStrategies.VARIABLE_ASSIGNMENT_STRING:
             return self._build_variable_assignment_string(value)
         else:
+            recurring_logger.debug(f"Unknown strategy: {self.strategy}")
             raise ValueError(f"Unknown strategy: {self.strategy}")
 
     def _build_function_call(self, value: str) -> str:

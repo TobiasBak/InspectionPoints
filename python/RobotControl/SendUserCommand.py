@@ -1,4 +1,3 @@
-from RobotControl.RobotControl import list_of_variables
 from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import CommandMessage

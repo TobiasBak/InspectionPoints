@@ -128,6 +128,7 @@ def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter
         try:  # Retrieve the result and ignore whatever returned, since it's just cleaning
             fu.result()
         except Exception as e:
+            print(f"Client cleaned up, Exception: {e}")
             raise e
         # Remove the client from client records
         del clients[client_id]

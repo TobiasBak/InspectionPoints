@@ -5,7 +5,7 @@ from RobotControl.RobotControl import send_command, clear_interpreter_mode, \
 from SocketMessages import AckResponse
 from WebsocketNotifier import websocket_notifier
 from custom_logging import LogConfig
-from undo.HistorySupport import get_latest_state
+from undo.HistorySupport import get_latest_code_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -26,16 +26,17 @@ def recover_state(state: States, command: str, command_id: int | None):
         case States.Protective_stop:
             recover_from_protective_stop(command, command_id)
         case _:
+            recurring_logger.error(f"Unknown state send to recover_state functionality: {state}")
             raise ValueError(f"Unknown state send to recover_state functionality: {state}")
 
 
 def recover_from_invalid_state(command: str, command_id: int | None):
-    recurring_logger.warn(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
+    recurring_logger.debug(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
     _start_interpreter_mode_and_connect_to_backend_socket()
-    send_command(get_latest_state().get_apply_commands(True), get_interpreter_socket())
+    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
     if command_id is not None:
         # Todo: We need ssh to see the logs for optimal feedback
-        ack_response = AckResponse(command_id, command,
+        ack_response = AckResponse(command_id, "",
                                    f"discard: Command caused invalid state. Can be due to following reasons:\n"
                                    f"1. array out of bounds.\n"
                                    f"2. Reassigning variable to new type.\n"
@@ -45,9 +46,9 @@ def recover_from_invalid_state(command: str, command_id: int | None):
 
 
 def recover_from_too_many_commands(command: str, command_id: int | None):
-    recurring_logger.info(f"\t\t\tToo many commands detected. Attempting to fix the state.")
+    recurring_logger.debug(f"\t\t\tToo many commands detected. Attempting to fix the state.")
     clear_interpreter_mode()
-    send_command(get_latest_state().get_apply_commands(True), get_interpreter_socket())
+    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
     result = send_command(command, get_interpreter_socket())  # Resend command since it was lost.
     if command_id is not None:
         ack_response = AckResponse(command_id, command, result)
@@ -55,7 +56,7 @@ def recover_from_too_many_commands(command: str, command_id: int | None):
 
 
 def recover_from_protective_stop(command: str, command_id: int | None):
-    recurring_logger.warn(f"\t\t\tRobot is in protective stop. Attempting to unlock; Command id: {command_id}")
+    recurring_logger.debug(f"\t\t\tRobot is in protective stop. Attempting to unlock; Command id: {command_id}")
     if command_id is not None:
         # Todo: We need ssh to see the logs for optimal feedback
         ack_response = AckResponse(command_id, command,
@@ -64,5 +65,5 @@ def recover_from_protective_stop(command: str, command_id: int | None):
 
     unlock_protective_stop()
     _start_interpreter_mode_and_connect_to_backend_socket()
-    send_command(get_latest_state().get_apply_commands(True), get_interpreter_socket())
+    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
     send_command(command, get_interpreter_socket())

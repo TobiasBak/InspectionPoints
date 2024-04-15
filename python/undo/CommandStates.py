@@ -14,6 +14,7 @@ class CommandStates:
         self.previous_states: dict[StateType, tuple[int, State]] = {}
 
     def append_state(self, state: State):
+        print(f"Appending state: {state}")
         if state.state_type not in self.previous_states:
             recurring_logger.debug(f"state appended because it is the first state of its type: {state.state_type}.")
             self._append_state(state)
@@ -50,6 +51,16 @@ class CommandStates:
         for state in reversed(self.states):
             output += state.get_apply_commands()
         return output
+
+    def get_latest_rtde_state(self):
+        for state in reversed(self.states):
+            if state.state_type == StateType.rtde_state:
+                return state
+
+    def get_latest_code_state(self):
+        for state in reversed(self.states):
+            if state.state_type == StateType.code_state:
+                return state
 
     def __str__(self):
         if self.states is None:

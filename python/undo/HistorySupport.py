@@ -1,4 +1,3 @@
-
 from rtde.serialize import DataObject
 
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
@@ -83,6 +82,9 @@ def handle_report_state(reported_state: ReportState):
     recurring_logger.debug(f"Handling report state: {reported_state}")
     state = create_state_from_report_state(reported_state)
     history = History.get_history()
+
+    history.set_latest_code_state(state)
+
     history.append_state(state)
 
 
@@ -96,6 +98,6 @@ def get_command_state_history():
     return History.get_history().get_command_state_history()
 
 
-def get_latest_state() -> State:
-    recurring_logger.debug(f"Getting latest state: {History.get_history().get_active_command_state().states}")
-    return History.get_history().get_active_command_state().states[-1]
+def get_latest_code_state() -> State:
+    return History.get_history().get_latest_code_state()
+

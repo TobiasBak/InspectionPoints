@@ -35,6 +35,7 @@ from WebsocketProxy import has_new_client
 from custom_logging import LogConfig
 from undo.History import History
 from undo.HistorySupport import create_state_from_rtde_state
+from undo.State import State
 
 ROBOT_HOST = POLYSCOPE_IP
 ROBOT_PORT = 30004
@@ -106,7 +107,9 @@ def register_listener(listener: ListenerFunction):
 
 async def log_state(state: DataObject):
     history = History.get_history()
-    history.append_state(create_state_from_rtde_state(state))
+    rtde_state: State = create_state_from_rtde_state(state)
+    history.set_latest_rtde_state(rtde_state)
+    history.append_state(rtde_state)
     recurring_logger.debug(f"State logged: {state}")
 
 

@@ -85,13 +85,6 @@ def start_robot():
     _brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
     _start_interpreter_mode_and_connect_to_backend_socket()
-    apply_variables_to_robot(list_of_variables)
-
-
-# This is a list of variables that are sent to the robot for it to sent it back to the proxy.
-list_of_variables: list[VariableObject] = list()
-list_of_variables.append(VariableObject("__test__", VariableTypes.Integer, 2))
-list_of_variables.append(VariableObject("__test2__", VariableTypes.String, "f"))
 
 
 def apply_variables_to_robot(variables: list[VariableObject]):
@@ -173,6 +166,7 @@ def sanitize_dashboard_reads(response: str) -> str:
 
 
 def connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):
+    non_recurring_logger.debug(f"Connecting robot to feedback socket: {host}:{port}")
     send_command(f"socket_open(\"{host}\", {port}, {SOCKET_NAME})\n", get_interpreter_socket())
 
 
