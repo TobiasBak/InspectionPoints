@@ -29,18 +29,14 @@ from rtde import rtde_config, rtde
 from rtde.serialize import DataObject
 
 from SocketMessages import RobotState
-from RobotControl.RobotControl import POLYSCOPE_IP
 from WebsocketNotifier import websocket_notifier
 from WebsocketProxy import has_new_client
 from custom_logging import LogConfig
 from undo.History import History
 from undo.HistorySupport import create_state_from_rtde_state
+from constants import ROBOT_IP, RTDE_PORT, RTDE_CONFIG_FILE
 
-ROBOT_HOST = POLYSCOPE_IP
-ROBOT_PORT = 30004
-config_filename = "rtde_configuration.xml"
-
-conf = rtde_config.ConfigFile(config_filename)
+conf = rtde_config.ConfigFile(RTDE_CONFIG_FILE)
 state_names, state_types = conf.get_recipe("state")
 
 TRANSMIT_FREQUENCY_IN_HERTZ = 60
@@ -53,7 +49,7 @@ recurring_logger = LogConfig.get_recurring_logger(__name__)
 
 
 async def start_rtde_loop():
-    con = rtde.RTDE(ROBOT_HOST, ROBOT_PORT)
+    con = rtde.RTDE(ROBOT_IP, RTDE_PORT)
     con.connect()
     # get controller version
     con.get_controller_version()

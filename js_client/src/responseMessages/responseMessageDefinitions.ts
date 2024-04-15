@@ -57,20 +57,9 @@ export type RobotStateMessageData = {
 
 export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation
 
-
-export type StringedVariableTypes = 'string' | 'number' | 'boolean' | 'number[]'
-export type VariableTypes = string | number | boolean | number[]
-
-export type CommandFinishedVariable = {
-    name: string,
-    type: StringedVariableTypes,
-    value: VariableTypes
-}
-
 export type CommandFinishedMessageData = {
     id: number,
-    command: string,
-    variables: CommandFinishedVariable[]
+    command: string
 }
 
 export type UndoResponseMessage = {

@@ -29,6 +29,10 @@ services:
         target: /app
     tty: true
     stdin_open: true
+    environment:
+      - ROBOT_IP=polyscope
+      - ROBOT_FEEDBACK_PORT=8000
+      - ROBOT_FEEDBACK_HOST=proxy
     profiles:
         - ""
   test:

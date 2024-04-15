@@ -33,7 +33,7 @@ class State:
 
     def has_un_collapsible_difference(self, other: Self) -> bool:
         if self.state is None:
-            recurring_logger.warn("self.state is None")
+            recurring_logger.warning("self.state is None")
             return False
 
         # Sort variables by name or reference to their StateVariable
