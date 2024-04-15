@@ -17,8 +17,6 @@ from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
 from custom_logging import LogConfig
 from undo.HistorySupport import handle_report_state, handle_command_finished
-from undo.ReadVariableState import start_read_loop
-from undo.HistorySupport import handle_report_state, handle_command_finished
 from undo.UndoHandler import handle_undo_message, handle_undo_request
 from undo.VariableReadLoop import start_read_loop
 
@@ -148,6 +146,7 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
     while True:
         data = await reader.read(4096)
+        print(f"Data received: {data}")
 
         if data == _EMPTY_BYTE:
             continue
@@ -231,6 +230,7 @@ def message_from_robot_received(message: bytes):
         return
 
     robot_message = parse_robot_message(decoded_message)
+    print(f"Robot message: {robot_message}")
     match robot_message:
         case CommandFinished():
             handle_command_finished(robot_message)

@@ -41,16 +41,16 @@ class VariableRegistry:
 
 
 def register_all_code_variables(in_registry: VariableRegistry):
-    variables = [
-        CodeStateVariable("test", "__test__",
-                          command_for_changing=
-                          VariableAssignmentCommandBuilder("__test__",
-                                                           AssignmentStrategies.VARIABLE_ASSIGNMENT)),
-        CodeStateVariable("test2", "__test2__",
-                          command_for_changing=
-                          VariableAssignmentCommandBuilder("__test2__",
-                                                           AssignmentStrategies.VARIABLE_ASSIGNMENT_STRING))
-    ]
+    # variables = [
+    #     CodeStateVariable("test", "__test__",
+    #                       command_for_changing=
+    #                       VariableAssignmentCommandBuilder("__test__",
+    #                                                        AssignmentStrategies.VARIABLE_ASSIGNMENT)),
+    #     CodeStateVariable("test2", "__test2__",
+    #                       command_for_changing=
+    #                       VariableAssignmentCommandBuilder("__test2__",
+    #                                                        AssignmentStrategies.VARIABLE_ASSIGNMENT_STRING))
+    # ]
 
     for variable in variables:
         in_registry.register_code_variable(variable)

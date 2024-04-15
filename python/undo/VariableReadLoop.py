@@ -5,7 +5,7 @@ from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from custom_logging import LogConfig
 from undo.HistorySupport import get_variable_registry
 
-READ_FREQUENCY_HZ = 5
+READ_FREQUENCY_HZ = 1
 READ_PERIOD = 1 / READ_FREQUENCY_HZ
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -34,6 +34,7 @@ async def start_read_loop():
     try:
         while True:
             if _read_report_state:
+                print("Reading variable state")
                 read_variable_state()
             await asyncio.sleep(READ_PERIOD)
     except Exception as e:

@@ -1,4 +1,5 @@
-from RobotControl.RobotSocketMessages import CommandFinished
+from RobotControl.RobotSocketMessages import CommandFinished, VariableObject
+from RobotControl.RobotSocketVariableTypes import VariableTypes
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import CommandMessage
 from URIFY import URIFY_return_string
@@ -23,7 +24,7 @@ def send_user_command(command: CommandMessage) -> str:
 
 
 def send_command_finished(command_id: int, command_message: str):
-    finish_command = CommandFinished(command_id, command_message, tuple(list_of_variables))
+    finish_command = CommandFinished(command_id, command_message)
     string_command = finish_command.dump_ur_string()
     wrapping = URIFY_return_string(string_command)
     send_command_with_recovery(wrapping, command_id=command_id)

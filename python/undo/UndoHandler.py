@@ -60,4 +60,4 @@ def handle_undo_request(command_id: int) -> None:
     stop_read_report_state()
     undo_command_states(command_states)
     remove_undone_command_states(command_states_keys)
-    send_command_with_recovery(get_latest_code_state().get_apply_commands(True))
+    send_command_with_recovery(get_latest_code_state().get_apply_commands())
