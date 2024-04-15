@@ -2,7 +2,6 @@ from enum import Enum, auto
 
 from RobotControl.RobotControl import send_command, clear_interpreter_mode, \
     unlock_protective_stop, _start_interpreter_mode_and_connect_to_backend_socket, get_interpreter_socket
-from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import AckResponse
 from WebsocketNotifier import websocket_notifier
 from custom_logging import LogConfig
@@ -33,7 +32,7 @@ def recover_state(state: States, command: str, command_id: int | None):
 def recover_from_invalid_state(command: str, command_id: int | None):
     recurring_logger.warn(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
     _start_interpreter_mode_and_connect_to_backend_socket()
-    send_command_with_recovery(get_latest_state().get_apply_commands(True))
+    send_command(get_latest_state().get_apply_commands(True), get_interpreter_socket())
     if command_id is not None:
         # Todo: We need ssh to see the logs for optimal feedback
         ack_response = AckResponse(command_id, command,
@@ -48,7 +47,7 @@ def recover_from_invalid_state(command: str, command_id: int | None):
 def recover_from_too_many_commands(command: str, command_id: int | None):
     recurring_logger.info(f"\t\t\tToo many commands detected. Attempting to fix the state.")
     clear_interpreter_mode()
-    send_command_with_recovery(get_latest_state().get_apply_commands(True))
+    send_command(get_latest_state().get_apply_commands(True), get_interpreter_socket())
     result = send_command(command, get_interpreter_socket())  # Resend command since it was lost.
     if command_id is not None:
         ack_response = AckResponse(command_id, command, result)
@@ -65,5 +64,5 @@ def recover_from_protective_stop(command: str, command_id: int | None):
 
     unlock_protective_stop()
     _start_interpreter_mode_and_connect_to_backend_socket()
-    send_command_with_recovery(get_latest_state().get_apply_commands(True))
+    send_command(get_latest_state().get_apply_commands(True), get_interpreter_socket())
     send_command(command, get_interpreter_socket())

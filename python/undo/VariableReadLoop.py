@@ -1,0 +1,41 @@
+import asyncio
+
+from RobotControl.RobotSocketMessages import ReportState
+from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
+from custom_logging import LogConfig
+from undo.HistorySupport import get_variable_registry
+
+READ_FREQUENCY_HZ = 5
+READ_PERIOD = 1 / READ_FREQUENCY_HZ
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+
+
+def read_variable_state():
+    read_commands = get_variable_registry().generate_read_commands()
+    report_state = ReportState(read_commands)
+    send_command_with_recovery(report_state.dump_string_post_urify())
+
+
+_read_report_state = False
+
+
+def stop_read_report_state():
+    global _read_report_state
+    _read_report_state = False
+
+
+def start_read_report_state():
+    global _read_report_state
+    _read_report_state = True
+
+
+async def start_read_loop():
+    try:
+        while True:
+            if _read_report_state:
+                read_variable_state()
+            await asyncio.sleep(READ_PERIOD)
+    except Exception as e:
+        recurring_logger.error(f"Error in start_read_loop: {e}")
+        raise e

@@ -16,8 +16,9 @@ from SocketMessages import parse_message, CommandMessage, UndoMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
 from custom_logging import LogConfig
-from undo.HistorySupport import handle_report_state, start_read_loop, handle_command_finished
+from undo.HistorySupport import handle_report_state, handle_command_finished
 from undo.UndoHandler import handle_undo_message, handle_undo_request
+from undo.VariableReadLoop import start_read_loop
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)

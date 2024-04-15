@@ -1,13 +1,11 @@
-import asyncio
 
 from rtde.serialize import DataObject
 
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
-from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 
 from SocketMessages import RobotState
 from custom_logging import LogConfig
-from undo.History import History, CommandStateHistory
+from undo.History import History
 from undo.State import State, StateType
 from undo.StateValue import StateValue
 from undo.VariableRegistry import VariableRegistry, register_all_code_variables, register_all_rtde_variables
@@ -16,9 +14,6 @@ recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 _variable_registry = VariableRegistry()
-
-READ_FREQUENCY_HZ = 5
-READ_PERIOD = 1 / READ_FREQUENCY_HZ
 
 
 def get_variable_registry():
@@ -63,37 +58,6 @@ def register_all_variables():
 register_all_variables()
 
 
-def read_variable_state():
-    # print("Reading variable state")
-    read_commands = _variable_registry.generate_read_commands()
-    report_state = ReportState(read_commands)
-    send_command_with_recovery(report_state.dump_string_post_urify())
-
-
-_read_report_state = False
-
-
-def stop_read_report_state():
-    global _read_report_state
-    _read_report_state = False
-
-
-def start_read_report_state():
-    global _read_report_state
-    _read_report_state = True
-
-
-async def start_read_loop():
-    try:
-        while True:
-            if _read_report_state:
-                read_variable_state()
-            await asyncio.sleep(READ_PERIOD)
-    except Exception as e:
-        recurring_logger.error(f"Error in start_read_loop: {e}")
-        raise e
-
-
 def create_state_from_report_state(report_state: ReportState) -> State:
     state_values: list[StateValue] = []
 
@@ -128,9 +92,10 @@ def handle_command_finished(command_finished: CommandFinished):
     history.close_command(command_finished)
 
 
-def get_command_state_history() -> CommandStateHistory:
-    return History.get_history().command_state_history
+def get_command_state_history():
+    return History.get_history().get_command_state_history()
 
 
 def get_latest_state() -> State:
-    return History.get_history().active_command_state.states[-1]
+    recurring_logger.debug(f"Getting latest state: {History.get_history().get_active_command_state().states}")
+    return History.get_history().get_active_command_state().states[-1]
