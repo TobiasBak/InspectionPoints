@@ -9,12 +9,14 @@ from undo.State import State
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
+type CommandStateHistory = dict[int, CommandStates]
+
 
 class History(object):
     _instance: Self | None = None
 
     def __init__(self):
-        self.command_state_history: dict[int, CommandStates] = {}
+        self.command_state_history: CommandStateHistory = {}
         self.active_command_state: CommandStates | None = None
 
     def get_active_command_state(self) -> CommandStates:
