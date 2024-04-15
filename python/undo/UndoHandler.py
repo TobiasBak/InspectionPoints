@@ -1,4 +1,4 @@
-from RobotControl.RobotControl import get_interpreter_socket, sanitize_command
+from RobotControl.RobotControl import sanitize_command
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import UndoMessage, UndoResponseMessage, UndoStatus
 from custom_logging import LogConfig
@@ -43,7 +43,7 @@ def undo_command_states(command_states: list[CommandStates]) -> None:
         command_undo_string = command_state.get_undo_commands()
         new_string = sanitize_command(command_undo_string)
         recurring_logger.debug(f"Undoing command: {new_string}")
-        send_command_with_recovery(command_undo_string, get_interpreter_socket())
+        send_command_with_recovery(command_undo_string)
 
 
 def remove_undone_command_states(command_ids: list[int]) -> None:
@@ -59,4 +59,4 @@ def handle_undo_request(command_id: int) -> None:
     stop_read_report_state()
     undo_command_states(command_states)
     remove_undone_command_states(command_states_keys)
-    send_command_with_recovery(get_latest_state().get_apply_commands(True), get_interpreter_socket())
+    send_command_with_recovery(get_latest_state().get_apply_commands(True))

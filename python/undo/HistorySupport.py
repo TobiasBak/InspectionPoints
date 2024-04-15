@@ -2,7 +2,6 @@ import asyncio
 
 from rtde.serialize import DataObject
 
-from RobotControl.RobotControl import get_interpreter_socket
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 
@@ -66,10 +65,9 @@ register_all_variables()
 
 def read_variable_state():
     # print("Reading variable state")
-    interpreter_socket = get_interpreter_socket()
     read_commands = _variable_registry.generate_read_commands()
     report_state = ReportState(read_commands)
-    send_command_with_recovery(report_state.dump_string_post_urify(), interpreter_socket)
+    send_command_with_recovery(report_state.dump_string_post_urify())
 
 
 _read_report_state = False
