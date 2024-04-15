@@ -11,7 +11,6 @@ recurring_logger = LogConfig.get_recurring_logger(__name__)
 
 def handle_undo_message(message: UndoMessage) -> str:
     response = UndoResponseMessage(message.data.id, UndoStatus.Success)
-    print(f"Sending response: {response}")
     return str(response)
 
 

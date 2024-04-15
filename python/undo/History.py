@@ -32,14 +32,12 @@ class History(object):
 
     def set_latest_code_state(self, state: State) -> None:
         self.latest_code_state = state
-        print(f"Latest code state set: {state}")
 
     def get_latest_rtde_state(self) -> State:
         return self.latest_rtde_state
 
     def set_latest_rtde_state(self, state: State) -> None:
         self.latest_rtde_state = state
-        print(f"Latest rtde state set: {state}")
 
     def append_state(self, state: State) -> None:
         if self.active_command_state is None:
@@ -89,9 +87,6 @@ class History(object):
 
     def _add_pre_states(self, command_id: int) -> None:
         new_command_state = self.command_state_history[command_id]
-        print(f"Adding pre states to command state: {new_command_state}")
-        print(f"Latest code state: {self.latest_code_state}")
-        print(f"Latest rtde state: {self.latest_rtde_state}")
         new_command_state.append_state(self.latest_code_state)
         new_command_state.append_state(self.latest_rtde_state)
 

@@ -97,13 +97,13 @@ def _start_interpreter_mode_and_connect_to_backend_socket():
     start_interpreter_mode()
     # Todo: For some reason the robot needs a sleep here, otherwise open_socket does not work.
     #  I thought the parameters on interpreter_mode would fix this. (clear_queue_on_enter, clear_on_end)
-    sleep(1)
+    sleep(2)
     connect_robot_to_feedback_socket()
 
     # Ensure that non-user inputted commands are not sent to the websocket.
     # We sleep, because the message has to be processed by the robot first.
     # I have tested values below 0.5, but they did not give reliable results.
-    sleep(0.5)
+    sleep(1)
     delayed_read = read_from_socket_till_end(get_interpreter_socket())
     non_recurring_logger.debug(f"Delayed read: {escape_string(delayed_read)}")
 

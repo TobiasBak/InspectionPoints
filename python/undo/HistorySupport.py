@@ -100,11 +100,9 @@ def create_state_from_report_state(report_state: ReportState) -> State:
 
 
 def handle_report_state(reported_state: ReportState):
-    print(f"Handling report state: {reported_state}")
     recurring_logger.debug(f"Handling report state: {reported_state}")
     state = create_state_from_report_state(reported_state)
     history = History.get_history()
-    print(f"Report state converted: {state}")
 
     history.set_latest_code_state(state)
 
