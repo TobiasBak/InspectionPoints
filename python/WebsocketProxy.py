@@ -63,7 +63,7 @@ def get_handler() -> callable:
             _connected_web_clients.add(websocket)
             handle_new_client()
             async for message in websocket:
-                # print(f"Received message: {message}")
+                recurring_logger.debug(f"Received following command from frontend: {message}")
 
                 message = parse_message(message)
 

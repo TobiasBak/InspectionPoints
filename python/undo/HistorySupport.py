@@ -58,16 +58,10 @@ def register_all_variables():
     register_all_rtde_variables(_variable_registry)
 
 
-def register_code_variable(variable: str):
-    variable_assignment_builder = VariableAssignmentCommandBuilder(variable, AssignmentStrategies.VARIABLE_ASSIGNMENT)
-    code_variable = CodeStateVariable(variable, variable, command_for_changing=variable_assignment_builder)
-    _variable_registry.register_code_variable(code_variable)
-
-
 register_all_variables()
 
 
-def find_variable_definition_in_command(command: str) -> list[str]:
+def find_variable_definition_in_command(command: str) -> list[tuple[str, str]]:
     # Regular expression pattern to match variable definitions excluding those within method parameters
     pattern = r'\b(\w+)\s*=\s*("[^"]*"|\S+)\b(?![^(]*\))(?![^:]*end)'
     # Use re.findall to find all matches in the string
@@ -75,22 +69,34 @@ def find_variable_definition_in_command(command: str) -> list[str]:
     list_of_matches = []
     if matches:
         for match in matches:
-            variable_name = match[0]
-            list_of_matches.append(variable_name)
+            non_recurring_logger.debug(f"Match: {match}")
+            variable = match
+            list_of_matches.append(variable)
     return list_of_matches
 
 
-def add_new_variable(variable: str):
-    register_code_variable(variable)
+def register_code_variable(variable: str, assignment_strategy: AssignmentStrategies):
+    variable_assignment_builder = VariableAssignmentCommandBuilder(variable, assignment_strategy)
+    code_variable = CodeStateVariable(variable, variable, command_for_changing=variable_assignment_builder)
+    _variable_registry.register_code_variable(code_variable)
 
 
-def delete_latest_new_variables(variables: list[str]):
+def add_new_variable(variable: tuple[str, str]):
+    variable_name = variable[0]
+    variable_value = variable[1]
+    if variable_value.startswith('"'): # Match case removes last ", therefore we only check if starts with
+        register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT_STRING)
+    else:
+        register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT)
+
+
+def delete_latest_new_variables(variables: list[tuple[str, str]]):
     copy_of_variable_list = _variable_registry.get_code_variables().copy()
     copy_of_variable_list = copy_of_variable_list[-len(variables):]
 
     for variable in variables:
         for code_variable in copy_of_variable_list:
-            if code_variable.name == variable:
+            if code_variable.name == variable[0]:
                 _variable_registry.remove_code_variable(code_variable)
 
 
