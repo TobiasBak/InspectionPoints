@@ -27,7 +27,7 @@ def recover_state(state: States, command: str, command_id: int | None):
         case States.Protective_stop:
             recover_from_protective_stop(command, command_id)
         case _:
-            recurring_logger.error(f"Unknown state send to recover_state functionality: {state}")
+            recurring_logger.error(f"Unknown state sent to recover_state functionality: {state}")
             raise ValueError(f"Unknown state send to recover_state functionality: {state}")
 
 
