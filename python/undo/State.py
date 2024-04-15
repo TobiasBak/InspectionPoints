@@ -24,9 +24,11 @@ class State:
     def __repr__(self):
         return self.__str__()
 
-    def get_apply_commands(self) -> str:
+    def get_apply_commands(self, only_code: bool = False) -> str:
         output = ""
         for state_value in self.state:
+            if only_code and state_value.variable_definition.is_rtde:
+                continue
             output += state_value.get_apply_command()
         output += "\n"
         return output

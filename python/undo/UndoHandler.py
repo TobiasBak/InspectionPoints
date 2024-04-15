@@ -3,12 +3,9 @@ from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import UndoMessage, UndoResponseMessage, UndoStatus
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
-from undo.History import History
-from undo.HistorySupport import stop_read_report_state
+from undo.HistorySupport import stop_read_report_state, get_command_state_history, get_latest_command_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
-
-_command_history = History.get_history().command_state_history
 
 
 def handle_undo_message(message: UndoMessage) -> str:
@@ -19,12 +16,12 @@ def handle_undo_message(message: UndoMessage) -> str:
 
 def get_reversed_list_of_command_keys(command_id: int) -> list[int]:
     command_states_keys: list[int] = []
-    if command_id not in _command_history.keys():
+    if command_id not in get_command_state_history().keys():
         recurring_logger.debug(f"Command id: {command_id} not found in command history.")
         return command_states_keys
 
     list_of_keys_to_undo = []
-    for key in _command_history.keys():
+    for key in get_command_state_history().keys():
         if key >= command_id:
             list_of_keys_to_undo.append(key)
 
@@ -36,7 +33,7 @@ def get_reversed_list_of_command_keys(command_id: int) -> list[int]:
 def find_command_states_to_undo(command_ids: list[int]) -> list[CommandStates]:
     commands_states_to_undo: list[CommandStates] = []
     for key in command_ids:
-        commands_states_to_undo.append(_command_history.get(key))
+        commands_states_to_undo.append(get_command_state_history().get(key))
     recurring_logger.debug(f"Found command states to undo: {commands_states_to_undo}")
     return commands_states_to_undo
 
@@ -51,7 +48,7 @@ def undo_command_states(command_states: list[CommandStates]) -> None:
 
 def remove_undone_command_states(command_ids: list[int]) -> None:
     for key in command_ids:
-        _command_history.pop(key)
+        get_command_state_history().pop(key)
         recurring_logger.debug(f"Removed command state: {key}")
     recurring_logger.debug(f"Removed command states: {command_ids}")
 
@@ -62,3 +59,4 @@ def handle_undo_request(command_id: int) -> None:
     stop_read_report_state()
     undo_command_states(command_states)
     remove_undone_command_states(command_states_keys)
+    send_command_with_recovery(get_latest_command_state().get_apply_commands(True), get_interpreter_socket())

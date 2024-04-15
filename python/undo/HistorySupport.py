@@ -128,3 +128,11 @@ def handle_command_finished(command_finished: CommandFinished):
     recurring_logger.debug(f"Handling command finished: {command_finished}")
     history = History.get_history()
     history.close_command(command_finished)
+
+
+def get_command_state_history():
+    return History.get_history().command_state_history
+
+
+def get_latest_command_state():
+    return History.get_history().active_command_state.states[-1]
