@@ -14,6 +14,8 @@ class StateVariable(ABC):
         self.name = name
         self.is_collapsible = is_collapsible
         self.command_for_changing = command_for_changing
+        self.is_rtde = False
+        self.is_code = False
 
     def __str__(self):
         collapsible = "Collapsible" if self.is_collapsible else "Not Collapsible"
