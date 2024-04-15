@@ -1,3 +1,6 @@
+import asyncio
+import re
+
 from rtde.serialize import DataObject
 
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
@@ -7,6 +10,8 @@ from custom_logging import LogConfig
 from undo.History import History
 from undo.State import State, StateType
 from undo.StateValue import StateValue
+from undo.StateVariable import CodeStateVariable
+from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder, AssignmentStrategies
 from undo.VariableRegistry import VariableRegistry, register_all_code_variables, register_all_rtde_variables
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -54,7 +59,23 @@ def register_all_variables():
     register_all_rtde_variables(_variable_registry)
 
 
+def register_code_variable(variable: str):
+    variable_assignment_builder = VariableAssignmentCommandBuilder(variable, AssignmentStrategies.VARIABLE_ASSIGNMENT)
+    code_variable = CodeStateVariable(variable, variable, command_for_changing=variable_assignment_builder)
+    _variable_registry.register_code_variable(code_variable)
+
+
 register_all_variables()
+
+
+def register_new_variables(command: str) -> None:
+    # Regular expression pattern to match variable definitions excluding those within method parameters
+    pattern = r'\b(\w+)\s*=\s*("[^"]*"|\S+)\b(?![^(]*\))(?![^:]*end)'
+    # Use re.findall to find all matches in the string
+    matches = re.findall(pattern, command)
+    if matches:
+        for variable, value in matches:
+            register_code_variable(variable)
 
 
 def create_state_from_report_state(report_state: ReportState) -> State:

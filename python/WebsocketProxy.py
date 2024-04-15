@@ -17,6 +17,8 @@ from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
 from custom_logging import LogConfig
 from undo.HistorySupport import handle_report_state, handle_command_finished
+from undo.ReadVariableState import start_read_loop
+from undo.HistorySupport import handle_report_state, handle_command_finished
 from undo.UndoHandler import handle_undo_message, handle_undo_request
 from undo.VariableReadLoop import start_read_loop
 
@@ -124,7 +126,7 @@ def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter
 
     # Define the cleanup function here
     def client_cleanup(fu: Task[None]):
-        non_recurring_logger.warn('Cleaning up client {}'.format(client_id))
+        non_recurring_logger.warning('Cleaning up client {}'.format(client_id))
         try:  # Retrieve the result and ignore whatever returned, since it's just cleaning
             fu.result()
         except Exception as e:

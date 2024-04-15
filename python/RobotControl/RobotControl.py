@@ -10,14 +10,8 @@ from RobotControl.RobotSocketMessages import VariableObject
 from RobotControl.RobotSocketVariableTypes import VariableTypes
 from ToolBox import escape_string
 from URIFY import SOCKET_NAME
-from constants import ROBOT_FEEDBACK_PORT
+from constants import ROBOT_FEEDBACK_PORT, ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, INTERPRETER_PORT
 from custom_logging import LogConfig
-
-POLYSCOPE_IP = "polyscope"
-_DASHBOARD_PORT = 29999
-_PRIMARY_PORT = 30001
-_SECONDARY_PORT = 30002
-_INTERPRETER_PORT = 30020
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -41,6 +35,7 @@ def create_get_socket_function() -> Callable[[str, int], Socket]:
             non_recurring_logger.debug(f"Socket connected to {ip}:{port}")
         except ConnectionRefusedError:
             non_recurring_logger.info(f"Connection to {ip}:{port} refused - retrying in 1 second")
+            my_socket.close()
             sleep(1)
             return get_socket(ip, port)
 
@@ -57,17 +52,17 @@ _interpreter_open = False
 
 
 def get_dashboard_socket():
-    return get_socket(POLYSCOPE_IP, _DASHBOARD_PORT)
+    return get_socket(ROBOT_IP, DASHBOARD_PORT)
 
 
 def get_secondary_socket():
-    return get_socket(POLYSCOPE_IP, _SECONDARY_PORT)
+    return get_socket(ROBOT_IP, SECONDARY_PORT)
 
 
 def get_interpreter_socket():
     """This function is safe to call multiple times.
     If the interpreter_socket is opened, then it will be returned from cache"""
-    return get_socket(POLYSCOPE_IP, _INTERPRETER_PORT)
+    return get_socket(ROBOT_IP, INTERPRETER_PORT)
 
 
 def start_interpreter_mode():
@@ -134,7 +129,7 @@ def unlock_protective_stop():
 
     result = get_value_from_dashboard("unlock protective stop")
     if result == "Protectivestopreleasing":
-        non_recurring_logger.warn("Protective stop releasing")
+        non_recurring_logger.warning("Protective stop releasing")
         return
     else:
         non_recurring_logger.info(f"Unlock protective stop result: {result}")
