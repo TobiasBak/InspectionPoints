@@ -149,9 +149,8 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
         data = await reader.read(4096)
 
         if data == _EMPTY_BYTE:
-            # non_recurring_logger.debug("Empty data received")
-            return # Connection closed
-            # continue
+            non_recurring_logger.debug("Empty data received. Closing connection")
+            return 
 
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
         if data[0] == _START_BYTE[0] and extra_data:
