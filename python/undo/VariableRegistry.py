@@ -10,13 +10,22 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 class VariableRegistry:
     def __init__(self):
         self._code_variables: list[CodeStateVariable] = []
+        self._code_variable_dict: dict[str, CodeStateVariable] = {}
         self._rtde_variables: list[RtdeStateVariable] = []
 
     def register_code_variable(self, variable: CodeStateVariable) -> None:
         self._code_variables.append(variable)
+        self._code_variable_dict[variable.name] = variable
 
     def remove_code_variable(self, variable: CodeStateVariable) -> None:
         self._code_variables.remove(variable)
+        self._code_variable_dict.pop(variable.name)
+        # We are checking if the variable still exists because it is possible to redefine variables
+        # Scenario of commands: {c=2 c=3 c="f"}. We then want to remove c="f" and keep c=3
+        for var in reversed(self._code_variables):
+            if var.name == variable.name:
+                self._code_variable_dict[variable.name] = var
+                break
 
     def register_rtde_variable(self, variable: RtdeStateVariable) -> None:
         self._rtde_variables.append(variable)
@@ -33,6 +42,9 @@ class VariableRegistry:
 
     def get_code_variables(self) -> list[CodeStateVariable]:
         return self._code_variables
+
+    def get_code_variable_dict(self) -> dict[str, CodeStateVariable]:
+        return self._code_variable_dict
 
     def get_rtde_variables(self) -> list[RtdeStateVariable]:
         return self._rtde_variables
