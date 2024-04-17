@@ -3,22 +3,22 @@ import json
 import re
 from asyncio import StreamReader, StreamWriter, Task
 from socket import gethostbyname, gethostname
-from socket import socket as Socket
 from time import sleep
 from typing import Final
 
 from websockets.server import serve
 
-from RobotControl.RobotControl import get_interpreter_socket, get_robot_mode, start_robot
+from RobotControl.RobotControl import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes
-from RobotControl.SendRobotCommandWithRecovery import send_user_command, send_command_finished
+from RobotControl.SendUserCommand import send_user_command, send_command_finished
 from SocketMessages import AckResponse
-from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
+from SocketMessages import parse_message, CommandMessage, UndoMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT
 from custom_logging import LogConfig
 from undo.HistorySupport import handle_report_state, handle_command_finished
-from undo.ReadVariableState import start_read_loop
+from undo.UndoHandler import handle_undo_message, handle_undo_request
+from undo.VariableReadLoop import start_read_loop
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -33,21 +33,15 @@ _connected_web_clients = set()
 _new_client = False
 
 
-def handle_command_message(message: CommandMessage, socket: Socket) -> str:
+def handle_command_message(message: CommandMessage) -> str:
     command_string = message.data.command
-    result = send_user_command(message, socket)
+    result = send_user_command(message)
     if result == "":
         return ""
     response = AckResponse(message.data.id, command_string, result)
     str_response = str(response)
     recurring_logger.debug(f"Sending response: {str_response}")
     return str_response
-
-
-def handle_undo_message(message: UndoMessage) -> str:
-    response = UndoResponseMessage(message.data.id, UndoStatus.Success)
-    recurring_logger.debug(f"Sending response: {response}")
-    return str(response)
 
 
 def handle_new_client():
@@ -63,22 +57,23 @@ def has_new_client() -> bool:
     return False
 
 
-def get_handler(socket: Socket) -> callable:
+def get_handler() -> callable:
     async def echo(websocket):
         try:
             _connected_web_clients.add(websocket)
             handle_new_client()
             async for message in websocket:
-                # print(f"Received message: {message}")
+                recurring_logger.debug(f"Received following command from frontend: {message}")
 
                 message = parse_message(message)
 
                 match message:
                     case CommandMessage():
-                        str_response = handle_command_message(message, socket)
+                        str_response = handle_command_message(message)
                         # print(f"Message is a CommandMessage")
                     case UndoMessage():
                         str_response = handle_undo_message(message)
+                        handle_undo_request(message.data.id)
                         recurring_logger.debug(f"Message is an UndoMessage")
                     case _:
                         raise ValueError(f"Unknown message type: {message}")
@@ -133,11 +128,13 @@ def client_connected_cb(client_reader: StreamReader, client_writer: StreamWriter
         try:  # Retrieve the result and ignore whatever returned, since it's just cleaning
             fu.result()
         except Exception as e:
+            non_recurring_logger.error(f"Client cleaned up, Exception: {e}")
             raise e
         # Remove the client from client records
         del clients[client_id]
 
     task = asyncio.ensure_future(client_task(client_reader, client_writer))
+    non_recurring_logger.debug(f"Task created for client: {client_id}")
     task.add_done_callback(client_cleanup)
     # Add the client and the task to client records
     clients[client_id] = task
@@ -152,7 +149,8 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
         data = await reader.read(4096)
 
         if data == _EMPTY_BYTE:
-            continue
+            non_recurring_logger.debug("Empty data received. Closing connection")
+            return 
 
         # When using _START_BYTE[0] we return the integer value of the byte in the ascii table, so here it returns 2
         if data[0] == _START_BYTE[0] and extra_data:
@@ -210,7 +208,7 @@ async def recover_mangled_data(extra_data: bytes) -> None:
         command = match.group(3)
         match message_type:
             case RobotSocketMessageTypes.Command_finished.name:
-                send_command_finished(id_value, command, get_interpreter_socket())
+                send_command_finished(id_value, command)
                 recurring_logger.debug(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
     else:
         recurring_logger.debug("Pattern not found in the message.")
@@ -249,9 +247,8 @@ async def start_webserver():
 
     start_robot()
 
-    interpreter_socket: Socket = get_interpreter_socket()
     recurring_logger.info("Starting websocket server")
-    async with serve(get_handler(interpreter_socket), "0.0.0.0", 8767):
+    async with serve(get_handler(), "0.0.0.0", 8767):
         await asyncio.Future()  # run forever
 
 

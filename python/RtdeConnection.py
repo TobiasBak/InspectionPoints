@@ -35,6 +35,7 @@ from custom_logging import LogConfig
 from undo.History import History
 from undo.HistorySupport import create_state_from_rtde_state
 from constants import ROBOT_IP, RTDE_PORT, RTDE_CONFIG_FILE
+from undo.State import State
 
 conf = rtde_config.ConfigFile(RTDE_CONFIG_FILE)
 state_names, state_types = conf.get_recipe("state")
@@ -102,7 +103,8 @@ def register_listener(listener: ListenerFunction):
 
 async def log_state(state: DataObject):
     history = History.get_history()
-    history.append_state(create_state_from_rtde_state(state))
+    rtde_state: State = create_state_from_rtde_state(state)
+    history.append_state(rtde_state)
     recurring_logger.debug(f"State logged: {state}")
 
 

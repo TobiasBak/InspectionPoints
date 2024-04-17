@@ -1,11 +1,12 @@
 from enum import Enum, auto
 
-from RobotControl.RobotControl import send_command, get_interpreter_socket, clear_interpreter_mode, \
-    unlock_protective_stop, _start_interpreter_mode_and_connect_to_backend_socket, apply_variables_to_robot, \
-    list_of_variables
+from RobotControl.RobotControl import send_command, clear_interpreter_mode, \
+    unlock_protective_stop, _start_interpreter_mode_and_connect_to_backend_socket, get_interpreter_socket
 from SocketMessages import AckResponse
 from WebsocketNotifier import websocket_notifier
 from custom_logging import LogConfig
+from undo.HistorySupport import get_latest_code_state, get_latest_active_command_state, \
+    find_variables_in_command, delete_variables_from_variable_registry, get_variable_registry
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -26,16 +27,23 @@ def recover_state(state: States, command: str, command_id: int | None):
         case States.Protective_stop:
             recover_from_protective_stop(command, command_id)
         case _:
-            raise ValueError(f"Unknown state send to recover_state functionality: {state}")
+            recurring_logger.error(f"Unknown state sent to recover_state functionality: {state}")
+            raise ValueError(f"Unknown state sent to recover_state functionality: {state}")
 
 
 def recover_from_invalid_state(command: str, command_id: int | None):
     recurring_logger.warning(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
     _start_interpreter_mode_and_connect_to_backend_socket()
-    apply_variables_to_robot(list_of_variables)  # Temporary fix
+    __recover_latest_code_state()
     if command_id is not None:
         # Todo: We need ssh to see the logs for optimal feedback
-        ack_response = AckResponse(command_id, command,
+
+        actual_command_that_caused_invalid_state = get_latest_active_command_state().get_user_command().data.command
+        list_of_definitions = find_variables_in_command(actual_command_that_caused_invalid_state)
+        delete_variables_from_variable_registry(list_of_definitions)
+
+        non_recurring_logger.debug(f"Removing variable definition: {list_of_definitions}")
+        ack_response = AckResponse(command_id, "",
                                    f"discard: Command caused invalid state. Can be due to following reasons:\n"
                                    f"1. array out of bounds.\n"
                                    f"2. Reassigning variable to new type.\n"
@@ -45,9 +53,9 @@ def recover_from_invalid_state(command: str, command_id: int | None):
 
 
 def recover_from_too_many_commands(command: str, command_id: int | None):
-    recurring_logger.info(f"\t\t\tToo many commands detected. Attempting to fix the state.")
+    recurring_logger.debug(f"\t\t\tToo many commands detected. Attempting to fix the state.")
     clear_interpreter_mode()
-    apply_variables_to_robot(list_of_variables)  # Temporary fix
+    __recover_latest_code_state()
     result = send_command(command, get_interpreter_socket())  # Resend command since it was lost.
     if command_id is not None:
         ack_response = AckResponse(command_id, command, result)
@@ -64,5 +72,11 @@ def recover_from_protective_stop(command: str, command_id: int | None):
 
     unlock_protective_stop()
     _start_interpreter_mode_and_connect_to_backend_socket()
-    apply_variables_to_robot(list_of_variables)  # Temporary fix
+    __recover_latest_code_state()
     send_command(command, get_interpreter_socket())
+
+
+def __recover_latest_code_state() -> None:
+    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
+    recurring_logger.debug(f"Recovering latest code state: {get_latest_code_state()}")
+    
