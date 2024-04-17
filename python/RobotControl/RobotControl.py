@@ -48,18 +48,16 @@ def create_get_socket_function() -> Callable[[str, int], Socket]:
 
 get_socket = create_get_socket_function()
 
-_interpreter_open = False
 
-
-def get_dashboard_socket():
+def _get_dashboard_socket():
     return get_socket(ROBOT_IP, DASHBOARD_PORT)
 
 
-def get_secondary_socket():
+def _get_secondary_socket():
     return get_socket(ROBOT_IP, SECONDARY_PORT)
 
 
-def get_interpreter_socket():
+def _get_interpreter_socket():
     """This function is safe to call multiple times.
     If the interpreter_socket is opened, then it will be returned from cache"""
     return get_socket(ROBOT_IP, INTERPRETER_PORT)
@@ -97,13 +95,13 @@ def _start_interpreter_mode_and_connect_to_backend_socket():
     # Todo: For some reason the robot needs a sleep here, otherwise open_socket does not work.
     #  I thought the parameters on interpreter_mode would fix this. (clear_queue_on_enter, clear_on_end)
     sleep(1)
-    connect_robot_to_feedback_socket()
+    _connect_robot_to_feedback_socket()
 
     # Ensure that non-user inputted commands are not sent to the websocket.
     # We sleep, because the message has to be processed by the robot first.
     # I have tested values below 0.5, but they did not give reliable results.
     sleep(0.5)
-    delayed_read = read_from_socket_till_end(get_interpreter_socket())
+    delayed_read = read_from_socket_till_end(_get_interpreter_socket())
     non_recurring_logger.debug(f"Delayed read: {escape_string(delayed_read)}")
 
 
@@ -157,7 +155,7 @@ def sanitize_dashboard_reads(response: str) -> str:
     return message.replace('\\n', '').replace(' ', '')
 
 
-def connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):
+def _connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):
     non_recurring_logger.debug(f"Connecting robot to feedback socket: {host}:{port}")
     send_command_interpreter_socket(f"socket_open(\"{host}\", {port}, {SOCKET_NAME})\n")
 
@@ -171,19 +169,33 @@ def sanitize_command(command: str) -> str:
 _extremely_randomized_command = f' FKSUYFCGSHILU213Y4387RGFBEI87 = "KFJSHEUIFYGEWIURG3" '
 
 
-def _send_command_on_interpreter(command: str) -> str:
-    _interpreter_socket = get_interpreter_socket()
-    _interpreter_socket.send(command.encode())
-    result = read_from_socket(_interpreter_socket)
-    return result
+def _send_small_command_on_interpreter(command: str) -> str:
+    _interpreter_socket = _get_interpreter_socket()
+    sanitized_command = sanitize_command(command)
+    _interpreter_socket.send(sanitized_command.encode())
+    return read_from_socket(_interpreter_socket)
+
+
+def send_command_dashboard_socket(command: str) -> str:
+    dashboard_socket = _get_dashboard_socket()
+    sanitized_command = sanitize_command(command)
+    dashboard_socket.send(sanitized_command.encode())
+    return read_from_socket(dashboard_socket)
+
+
+def send_command_secondary_socket(command: str) -> str:
+    secondary_socket = _get_secondary_socket()
+    sanitized_command = sanitize_command(command)
+    secondary_socket.send(sanitized_command.encode())
+    return read_from_socket(secondary_socket)
 
 
 def send_command_interpreter_socket(command: str) -> str:
     """Returns the ack_response from the robot. The ack_response is a string."""
-    on_socket = get_interpreter_socket()
+    on_socket = _get_interpreter_socket()
 
     if "clear_interpreter()" in command:
-        return _send_command_on_interpreter(sanitize_command(command))
+        return _send_small_command_on_interpreter(command)
 
     recurring_logger.debug(f"Modifying command: {escape_string(command)}")
     command += _extremely_randomized_command  # To ensure that the command is read till the end.
@@ -201,20 +213,6 @@ def send_command_interpreter_socket(command: str) -> str:
 
     recurring_logger.debug(f"Result from robot: {escape_string(result)}")
     return escape_string(result)
-
-
-def send_command_dashboard_socket(command: str) -> str:
-    dashboard_socket = get_dashboard_socket()
-    sanitized_command = sanitize_command(command)
-    dashboard_socket.send(sanitized_command.encode())
-    return read_from_socket(dashboard_socket)
-
-
-def send_command_secondary_socket(command: str) -> str:
-    secondary_socket = get_secondary_socket()
-    sanitized_command = sanitize_command(command)
-    secondary_socket.send(sanitized_command.encode())
-    return read_from_socket(secondary_socket)
 
 
 def read_from_socket(socket: Socket) -> str:
@@ -244,6 +242,6 @@ def read_from_socket_till_end(socket: Socket) -> str:
 
 if __name__ == '__main__':
     non_recurring_logger.info("Starting RobotControl.py")
-    interpreter_socket: Socket = get_interpreter_socket()
+    interpreter_socket: Socket = _get_interpreter_socket()
 
     interpreter_socket.close()

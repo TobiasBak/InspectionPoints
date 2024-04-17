@@ -1,9 +1,6 @@
-from RobotControl.RobotControl import send_command_interpreter_socket, get_interpreter_socket
-from socket import socket as Socket
-
+from RobotControl.RobotControl import send_command_interpreter_socket
 
 def test():
-    socket: Socket = get_interpreter_socket()
 
     # Thread move kill
     # commands = [

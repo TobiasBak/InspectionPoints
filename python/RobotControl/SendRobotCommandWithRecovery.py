@@ -1,13 +1,11 @@
-import re
 from enum import Enum
 from RobotControl.RobotControl import send_command_interpreter_socket, get_safety_status, \
-    get_robot_mode, get_running, get_interpreter_socket
+    get_robot_mode, get_running
 from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.StateRecovery import States, recover_state
 from URIFY import URIFY_return_string
 from custom_logging import LogConfig
-from undo.History import History
-from undo.HistorySupport import find_variables_in_command, add_new_variable, get_variable_registry
+from undo.HistorySupport import find_variables_in_command, add_new_variable
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)

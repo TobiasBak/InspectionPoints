@@ -1,12 +1,12 @@
 from enum import Enum, auto
 
 from RobotControl.RobotControl import send_command_interpreter_socket, clear_interpreter_mode, \
-    unlock_protective_stop, _start_interpreter_mode_and_connect_to_backend_socket, get_interpreter_socket
+    unlock_protective_stop, _start_interpreter_mode_and_connect_to_backend_socket
 from SocketMessages import AckResponse
 from WebsocketNotifier import websocket_notifier
 from custom_logging import LogConfig
 from undo.HistorySupport import get_latest_code_state, get_latest_active_command_state, \
-    find_variables_in_command, delete_variables_from_variable_registry, get_variable_registry
+    find_variables_in_command, delete_variables_from_variable_registry
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
