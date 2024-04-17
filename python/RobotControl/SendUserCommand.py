@@ -11,7 +11,7 @@ def send_user_command(command: CommandMessage) -> str:
     start_read_report_state()
     command_id = command.data.id
     command_message = command.data.command
-    test_history(command)
+    add_command_to_history(command)
 
     response_from_command = send_command_with_recovery(command_message, command_id=command.data.id)
 
@@ -23,7 +23,7 @@ def send_user_command(command: CommandMessage) -> str:
     return response_from_command[:-2]  # Removes \n from the end of the response
 
 
-def test_history(command):
+def add_command_to_history(command):
     history = History.get_history()
     history.new_command(command)
     history.debug_print()
