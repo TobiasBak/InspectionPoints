@@ -19,7 +19,7 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 _variable_registry = VariableRegistry()
 
-READ_FREQUENCY_HZ = 5
+READ_FREQUENCY_HZ = 15
 READ_PERIOD = 1 / READ_FREQUENCY_HZ
 
 

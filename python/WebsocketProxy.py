@@ -10,15 +10,17 @@ from typing import Final
 from websockets.server import serve
 
 from RobotControl.RobotControl import get_interpreter_socket, get_robot_mode, start_robot
-from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes
+from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
+    InterpreterCleared
 from RobotControl.SendRobotCommandWithRecovery import send_user_command, send_command_finished
+from RobotControl.StateRecovery import handle_cleared_interpreter
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage, UndoResponseMessage, UndoStatus
 from WebsocketNotifier import websocket_notifier
-from constants import ROBOT_FEEDBACK_PORT
+from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
 from undo.HistorySupport import handle_report_state, handle_command_finished
-from undo.ReadVariableState import start_read_loop
+from undo.ReadVariableState import start_read_loop, report_state_received
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -184,7 +186,7 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
             for message in list_of_data:
                 # If message contains multiple start bytes, discard message
                 if message.count(_START_BYTE) > 1:
-                    recurring_logger.debug(f"Discarding message because of multiple start bytes: {message}")
+                    recurring_logger.warning(f"Discarding message because of multiple start bytes: {message}")
                     continue
 
                 if message:
@@ -197,6 +199,16 @@ async def recover_mangled_data(extra_data: bytes) -> None:
     # We have extra data and the rest was lost
     fucked_data = extra_data.decode()
     # Regular expression pattern to extract "type", "id", and "data.command"
+    if await search_for_command_finished(fucked_data):
+        return
+
+    if await search_for_report_state(fucked_data):
+        return
+
+    recurring_logger.error("Pattern not found in the message.")
+
+
+async def search_for_command_finished(fucked_data: str) -> bool:
     pattern = r'"type":\s*"([^"]+)".*?"id":\s*(\d+).*?"command":\s*"([^"]+)'
     # Use re.search to find the pattern in the string
     match = re.search(pattern, fucked_data)
@@ -209,8 +221,24 @@ async def recover_mangled_data(extra_data: bytes) -> None:
             case RobotSocketMessageTypes.Command_finished.name:
                 send_command_finished(id_value, command, get_interpreter_socket())
                 recurring_logger.debug(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
-    else:
-        recurring_logger.debug("Pattern not found in the message.")
+                return True
+    return False
+
+
+async def search_for_report_state(fucked_data: str) -> bool:
+    pattern = r'"type":\s*"([^"]+)"'
+    # Use re.search to find the pattern in the string
+    match = re.search(pattern, fucked_data)
+    # If match is found, extract the values
+    if match:
+        message_type = match.group(1)
+        data_value = int(match.group(2))
+        match message_type:
+            case RobotSocketMessageTypes.Report_state.name:
+                recurring_logger.warning("Found a match for report state in fucked data")
+                report_state_received()
+                return True
+    return False
 
 
 def is_json(myjson):
@@ -236,6 +264,10 @@ def message_from_robot_received(message: bytes):
             send_to_all_web_clients(str(robot_message))
         case ReportState():
             handle_report_state(robot_message)
+            report_state_received()
+        case InterpreterCleared():
+            handle_cleared_interpreter(robot_message)
+            report_state_received()
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
 
@@ -248,7 +280,7 @@ async def start_webserver():
 
     interpreter_socket: Socket = get_interpreter_socket()
     recurring_logger.info("Starting websocket server")
-    async with serve(get_handler(interpreter_socket), "0.0.0.0", 8767):
+    async with serve(get_handler(interpreter_socket), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
         await asyncio.Future()  # run forever
 
 

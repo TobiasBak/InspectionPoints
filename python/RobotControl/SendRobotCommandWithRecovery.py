@@ -1,6 +1,6 @@
-import re
 from enum import Enum
 from socket import socket as Socket
+
 from RobotControl.RobotControl import send_command, get_safety_status, \
     get_robot_mode, get_running
 from RobotControl.RobotSocketMessages import CommandFinished
@@ -60,7 +60,8 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
         recurring_logger.info(f"\t\tRobot state before fixing: {robot_state}")
         recover_state(robot_state, command, command_id)
 
-    out = ""  # Since we do not want to return the response to the frontend
+    if command_id is None:
+        out = ""  # Since we do not want to return the response to the frontend
 
     return out
 
