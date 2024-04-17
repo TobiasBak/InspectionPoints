@@ -66,7 +66,6 @@ class History(object):
 
     def new_command(self, command: CommandMessage) -> None:
         self.command_state_history[command.get_id()] = CommandStates(command)
-        self._add_pre_states(command.get_id())
 
         max_id = max(self.command_state_history.keys())
         if max_id != command.get_id():
@@ -98,8 +97,8 @@ class History(object):
         command_state.close()
         if self._max_command_id() > command_finished.data.id:
             next_id = self._next_command_id(command_finished.data.id)
-            self._add_pre_states(next_id)
             self.active_command_state = self.command_state_history[next_id]
+            self._add_pre_states(next_id)
         elif self._max_command_id() < command_finished.data.id:
             raise ValueError(f"Command id {command_finished.data.id} is greater than the maximum command id.")
 
