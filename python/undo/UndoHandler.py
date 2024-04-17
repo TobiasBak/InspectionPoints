@@ -3,8 +3,8 @@ from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import UndoMessage, UndoResponseMessage, UndoStatus
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
-from undo.HistorySupport import get_command_state_history, get_latest_code_state, remove_command_state_from_history, \
-    find_variables_in_command, delete_variables_from_variable_registry
+from undo.HistorySupport import get_command_state_history, remove_command_state_from_history, \
+    clean_variable_code_registry
 from undo.VariableReadLoop import stop_read_report_state, start_read_report_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -41,10 +41,10 @@ def find_command_states_to_undo(command_ids: list[int]) -> list[CommandStates]:
 
 def undo_command_states(command_states: list[CommandStates]) -> None:
     for command_state in command_states:
-        remove_command_from_variable_registry(command_state.get_user_command().data.command)
         command_undo_string = command_state.get_undo_commands()
         new_string = sanitize_command(command_undo_string)
         recurring_logger.debug(f"Undoing command: {new_string}")
+        clean_variable_code_registry()
         send_command_with_recovery(command_undo_string)
 
 
@@ -53,13 +53,6 @@ def remove_undone_command_states(command_ids: list[int]) -> None:
         remove_command_state_from_history(key)
         recurring_logger.debug(f"Removed command state: {key}")
     recurring_logger.debug(f"Removed command states: {command_ids}")
-
-
-def remove_command_from_variable_registry(user_command: str) -> None:
-    recurring_logger.info(f"Removing variables from variable registry in command: {user_command}")
-    variable_list: list[tuple[str, str]] = find_variables_in_command(user_command)
-    recurring_logger.info(f"Variables to remove: {variable_list}")
-    delete_variables_from_variable_registry(variable_list)
 
 
 def handle_undo_request(command_id: int) -> None:

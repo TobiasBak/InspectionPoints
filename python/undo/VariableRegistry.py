@@ -14,15 +14,17 @@ class VariableRegistry:
         self._rtde_variables: list[RtdeStateVariable] = []
 
     def register_code_variable(self, variable: CodeStateVariable) -> None:
+        recurring_logger.debug(f"Registering variable: {variable.name}")
         self._code_variables.append(variable)
         self._code_variable_dict[variable.name] = variable
+        recurring_logger.debug(f"Code variables: {self._code_variables}")
 
     def remove_code_variable(self, variable: CodeStateVariable) -> None:
         self._code_variables.remove(variable)
         self._code_variable_dict.pop(variable.name)
-        recurring_logger.info(f"Removed variable: {variable.name}")
-        recurring_logger.info(f"Code variables: {self._code_variables}")
-        recurring_logger.info(f"Code variable dict: {self._code_variable_dict}")
+        recurring_logger.debug(f"Removed variable: {variable.name}")
+        recurring_logger.debug(f"Code variables: {self._code_variables}")
+        recurring_logger.debug(f"Code variable dict: {self._code_variable_dict}")
         # We are checking if the variable still exists because it is possible to redefine variables
         # Scenario of commands: {c=2 c=3 c="f"}. We then want to remove c="f" and keep c=3
         for var in reversed(self._code_variables):
@@ -30,6 +32,12 @@ class VariableRegistry:
                 self._code_variable_dict[variable.name] = var
                 break
         recurring_logger.info(f"Code variable dict after reassignment: {self._code_variable_dict}")
+
+    def clean_variable_code_registry(self) -> None:
+        self._code_variables = []
+        self._code_variable_dict = {}
+        recurring_logger.debug(f"Cleaned code variables: {self._code_variables}")
+        recurring_logger.debug(f"Cleaned code variable dict: {self._code_variable_dict}")
 
     def register_rtde_variable(self, variable: RtdeStateVariable) -> None:
         self._rtde_variables.append(variable)

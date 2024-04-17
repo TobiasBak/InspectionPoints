@@ -126,6 +126,9 @@ def handle_report_state(reported_state: ReportState):
     history.append_state(state)
 
 
+def clean_variable_code_registry():
+    _variable_registry.clean_variable_code_registry()
+
 def handle_command_finished(command_finished: CommandFinished):
     recurring_logger.debug(f"Handling command finished: {command_finished}")
     history = History.get_history()

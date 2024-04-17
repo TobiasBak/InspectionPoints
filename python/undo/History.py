@@ -43,15 +43,17 @@ class History(object):
             recurring_logger.debug("There is no active command state.")
             return
             # raise ValueError("There is no active command state.")
-        print(f"state from history append state: {state}")
         self.active_command_state.append_state(state)
         recurring_logger.debug(f"we made it out from trying to append to the active command state.")
 
     def pop_command_state_from_history(self, command_id: int) -> CommandStates:
-        if self.active_command_state.get_user_command().get_id() == command_id and command_id == 1:
-            self.active_command_state = None
-        elif self.active_command_state.get_user_command().get_id() == command_id:
-            self.active_command_state = self.command_state_history[command_id - 1]
+        # if the active command state is the command_id we are looking for, we need to change the active command state
+        # to the previous command state
+        if self.active_command_state.get_user_command().get_id() == command_id:
+            if len(self.command_state_history) == 1:
+                self.active_command_state = None
+            else:
+                self.active_command_state = self.command_state_history[self._previous_command_id(command_id)]
         return self.command_state_history.pop(command_id)
 
     def _max_command_id(self) -> int:
@@ -67,6 +69,16 @@ class History(object):
                 return i
 
         raise ValueError(f"Could not find a command id greater than {from_index}")
+
+    def _previous_command_id(self, from_index: int) -> int:
+        """This requires that there is a command id less than from_index.
+        Otherwise, an error is raised."""
+        iterator = sorted(self.command_state_history.keys())
+        for i in reversed(iterator):
+            if i < from_index:
+                return i
+
+        raise ValueError(f"Could not find a command id less than {from_index}")
 
     def new_command(self, command: CommandMessage) -> None:
         self.command_state_history[command.get_id()] = CommandStates(command)
@@ -93,8 +105,6 @@ class History(object):
                                       f"does not match the provided command id {command_id}")
             raise ValueError(f"Active command id {self.active_command_state.get_user_command().get_id()} "
                              f"does not match the provided command id {command_id}")
-        print(f"latest code state: {self.latest_code_state}")
-        print(f"latest rtde state: {self.latest_rtde_state}")
         self.append_state(self.latest_code_state)
         self.append_state(self.latest_rtde_state)
 
