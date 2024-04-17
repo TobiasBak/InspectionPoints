@@ -143,6 +143,10 @@ def get_command_state_history() -> CommandStateHistory:
     return History.get_history().get_command_state_history()
 
 
+def remove_command_state_from_history(command_id: int) -> CommandStates:
+    return History.get_history().pop_command_state_from_history(command_id)
+
+
 def get_latest_active_command_state() -> CommandStates:
     return History.get_history().get_active_command_state()
 

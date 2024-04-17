@@ -3,7 +3,7 @@ from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import UndoMessage, UndoResponseMessage, UndoStatus
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
-from undo.HistorySupport import get_command_state_history, get_latest_code_state
+from undo.HistorySupport import get_command_state_history, get_latest_code_state, remove_command_state_from_history
 from undo.VariableReadLoop import stop_read_report_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -48,7 +48,7 @@ def undo_command_states(command_states: list[CommandStates]) -> None:
 
 def remove_undone_command_states(command_ids: list[int]) -> None:
     for key in command_ids:
-        get_command_state_history().pop(key)
+        remove_command_state_from_history(key)
         recurring_logger.debug(f"Removed command state: {key}")
     recurring_logger.debug(f"Removed command states: {command_ids}")
 
