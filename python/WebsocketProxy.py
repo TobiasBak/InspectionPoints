@@ -22,7 +22,6 @@ from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
 from undo.HistorySupport import handle_report_state, handle_command_finished
 from undo.UndoHandler import handle_undo_message, handle_undo_request
-from undo.VariableReadLoop import start_read_loop
 from undo.ReadVariableState import start_read_loop, report_state_received
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)

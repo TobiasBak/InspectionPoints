@@ -5,9 +5,26 @@ from RobotControl.RobotControl import get_interpreter_socket
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from RobotControl.RobotSocketMessages import ReportState
 from custom_logging import LogConfig
-from undo.HistorySupport import _variable_registry, READ_PERIOD
+from undo.HistorySupport import _variable_registry
+
+READ_FREQUENCY_HZ = 1
+READ_PERIOD = 1 / READ_FREQUENCY_HZ
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
+
+_read_report_state = True
+
+
+def stop_read_report_state():
+    global _read_report_state
+    recurring_logger.info("Stopping read report state")
+    _read_report_state = False
+
+
+def start_read_report_state():
+    global _read_report_state
+    recurring_logger.info("Starting read report state")
+    _read_report_state = True
 
 
 def get_closured_functions() -> tuple[Callable[[], None], Callable[[], None]]:
@@ -25,6 +42,10 @@ def get_closured_functions() -> tuple[Callable[[], None], Callable[[], None]]:
         set_read_in_progress(False)
 
     def read_variable_state():
+        if not _read_report_state:
+            recurring_logger.debug("Read report state is false, skipping read_variable_state")
+            return
+
         if get_read_in_progress():
             recurring_logger.debug("Read in progress, skipping read_variable_state")
             return

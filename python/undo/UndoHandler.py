@@ -5,7 +5,7 @@ from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
 from undo.HistorySupport import get_command_state_history, remove_command_state_from_history, \
     clean_variable_code_registry
-from undo.VariableReadLoop import stop_read_report_state, start_read_report_state
+from undo.ReadVariableState import stop_read_report_state, start_read_report_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 
