@@ -102,21 +102,14 @@ def delete_latest_new_variables(variables: list[tuple[str, str]]):
 
 def create_state_from_report_state(report_state: ReportState) -> State:
     state_values: list[StateValue] = []
-
-    code_variables = get_variable_registry().get_code_variables()
-    code_variables_names = []
-
-    for code_variable in code_variables:
-        code_variable_name = code_variable.name
-        code_variables_names.append(code_variable_name)
-
+    code_variable_dict = get_variable_registry().get_code_variable_dict()
     received_variables = report_state.variables
 
     for variable in received_variables:
         variable_name = variable.name
-        if variable_name not in code_variables_names:
+        if variable_name not in code_variable_dict:
             raise ValueError(f"Variable {variable_name} not found in code variables")
-        code_variable = code_variables[code_variables_names.index(variable_name)]
+        code_variable = code_variable_dict[variable_name]
         state_values.append(StateValue(variable.value, code_variable))
 
     if len(state_values) != len(received_variables):
