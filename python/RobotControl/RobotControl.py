@@ -66,10 +66,9 @@ def get_interpreter_socket():
 
 
 def start_interpreter_mode():
-    secondary_socket = get_secondary_socket()
     clear_queue_on_enter = "clearQueueOnEnter = True"
     clear_on_end = "clearOnEnd = True"
-    send_command(f"interpreter_mode({clear_queue_on_enter}, {clear_on_end})", secondary_socket)
+    send_command_secondary_socket(f"interpreter_mode({clear_queue_on_enter}, {clear_on_end})")
     non_recurring_logger.debug("Interpreter mode command sent")
 
 
@@ -121,13 +120,11 @@ def clear_interpreter_mode():
 
 
 def _power_on_robot():
-    dashboard_socket = get_dashboard_socket()
-    send_command("power on", dashboard_socket)
+    send_command_dashboard_socket("power on")
 
 
 def _brake_release_on_robot():
-    dashboard_socket = get_dashboard_socket()
-    send_command("brake release", dashboard_socket)
+    send_command_dashboard_socket("brake release")
 
 
 def unlock_protective_stop():
@@ -186,16 +183,30 @@ def send_command(command: str, on_socket: Socket) -> str:
     count = 1
     while result != "nothing" and count < 2:
         out += result
-        # time_print(f"Received {count}: {escape_string(result)}")
         result = read_from_socket(on_socket)
         count += 1
     return escape_string(out)
+
+
+def send_command_dashboard_socket(command: str) -> str:
+    dashboard_socket = get_dashboard_socket()
+    dashboard_socket.send(command.encode())
+    result = read_from_socket(dashboard_socket)
+    return escape_string(result)
+
+
+def send_command_secondary_socket(command: str) -> str:
+    secondary_socket = get_secondary_socket()
+    secondary_socket.send(command.encode())
+    result = read_from_socket(secondary_socket)
+    return escape_string(result)
 
 
 def read_from_socket(socket: Socket) -> str:
     ready_to_read, ready_to_write, in_error = select.select([socket], [], [], 0.1)
     if ready_to_read:
         message = socket.recv(4096)
+        non_recurring_logger.debug(f"Message received after send_command: {message}")
 
         try:
             return message.decode()
