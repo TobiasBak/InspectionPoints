@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from RobotControl.RobotControl import send_command, get_safety_status, \
+from RobotControl.RobotControl import send_command_interpreter_socket, get_safety_status, \
     get_robot_mode, get_running, get_interpreter_socket
 from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.StateRecovery import States, recover_state
@@ -27,7 +27,7 @@ class ResponseCodes(Enum):
 
 def send_command_with_recovery(command: str, command_id=None) -> str:
     """Command_id is important if a message containing the error should be sent back to the frontend."""
-    result = send_command(command, get_interpreter_socket())
+    result = send_command_interpreter_socket(command)
     recurring_logger.debug(f"Result from robot: {result}")
 
     # TODO: Remove this responsibility from the send_command function

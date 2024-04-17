@@ -1,4 +1,4 @@
-from RobotControl.RobotControl import send_command, get_interpreter_socket
+from RobotControl.RobotControl import send_command_interpreter_socket, get_interpreter_socket
 from socket import socket as Socket
 
 
@@ -27,7 +27,7 @@ def test():
     ]
 
     for command in commands:
-        send_command(command, socket)
+        send_command_interpreter_socket(command)
 
 if __name__ == '__main__':
     test()
