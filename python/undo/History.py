@@ -4,7 +4,7 @@ from RobotControl.RobotSocketMessages import CommandFinished
 from SocketMessages import CommandMessage
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
-from undo.State import State
+from undo.State import State, StateType
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -30,20 +30,18 @@ class History(object):
     def get_latest_code_state(self) -> State:
         return self.latest_code_state
 
-    def set_latest_code_state(self, state: State) -> None:
-        self.latest_code_state = state
-
     def get_latest_rtde_state(self) -> State:
         return self.latest_rtde_state
-
-    def set_latest_rtde_state(self, state: State) -> None:
-        self.latest_rtde_state = state
 
     def append_state(self, state: State) -> None:
         if self.active_command_state is None:
             recurring_logger.debug("There is no active command state.")
             return
             # raise ValueError("There is no active command state.")
+        if state.state_type == StateType.code_state:
+            self.latest_code_state = state
+        elif state.state_type == StateType.rtde_state:
+            self.latest_rtde_state = state
         self.active_command_state.append_state(state)
         recurring_logger.debug(f"we made it out from trying to append to the active command state.")
 

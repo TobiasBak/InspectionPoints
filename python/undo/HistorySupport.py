@@ -130,9 +130,6 @@ def handle_report_state(reported_state: ReportState):
     recurring_logger.debug(f"Handling report state: {reported_state}")
     state = create_state_from_report_state(reported_state)
     history = History.get_history()
-
-    history.set_latest_code_state(state)
-
     history.append_state(state)
 
 
