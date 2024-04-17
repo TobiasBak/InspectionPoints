@@ -81,13 +81,6 @@ def start_robot():
     _brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
     _start_interpreter_mode_and_connect_to_backend_socket()
-    apply_variables_to_robot(list_of_variables)
-
-
-# This is a list of variables that are sent to the robot for it to sent it back to the proxy.
-list_of_variables: list[VariableObject] = list()
-list_of_variables.append(VariableObject("__test__", VariableTypes.Integer, 2))
-list_of_variables.append(VariableObject("__test2__", VariableTypes.String, "f"))
 
 
 def apply_variables_to_robot(variables: list[VariableObject]):
@@ -173,6 +166,7 @@ def sanitize_dashboard_reads(response: str) -> str:
 
 
 def connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):
+    non_recurring_logger.debug(f"Connecting robot to feedback socket: {host}:{port}")
     send_command(f"socket_open(\"{host}\", {port}, {SOCKET_NAME})\n", get_interpreter_socket())
 
 
@@ -182,10 +176,23 @@ def sanitize_command(command: str) -> str:
     return command
 
 
+_extremely_randomized_command = f' FKSUYFCGSHILU213Y4387RGFBEI87 = "KFJSHEUIFYGEWIURG3" '
+
+
 def send_command(command: str, on_socket: Socket) -> str:
     """Returns the ack_response from the robot. The ack_response is a string."""
+    running_on_interpreter = on_socket == get_interpreter_socket() and "clear_interpreter()" not in command
+
+    if running_on_interpreter:
+        recurring_logger.debug(f"Modifying command: {escape_string(command)}")
+        command += _extremely_randomized_command
+
     command = sanitize_command(command)
+    recurring_logger.debug(f"Sending command to robot: {escape_string(command)}")
+
     on_socket.send(command.encode())
+    recurring_logger.debug(f"Command sent to robot: {escape_string(command)}")
+
     result = read_from_socket(on_socket)
     out = ""
     count = 1
@@ -194,6 +201,17 @@ def send_command(command: str, on_socket: Socket) -> str:
         # time_print(f"Received {count}: {escape_string(result)}")
         result = read_from_socket(on_socket)
         count += 1
+
+    if running_on_interpreter:
+        recurring_logger.debug(f"Running while loop until end: {escape_string(out)}")
+        while _extremely_randomized_command not in out:
+            out += read_from_socket(on_socket)
+            recurring_logger.debug(f"Running in while loop: {escape_string(out)}")
+
+        out = out.replace(_extremely_randomized_command, "")
+        recurring_logger.debug(f"replacing randomized with empty strings: {escape_string(out)}")
+
+    recurring_logger.debug(f"Result from robot: {escape_string(out)}")
     return escape_string(out)
 
 

@@ -1,28 +1,23 @@
-import asyncio
 import re
 
 from rtde.serialize import DataObject
 
-from RobotControl.RobotControl import get_interpreter_socket
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
-from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 
 from SocketMessages import RobotState
 from custom_logging import LogConfig
-from undo.History import History
+from undo.CommandStates import CommandStates
+from undo.History import History, CommandStateHistory
 from undo.State import State, StateType
 from undo.StateValue import StateValue
 from undo.StateVariable import CodeStateVariable
 from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder, AssignmentStrategies
-from undo.VariableRegistry import VariableRegistry, register_all_code_variables, register_all_rtde_variables
+from undo.VariableRegistry import VariableRegistry, register_all_rtde_variables
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 _variable_registry = VariableRegistry()
-
-READ_FREQUENCY_HZ = 15
-READ_PERIOD = 1 / READ_FREQUENCY_HZ
 
 
 def get_variable_registry():
@@ -60,58 +55,61 @@ def create_state_from_rtde_state(state: DataObject) -> State:
 
 
 def register_all_variables():
-    register_all_code_variables(_variable_registry)
     register_all_rtde_variables(_variable_registry)
-
-
-def register_code_variable(variable: str):
-    variable_assignment_builder = VariableAssignmentCommandBuilder(variable, AssignmentStrategies.VARIABLE_ASSIGNMENT)
-    code_variable = CodeStateVariable(variable, variable, command_for_changing=variable_assignment_builder)
-    _variable_registry.register_code_variable(code_variable)
 
 
 register_all_variables()
 
 
-def register_new_variables(command: str) -> None:
+def find_variables_in_command(command: str) -> list[tuple[str, str]]:
     # Regular expression pattern to match variable definitions excluding those within method parameters
     pattern = r'\b(\w+)\s*=\s*("[^"]*"|\S+)\b(?![^(]*\))(?![^:]*end)'
     # Use re.findall to find all matches in the string
     matches = re.findall(pattern, command)
+    list_of_matches = []
     if matches:
-        for variable, value in matches:
-            register_code_variable(variable)
+        for match in matches:
+            non_recurring_logger.debug(f"Match: {match}")
+            variable = match
+            list_of_matches.append(variable)
+    return list_of_matches
 
 
-def read_variable_state():
-    interpreter_socket = get_interpreter_socket()
-    read_commands = _variable_registry.generate_read_commands()
-    report_state = ReportState(read_commands)
-    send_command_with_recovery(report_state.dump_string_post_urify(), interpreter_socket)
+def register_code_variable(variable: str, assignment_strategy: AssignmentStrategies):
+    variable_assignment_builder = VariableAssignmentCommandBuilder(variable, assignment_strategy)
+    code_variable = CodeStateVariable(variable, variable, command_for_changing=variable_assignment_builder)
+    _variable_registry.register_code_variable(code_variable)
 
 
-async def start_read_loop():
-    try:
-        while True:
-            read_variable_state()
-            await asyncio.sleep(READ_PERIOD)
-    except Exception as e:
-        recurring_logger.error(f"Error in start_read_loop: {e}")
-        raise e
+def add_new_variable(variable: tuple[str, str]):
+    variable_name = variable[0]
+    variable_value = variable[1]
+    if variable_value.startswith('"'): # Match case removes last ", therefore we only check if starts with
+        register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT_STRING)
+    else:
+        register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT)
+
+
+def delete_variables_from_variable_registry(variables: list[tuple[str, str]]):
+    copy_of_variable_list = _variable_registry.get_code_variables().copy()
+    copy_of_variable_list = copy_of_variable_list[-len(variables):]
+
+    for variable in variables:
+        for code_variable in copy_of_variable_list:
+            if code_variable.name == variable[0]:
+                _variable_registry.remove_code_variable(code_variable)
 
 
 def create_state_from_report_state(report_state: ReportState) -> State:
     state_values: list[StateValue] = []
-
-    code_variables = get_variable_registry().get_code_variable_dict()
-
+    code_variable_dict = get_variable_registry().get_code_variable_dict()
     received_variables = report_state.variables
 
     for variable in received_variables:
         variable_name = variable.name
-        if variable_name not in code_variables:
+        if variable_name not in code_variable_dict:
             raise ValueError(f"Variable {variable_name} not found in code variables")
-        code_variable = code_variables[variable_name]
+        code_variable = code_variable_dict[variable_name]
         state_values.append(StateValue(variable.value, code_variable))
 
     if len(state_values) != len(received_variables):
@@ -128,7 +126,26 @@ def handle_report_state(reported_state: ReportState):
     history.append_state(state)
 
 
+def clean_variable_code_registry():
+    _variable_registry.clean_variable_code_registry()
+
 def handle_command_finished(command_finished: CommandFinished):
     recurring_logger.debug(f"Handling command finished: {command_finished}")
     history = History.get_history()
     history.close_command(command_finished)
+
+
+def get_command_state_history() -> CommandStateHistory:
+    return History.get_history().get_command_state_history()
+
+
+def remove_command_state_from_history(command_id: int) -> CommandStates:
+    return History.get_history().pop_command_state_from_history(command_id)
+
+
+def get_latest_active_command_state() -> CommandStates:
+    return History.get_history().get_active_command_state()
+
+
+def get_latest_code_state() -> State:
+    return History.get_history().get_latest_code_state()

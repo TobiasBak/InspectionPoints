@@ -2,14 +2,13 @@ from enum import Enum
 from socket import socket as Socket
 
 from RobotControl.RobotControl import send_command, get_safety_status, \
-    get_robot_mode, get_running
+    get_robot_mode, get_running, get_interpreter_socket
 from RobotControl.RobotSocketMessages import CommandFinished
-from RobotControl.StateRecovery import list_of_variables, States, recover_state
-from SocketMessages import CommandMessage
+from RobotControl.StateRecovery import States, recover_state
 from URIFY import URIFY_return_string
 from custom_logging import LogConfig
 from undo.History import History
-from undo.HistorySupport import register_new_variables
+from undo.HistorySupport import find_variables_in_command, add_new_variable, get_variable_registry
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -27,9 +26,10 @@ class ResponseCodes(Enum):
     DISCARD = "discard"
 
 
-def send_command_with_recovery(command: str, on_socket: Socket, command_id=None) -> str:
+def send_command_with_recovery(command: str, command_id=None) -> str:
     """Command_id is important if a message containing the error should be sent back to the frontend."""
-    result = send_command(command, on_socket)
+    result = send_command(command, get_interpreter_socket())
+    recurring_logger.debug(f"Result from robot: {result}")
 
     # TODO: Remove this responsibility from the send_command function
     out = result
@@ -43,9 +43,13 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
 
     response_code = response_array[0]
 
+    _list_of_variables = []
+
     if response_code == ResponseCodes.ACK.value:
         # If we get an ack, we need to get all the multiple variable definitions and single them out
-        register_new_variables(command)
+        _list_of_variables = find_variables_in_command(command)
+        for variable_definition in _list_of_variables:
+            add_new_variable(variable_definition)
         return out
 
     response_message = response_array[1]
@@ -66,26 +70,11 @@ def send_command_with_recovery(command: str, on_socket: Socket, command_id=None)
     return out
 
 
-def send_command_finished(command_id: int, command_message: str, on_socket: Socket):
+def send_command_finished(command_id: int, command_message: str):
     finish_command = CommandFinished(command_id, command_message)
     string_command = finish_command.dump_ur_string()
     wrapping = URIFY_return_string(string_command)
-    send_command_with_recovery(wrapping, on_socket, command_id=command_id)
-
-
-def send_user_command(command: CommandMessage, on_socket: Socket) -> str:
-    command_id = command.data.id
-    command_message = command.data.command
-    test_history(command)
-
-    response_from_command = send_command_with_recovery(command_message, on_socket, command_id=command.data.id)
-
-    send_command_finished(command_id, command_message, on_socket)
-
-    if response_from_command is None:
-        return ""
-
-    return response_from_command[:-2]  # Removes \n from the end of the response
+    send_command_with_recovery(wrapping, command_id=command_id)
 
 
 def get_state_of_robot(response_message: str) -> States | None:
@@ -99,9 +88,3 @@ def get_state_of_robot(response_message: str) -> States | None:
     if safety_status == "NORMAL" and robot_mode == "RUNNING" and running == "false":
         return States.Invalid_state
     return None
-
-
-def test_history(command):
-    history = History.get_history()
-    history.new_command(command)
-    history.debug_print()

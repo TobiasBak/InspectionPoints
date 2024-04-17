@@ -10,12 +10,34 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 class VariableRegistry:
     def __init__(self):
         self._code_variables: list[CodeStateVariable] = []
-        self._rtde_variables: list[RtdeStateVariable] = []
         self._code_variable_dict: dict[str, CodeStateVariable] = {}
+        self._rtde_variables: list[RtdeStateVariable] = []
 
     def register_code_variable(self, variable: CodeStateVariable) -> None:
+        recurring_logger.debug(f"Registering variable: {variable.name}")
         self._code_variables.append(variable)
         self._code_variable_dict[variable.name] = variable
+        recurring_logger.debug(f"Code variables: {self._code_variables}")
+
+    def remove_code_variable(self, variable: CodeStateVariable) -> None:
+        self._code_variables.remove(variable)
+        self._code_variable_dict.pop(variable.name)
+        recurring_logger.debug(f"Removed variable: {variable.name}")
+        recurring_logger.debug(f"Code variables: {self._code_variables}")
+        recurring_logger.debug(f"Code variable dict: {self._code_variable_dict}")
+        # We are checking if the variable still exists because it is possible to redefine variables
+        # Scenario of commands: {c=2 c=3 c="f"}. We then want to remove c="f" and keep c=3
+        for var in reversed(self._code_variables):
+            if var.name == variable.name:
+                self._code_variable_dict[variable.name] = var
+                break
+        recurring_logger.info(f"Code variable dict after reassignment: {self._code_variable_dict}")
+
+    def clean_variable_code_registry(self) -> None:
+        self._code_variables = []
+        self._code_variable_dict = {}
+        recurring_logger.debug(f"Cleaned code variables: {self._code_variables}")
+        recurring_logger.debug(f"Cleaned code variable dict: {self._code_variable_dict}")
 
     def register_rtde_variable(self, variable: RtdeStateVariable) -> None:
         self._rtde_variables.append(variable)
@@ -23,7 +45,7 @@ class VariableRegistry:
 
     def generate_read_commands(self) -> list[VariableObject]:
         output_list = []
-        for variable in self._code_variables:
+        for variable in self._code_variable_dict.values():
             if variable.is_code:
                 output_list.append(variable.socket_representation)
             else:
@@ -39,21 +61,11 @@ class VariableRegistry:
     def get_rtde_variables(self) -> list[RtdeStateVariable]:
         return self._rtde_variables
 
+    def __str__(self):
+        return f"Code variables: {self._code_variables}, RTDE variables: {self._rtde_variables}"
 
-def register_all_code_variables(in_registry: VariableRegistry):
-    variables = [
-        CodeStateVariable("test", "__test__",
-                          command_for_changing=
-                          VariableAssignmentCommandBuilder("__test__",
-                                                           AssignmentStrategies.VARIABLE_ASSIGNMENT)),
-        CodeStateVariable("test2", "__test2__",
-                          command_for_changing=
-                          VariableAssignmentCommandBuilder("__test2__",
-                                                           AssignmentStrategies.VARIABLE_ASSIGNMENT))
-    ]
-
-    for variable in variables:
-        in_registry.register_code_variable(variable)
+    def __repr__(self):
+        return self.__str__()
 
 
 def register_all_rtde_variables(in_registry: VariableRegistry):
