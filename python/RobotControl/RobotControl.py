@@ -192,16 +192,12 @@ def send_command_interpreter_socket(command: str) -> str:
     recurring_logger.debug(f"Sending command to robot: {escape_string(command)}")
 
     on_socket.send(command.encode())
-
     result = read_from_socket(on_socket)
 
-    recurring_logger.debug(f"Running while loop until end: {escape_string(result)}")
     while _extremely_randomized_command not in result:
         result += read_from_socket(on_socket)
-        recurring_logger.debug(f"Running in while loop: {escape_string(result)}")
 
     result = result.replace(_extremely_randomized_command, "")
-    recurring_logger.debug(f"replacing randomized with empty strings: {escape_string(result)}")
 
     recurring_logger.debug(f"Result from robot: {escape_string(result)}")
     return escape_string(result)
@@ -209,16 +205,16 @@ def send_command_interpreter_socket(command: str) -> str:
 
 def send_command_dashboard_socket(command: str) -> str:
     dashboard_socket = get_dashboard_socket()
-    dashboard_socket.send(command.encode())
-    result = read_from_socket(dashboard_socket)
-    return escape_string(result)
+    sanitized_command = sanitize_command(command)
+    dashboard_socket.send(sanitized_command.encode())
+    return read_from_socket(dashboard_socket)
 
 
 def send_command_secondary_socket(command: str) -> str:
     secondary_socket = get_secondary_socket()
-    secondary_socket.send(command.encode())
-    result = read_from_socket(secondary_socket)
-    return escape_string(result)
+    sanitized_command = sanitize_command(command)
+    secondary_socket.send(sanitized_command.encode())
+    return read_from_socket(secondary_socket)
 
 
 def read_from_socket(socket: Socket) -> str:
