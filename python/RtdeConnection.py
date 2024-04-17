@@ -104,7 +104,6 @@ def register_listener(listener: ListenerFunction):
 async def log_state(state: DataObject):
     history = History.get_history()
     rtde_state: State = create_state_from_rtde_state(state)
-    history.set_latest_rtde_state(rtde_state)
     history.append_state(rtde_state)
     recurring_logger.debug(f"State logged: {state}")
 
