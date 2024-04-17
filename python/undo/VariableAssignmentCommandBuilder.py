@@ -25,7 +25,11 @@ class VariableAssignmentCommandBuilder:
             raise ValueError(f"Unknown strategy: {self.strategy}")
 
     def _build_function_call(self, value: str) -> str:
-        return f"{self.command}({value})"
+        out = f"{self.command}({value})"
+        non_recurring_logger.debug(f"Building function call with value: {value}. This results in '{out}'")
+        return out
 
     def _build_variable_assignment(self, value: str) -> str:
-        return f"{self.command} = {value}"
+        out = f"{self.command} = {value}"
+        non_recurring_logger.debug(f"Building variable assignment with value: {value}. This results in '{out}'")
+        return out

@@ -1,9 +1,10 @@
 import {ResponseMessage, ResponseMessageType} from "./responseMessageDefinitions";
 import {getChildWithClass, getCommandEntry} from "../Toolbox/DomTools";
-import {emitCommandFinishedEvent} from "./MessageFinishedHandler";
 
 const errorClass = "error-response"
 const successClass = "success-response"
+
+const frontend_text_for_ack_success = "Command accepted by robot"
 
 export function handleAckResponseMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.AckResponse) {
@@ -22,17 +23,16 @@ export function handleAckResponseMessage(message: ResponseMessage): void {
     const responseParagraph: HTMLParagraphElement = document.createElement('p');
     responseParagraph.classList.add("response");
 
-    const classname = (message.data.status === 'Ok') ? successClass : errorClass
-    responseParagraph.classList.add(classname);
+    if (message.data.status !== 'Ok') {
+        const messageParts = message.data.message.split(':')
+        const statusType = `<span>${messageParts.shift()}:</span>`
+        responseParagraph.classList.add(errorClass);
 
-    let messageParts = message.data.message.split(':')
-    let statusType = messageParts.shift()
-    let newMessage = messageParts.join(':')
+        responseParagraph.innerHTML = statusType + messageParts.join(':');
+    } else {
+        responseParagraph.innerHTML = frontend_text_for_ack_success
+    }
 
-    statusType = `<span>${statusType}:</span>`
-    newMessage = statusType + newMessage
-
-    responseParagraph.innerHTML = newMessage;
 
     responseWrapper.appendChild(responseParagraph);
 

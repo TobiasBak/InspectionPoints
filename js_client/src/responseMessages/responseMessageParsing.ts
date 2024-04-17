@@ -105,8 +105,7 @@ function parseCommandFinishedMessage(message: any): CommandFinishedMessage {
         type: ResponseMessageType.CommandFinished,
         data: {
             id: noneGuard(message.data.id),
-            command: noneGuard(message.data.command),
-            variables: noneGuard(message.data.variables)
+            command: noneGuard(message.data.command)
         }
     };
 }

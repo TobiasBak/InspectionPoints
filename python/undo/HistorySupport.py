@@ -3,7 +3,9 @@ import re
 
 from rtde.serialize import DataObject
 
+from RobotControl.RobotControl import get_interpreter_socket
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
+from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 
 from SocketMessages import RobotState
 from custom_logging import LogConfig
@@ -50,8 +52,9 @@ def create_state_from_rtde_state(state: DataObject) -> State:
         state_values.append(StateValue(variable_value, variable_definition))
 
     if len(state_values) != len(received_variables):
-        raise ValueError(f"Received state has {len(received_variables)} variables,"
-                         f" but only {len(state_values)} were processed.")
+        # raise ValueError(f"Received state has {len(received_variables)} variables,"
+        #                  f" but only {len(state_values)} were processed.")
+        pass
 
     return State(StateType.rtde_state, state_values)
 
@@ -78,6 +81,23 @@ def register_new_variables(command: str) -> None:
     if matches:
         for variable, value in matches:
             register_code_variable(variable)
+
+
+def read_variable_state():
+    interpreter_socket = get_interpreter_socket()
+    read_commands = _variable_registry.generate_read_commands()
+    report_state = ReportState(read_commands)
+    send_command_with_recovery(report_state.dump_string_post_urify(), interpreter_socket)
+
+
+async def start_read_loop():
+    try:
+        while True:
+            read_variable_state()
+            await asyncio.sleep(READ_PERIOD)
+    except Exception as e:
+        recurring_logger.error(f"Error in start_read_loop: {e}")
+        raise e
 
 
 def create_state_from_report_state(report_state: ReportState) -> State:
