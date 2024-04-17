@@ -201,6 +201,7 @@ def send_command(command: str, on_socket: Socket) -> str:
         recurring_logger.debug(f"Running while loop until end: {escape_string(out)}")
         while _extremely_randomized_command not in out:
             out += read_from_socket(on_socket)
+            recurring_logger.debug(f"Running in while loop: {escape_string(out)}")
 
         out = out.replace(_extremely_randomized_command, "")
         recurring_logger.debug(f"replacing randomized with empty strings: {escape_string(out)}")
