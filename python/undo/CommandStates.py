@@ -13,7 +13,7 @@ class CommandStates:
         self.is_closed = False
         self.previous_states: dict[StateType, tuple[int, State]] = {}
 
-    def get_user_command(self):
+    def get_user_command(self) -> CommandMessage:
         return self.user_command
 
     def append_state(self, state: State):

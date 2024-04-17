@@ -61,7 +61,7 @@ def register_all_variables():
 register_all_variables()
 
 
-def find_variable_definition_in_command(command: str) -> list[tuple[str, str]]:
+def find_variables_in_command(command: str) -> list[tuple[str, str]]:
     # Regular expression pattern to match variable definitions excluding those within method parameters
     pattern = r'\b(\w+)\s*=\s*("[^"]*"|\S+)\b(?![^(]*\))(?![^:]*end)'
     # Use re.findall to find all matches in the string
@@ -90,7 +90,7 @@ def add_new_variable(variable: tuple[str, str]):
         register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT)
 
 
-def delete_latest_new_variables(variables: list[tuple[str, str]]):
+def delete_variables_from_variable_registry(variables: list[tuple[str, str]]):
     copy_of_variable_list = _variable_registry.get_code_variables().copy()
     copy_of_variable_list = copy_of_variable_list[-len(variables):]
 

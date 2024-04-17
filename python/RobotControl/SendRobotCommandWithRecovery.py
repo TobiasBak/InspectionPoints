@@ -7,7 +7,7 @@ from RobotControl.StateRecovery import States, recover_state
 from URIFY import URIFY_return_string
 from custom_logging import LogConfig
 from undo.History import History
-from undo.HistorySupport import find_variable_definition_in_command, add_new_variable, get_variable_registry
+from undo.HistorySupport import find_variables_in_command, add_new_variable, get_variable_registry
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -42,12 +42,12 @@ def send_command_with_recovery(command: str, command_id=None) -> str:
 
     response_code = response_array[0]
 
-    _variable_definitions = []
+    _list_of_variables = []
 
     if response_code == ResponseCodes.ACK.value:
         # If we get an ack, we need to get all the multiple variable definitions and single them out
-        _variable_definitions = find_variable_definition_in_command(command)
-        for variable_definition in _variable_definitions:
+        _list_of_variables = find_variables_in_command(command)
+        for variable_definition in _list_of_variables:
             add_new_variable(variable_definition)
         return out
 
