@@ -38,11 +38,11 @@ class History(object):
             recurring_logger.debug("There is no active command state.")
             return
             # raise ValueError("There is no active command state.")
+        self.active_command_state.append_state(state)
         if state.state_type == StateType.code_state:
             self.latest_code_state = state
         elif state.state_type == StateType.rtde_state:
             self.latest_rtde_state = state
-        self.active_command_state.append_state(state)
         recurring_logger.debug(f"we made it out from trying to append to the active command state.")
 
     def pop_command_state_from_history(self, command_id: int) -> CommandStates:
@@ -83,9 +83,14 @@ class History(object):
             f"New command added to history: {command.get_id()} length: {len(self.command_state_history)}")
 
     def _add_pre_states(self, command_id: int) -> None:
-        new_command_state = self.command_state_history[command_id]
-        new_command_state.append_state(self.latest_code_state)
-        new_command_state.append_state(self.latest_rtde_state)
+        if self.active_command_state.get_user_command().get_id() != command_id:
+            recurring_logger.error(f"Active command id {self.active_command_state.get_user_command().get_id()} "
+                                      f"does not match the provided command id {command_id}")
+            raise ValueError(f"Active command id {self.active_command_state.get_user_command().get_id()} "
+                             f"does not match the provided command id {command_id}")
+
+        self.append_state(self.latest_code_state)
+        self.append_state(self.latest_rtde_state)
 
     def close_command(self, command_finished: CommandFinished) -> None:
         if self.active_command_state is None:
