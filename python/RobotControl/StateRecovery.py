@@ -28,13 +28,13 @@ def recover_state(state: States, command: str, command_id: int | None):
             recover_from_protective_stop(command, command_id)
         case _:
             recurring_logger.error(f"Unknown state sent to recover_state functionality: {state}")
-            raise ValueError(f"Unknown state send to recover_state functionality: {state}")
+            raise ValueError(f"Unknown state sent to recover_state functionality: {state}")
 
 
 def recover_from_invalid_state(command: str, command_id: int | None):
     recurring_logger.warning(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
     _start_interpreter_mode_and_connect_to_backend_socket()
-    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
+    __recover_latest_code_state()
     if command_id is not None:
         # Todo: We need ssh to see the logs for optimal feedback
 
@@ -55,7 +55,7 @@ def recover_from_invalid_state(command: str, command_id: int | None):
 def recover_from_too_many_commands(command: str, command_id: int | None):
     recurring_logger.debug(f"\t\t\tToo many commands detected. Attempting to fix the state.")
     clear_interpreter_mode()
-    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
+    __recover_latest_code_state()
     result = send_command(command, get_interpreter_socket())  # Resend command since it was lost.
     if command_id is not None:
         ack_response = AckResponse(command_id, command, result)
@@ -72,5 +72,11 @@ def recover_from_protective_stop(command: str, command_id: int | None):
 
     unlock_protective_stop()
     _start_interpreter_mode_and_connect_to_backend_socket()
-    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
+    __recover_latest_code_state()
     send_command(command, get_interpreter_socket())
+
+
+def __recover_latest_code_state() -> None:
+    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
+    recurring_logger.debug(f"Recovering latest code state: {get_latest_code_state()}")
+    
