@@ -41,7 +41,7 @@ class CodeStateVariable(StateVariable):
         self.socket_representation = VariableObject(name, VariableTypes.String, command_for_reading)
 
     def __str__(self):
-        return f"{self.name} "
+        return f"Codevariable {self.name} with command for reading: {self.command_for_reading}"
 
     def __repr__(self):
         return self.__str__()
