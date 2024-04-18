@@ -39,10 +39,10 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
             handleCommandFinishedMessage(message);
             break;
         case ResponseMessageType.UndoResponse:
-            handleReportStateMessage(message);
+            console.log('undo response: ', message);
             break;
         case ResponseMessageType.ReportState:
-            console.log('Report state: ', message);
+            handleReportStateMessage(message);
             break;
         default:
             console.warn('invalid message type: ', message);
