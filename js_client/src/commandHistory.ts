@@ -1,6 +1,7 @@
 import {EventList} from "./interaction/EventList";
 import {highlightCommandIntoElement} from "./SyntaxHighlighting/hast-starry-night";
 import {getCommandEntry} from "./Toolbox/DomTools";
+import {createExecutingFeedbackSpinner} from "./interaction/robot_executing_feedback";
 
 document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
     createCommandContainer(e.detail.text, e.detail.id);
@@ -19,8 +20,8 @@ function createCommandContainer(text: string, id: number): void {
     const contentWrapper: HTMLDivElement = document.createElement('div');
     contentWrapper.classList.add('contentWrapper', 'column70');
 
-    const buttonsWrapper: HTMLDivElement = document.createElement('div');
-    buttonsWrapper.classList.add('buttonsWrapper', 'column20', 'center');
+    const statusWrapper: HTMLDivElement = document.createElement('div');
+    statusWrapper.classList.add('statusWrapper', 'column20', 'center');
 
     const commandWrapper: HTMLDivElement = document.createElement('div');
     commandWrapper.classList.add('commandWrapper');
@@ -29,24 +30,18 @@ function createCommandContainer(text: string, id: number): void {
     responseWrapper.classList.add('responseWrapper');
 
     const idText: HTMLParagraphElement = document.createElement('p');
-    const undoButton: HTMLButtonElement = document.createElement('button');
-    undoButton.onclick = function (): void {
-        document.dispatchEvent(new CustomEvent(EventList.UndoEvent, {detail: {id: id}}));
-    }
-
 
     idText.textContent = id.toString();
-    undoButton.textContent = 'Undo up to here';
 
     idWrapper.appendChild(idText);
-    buttonsWrapper.appendChild(undoButton);
+    statusWrapper.appendChild(createExecutingFeedbackSpinner());
 
     contentWrapper.appendChild(commandWrapper);
     contentWrapper.appendChild(responseWrapper);
 
     wrapperElement.appendChild(idWrapper);
     wrapperElement.appendChild(contentWrapper);
-    wrapperElement.appendChild(buttonsWrapper);
+    wrapperElement.appendChild(statusWrapper);
 
     highlightCommandIntoElement(text, commandWrapper);
 
