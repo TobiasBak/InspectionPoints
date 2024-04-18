@@ -170,6 +170,26 @@ p {
 }
 
 
+/* Spinner animation */
+.spinner {
+    display: inline-block;
+    height: 2.2em;
+    width: 2.2em;
+    border: .3em solid var(--spinner-color);
+    border-radius: 50%;
+    border-top-color: var(--text-on-background-color);
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
+
+
 /* Override Bootstrap */
 .dropdown-item {
     cursor: pointer;
