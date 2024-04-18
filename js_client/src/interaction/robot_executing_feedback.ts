@@ -2,8 +2,6 @@ import {EventList} from "./EventList";
 import {getChildWithClass, getCommandEntry} from "../Toolbox/DomTools";
 
 document.addEventListener(EventList.CommandFinished, function (e: CustomEvent): void {
-    console.log('command finished, stopping executing feedback. Event received from document', e.detail);
-    console.log('command entered, starting executing feedback. Event received from document id', e.detail.id);
     stopRobotExecutingFeedback(e.detail.id);
 })
 
