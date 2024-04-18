@@ -152,6 +152,11 @@ p {
     background-color: var(--undone-color);
 }
 
+.undone-feedback {
+    color: var(--text-on-background-color);
+    padding: .5em;
+}
+
 #stateVariablePopup {
     width: 100%;
     cursor: pointer;
