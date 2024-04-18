@@ -6,5 +6,4 @@ export function handleReportStateMessage(message: ResponseMessage): void {
         console.log('not a ReportState message: ', message);
         return;
     }
-    console.log('ReportState: ', message);
 }
