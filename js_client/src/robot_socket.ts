@@ -7,6 +7,7 @@ import {EventList} from "./interaction/EventList";
 import {createCommandMessage, createUndoMessage} from "./userMessages/userMessageFactory";
 import {UserMessage} from "./userMessages/userMessageDefinitions";
 import {handleCommandFinishedMessage} from "./responseMessages/MessageFinishedHandler";
+import {handleReportStateMessage} from "./responseMessages/ReportStateMessageHandler";
 
 function get_socket(ip: string, port: number) {
     const out = new WebSocket(
@@ -38,7 +39,10 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
             handleCommandFinishedMessage(message);
             break;
         case ResponseMessageType.UndoResponse:
-            console.log('Undo response: ', message);
+            handleReportStateMessage(message);
+            break;
+        case ResponseMessageType.ReportState:
+            console.log('Report state: ', message);
             break;
         default:
             console.warn('invalid message type: ', message);

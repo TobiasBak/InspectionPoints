@@ -237,6 +237,7 @@ def message_from_robot_received(message: bytes):
             send_to_all_web_clients(str(robot_message))
         case ReportState():
             handle_report_state(robot_message)
+            send_to_all_web_clients(str(robot_message))
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
 
