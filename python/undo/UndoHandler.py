@@ -1,4 +1,5 @@
-from RobotControl.RobotControl import sanitize_command, clear_interpreter_mode
+from RobotControl.ClearingInterpreter import queued_clear_interpreter
+from RobotControl.RobotControl import sanitize_command
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import UndoMessage, UndoResponseMessage, UndoStatus
 from custom_logging import LogConfig
@@ -59,7 +60,7 @@ def handle_undo_request(command_id: int) -> None:
     command_states_keys = get_reversed_list_of_command_keys(command_id)
     command_states = find_command_states_to_undo(command_states_keys)
     stop_read_report_state()
-    clear_interpreter_mode()
+    queued_clear_interpreter()
     undo_command_states(command_states)
     remove_undone_command_states(command_states_keys)
     start_read_report_state()
