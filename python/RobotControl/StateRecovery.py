@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 from RobotControl.ClearingInterpreter import clear_is_pending, call_and_clear_callback, queued_clear_interpreter
-from RobotControl.RobotControl import send_command, unlock_protective_stop, \
+from RobotControl.RobotControl import send_command_interpreter_socket, unlock_protective_stop, \
     _start_interpreter_mode_and_connect_to_backend_socket, get_interpreter_socket
 from RobotControl.RobotSocketMessages import InterpreterCleared
 from SocketMessages import AckResponse
@@ -51,7 +51,7 @@ def recover_from_invalid_state(command: str, command_id: int | None):
                                    f"2. Reassigning variable to new type.\n"
                                    f"3. Error occurred in the program. Did you write a proper command?\n")
         websocket_notifier.notify_observers(str(ack_response))
-    send_command(command, get_interpreter_socket())
+    send_command_interpreter_socket(command)
 
 
 
@@ -88,9 +88,9 @@ def recover_from_protective_stop(command: str, command_id: int | None):
     unlock_protective_stop()
     _start_interpreter_mode_and_connect_to_backend_socket()
     __recover_latest_code_state()
-    send_command(command, get_interpreter_socket())
+    send_command_interpreter_socket(command)
 
 
 def __recover_latest_code_state() -> None:
-    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
+    send_command_interpreter_socket(get_latest_code_state().get_apply_commands())
     recurring_logger.debug(f"Recovering latest code state: {get_latest_code_state()}")

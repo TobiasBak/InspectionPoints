@@ -1,9 +1,6 @@
-from RobotControl.RobotControl import send_command, get_interpreter_socket
-from socket import socket as Socket
-
+from RobotControl.RobotControl import send_command_interpreter_socket
 
 def test():
-    socket: Socket = get_interpreter_socket()
 
     # Thread move kill
     # commands = [
@@ -27,7 +24,7 @@ def test():
     ]
 
     for command in commands:
-        send_command(command, socket)
+        send_command_interpreter_socket(command)
 
 if __name__ == '__main__':
     test()
