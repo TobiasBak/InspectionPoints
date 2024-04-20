@@ -1,12 +1,14 @@
 from enum import Enum, auto
 
-from RobotControl.RobotControl import send_command, clear_interpreter_mode, \
-    unlock_protective_stop, _start_interpreter_mode_and_connect_to_backend_socket, get_interpreter_socket
+from RobotControl.ClearingInterpreter import clear_is_pending, call_and_clear_callback, queued_clear_interpreter
+from RobotControl.RobotControl import send_command_interpreter_socket, unlock_protective_stop, \
+    _start_interpreter_mode_and_connect_to_backend_socket, get_interpreter_socket
+from RobotControl.RobotSocketMessages import InterpreterCleared
 from SocketMessages import AckResponse
 from WebsocketNotifier import websocket_notifier
 from custom_logging import LogConfig
 from undo.HistorySupport import get_latest_code_state, get_latest_active_command_state, \
-    find_variables_in_command, delete_variables_from_variable_registry, get_variable_registry
+    find_variables_in_command, delete_variables_from_variable_registry
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -49,17 +51,30 @@ def recover_from_invalid_state(command: str, command_id: int | None):
                                    f"2. Reassigning variable to new type.\n"
                                    f"3. Error occurred in the program. Did you write a proper command?\n")
         websocket_notifier.notify_observers(str(ack_response))
-    send_command(command, get_interpreter_socket())
+    send_command_interpreter_socket(command)
+
+
 
 
 def recover_from_too_many_commands(command: str, command_id: int | None):
-    recurring_logger.debug(f"\t\t\tToo many commands detected. Attempting to fix the state.")
-    clear_interpreter_mode()
-    __recover_latest_code_state()
-    result = send_command(command, get_interpreter_socket())  # Resend command since it was lost.
-    if command_id is not None:
-        ack_response = AckResponse(command_id, command, result)
-        websocket_notifier.notify_observers(str(ack_response))
+    if clear_is_pending():
+        recurring_logger.debug(f"\t\t\tClear command already pending.")
+        return
+    recurring_logger.info(f"\t\t\tToo many commands detected. Will fix the state.")
+
+    def callback() -> None:
+        __recover_latest_code_state()
+        result = send_command(command, get_interpreter_socket())  # Resend command since it was lost.
+        if command_id is not None:
+            ack_response = AckResponse(command_id, command, result)
+            websocket_notifier.notify_observers(str(ack_response))
+
+    queued_clear_interpreter(callback)
+
+
+def handle_cleared_interpreter(robot_message: InterpreterCleared) -> None:
+    non_recurring_logger.info(f"Interpreter cleared: {robot_message}")
+    call_and_clear_callback(robot_message.cleared_id)
 
 
 def recover_from_protective_stop(command: str, command_id: int | None):
@@ -73,10 +88,9 @@ def recover_from_protective_stop(command: str, command_id: int | None):
     unlock_protective_stop()
     _start_interpreter_mode_and_connect_to_backend_socket()
     __recover_latest_code_state()
-    send_command(command, get_interpreter_socket())
+    send_command_interpreter_socket(command)
 
 
 def __recover_latest_code_state() -> None:
-    send_command(get_latest_code_state().get_apply_commands(), get_interpreter_socket())
+    send_command_interpreter_socket(get_latest_code_state().get_apply_commands())
     recurring_logger.debug(f"Recovering latest code state: {get_latest_code_state()}")
-    

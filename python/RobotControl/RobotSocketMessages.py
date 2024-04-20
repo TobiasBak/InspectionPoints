@@ -13,6 +13,7 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 class RobotSocketMessageTypes(Enum):
     Command_finished = auto()
     Report_state = auto()
+    Interpreter_cleared = auto()
 
 
 class VariableObject:
@@ -101,6 +102,21 @@ class ReportState:
         return URIFY_return_string(self.dump_string_pre_urify())
 
 
+class InterpreterCleared:
+    def __init__(self, cleared_id: int):
+        self.type = RobotSocketMessageTypes.Interpreter_cleared
+        self.cleared_id = cleared_id
+
+    def __str__(self):
+        return json.dumps(self.dump())
+
+    def dump(self):
+        return {
+            "type": self.type.name,
+            "cleared_id": self.cleared_id
+        }
+
+
 def parse_list_to_variable_objects(variable_list: list[dict]) -> list[VariableObject]:
     out: list[VariableObject] = list()
     for variable in variable_list:
@@ -116,7 +132,7 @@ def parse_list_to_variable_objects(variable_list: list[dict]) -> list[VariableOb
     return out
 
 
-def parse_robot_message(message: str) -> CommandFinished | ReportState:
+def parse_robot_message(message: str) -> CommandFinished | ReportState | InterpreterCleared:
     parsed = json.loads(message)
 
     match parsed:
@@ -134,5 +150,10 @@ def parse_robot_message(message: str) -> CommandFinished | ReportState:
             }
         }:
             return CommandFinished(id, command)
+        case {
+            'type': RobotSocketMessageTypes.Interpreter_cleared.name,
+            'cleared_id': cleared_id
+        }:
+            return InterpreterCleared(cleared_id)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage type: {parsed}")
