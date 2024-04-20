@@ -94,7 +94,7 @@ def apply_variables_to_robot(variables: list[VariableObject]):
 def _start_interpreter_mode_and_connect_to_backend_socket():
     start_interpreter_mode()
     sleep(1)  # Wait for the interpreter to start
-    connect_robot_to_feedback_socket()
+    _connect_robot_to_feedback_socket()
 
     # Ensure that non-user inputted commands are not sent to the websocket.
     # We sleep, because the message has to be processed by the robot first.
@@ -108,9 +108,9 @@ def clear_interpreter_mode(clear_id: int = None) -> None:
     """
     :param clear_id: If no id is provided, the feedback message will not be generated.
     """
-    response = send_command("clear_interpreter()", get_interpreter_socket())
+    response = send_command_interpreter_socket("clear_interpreter()")
     cleared_feedback_request = InterpreterCleared(clear_id)
-    feedback_response = send_command(URIFY.URIFY_return_string(str(cleared_feedback_request)), get_interpreter_socket())
+    feedback_response = send_command_interpreter_socket(URIFY.URIFY_return_string(str(cleared_feedback_request)))
 
     recurring_logger.info(f"Clear command sent, response: {response} feedback: {feedback_response}")
 

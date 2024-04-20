@@ -1,7 +1,6 @@
 import asyncio
 from typing import Callable
 
-from RobotControl.RobotControl import get_interpreter_socket
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from RobotControl.RobotSocketMessages import ReportState
 from custom_logging import LogConfig
