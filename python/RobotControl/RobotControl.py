@@ -6,7 +6,8 @@ from typing import Callable
 
 import select
 
-from RobotControl.RobotSocketMessages import VariableObject
+import URIFY
+from RobotControl.RobotSocketMessages import VariableObject, InterpreterCleared
 from RobotControl.RobotSocketVariableTypes import VariableTypes
 from ToolBox import escape_string
 from URIFY import SOCKET_NAME
@@ -92,10 +93,8 @@ def apply_variables_to_robot(variables: list[VariableObject]):
 
 def _start_interpreter_mode_and_connect_to_backend_socket():
     start_interpreter_mode()
-    # Todo: For some reason the robot needs a sleep here, otherwise open_socket does not work.
-    #  I thought the parameters on interpreter_mode would fix this. (clear_queue_on_enter, clear_on_end)
-    sleep(1)
-    _connect_robot_to_feedback_socket()
+    sleep(1)  # Wait for the interpreter to start
+    connect_robot_to_feedback_socket()
 
     # Ensure that non-user inputted commands are not sent to the websocket.
     # We sleep, because the message has to be processed by the robot first.
@@ -105,9 +104,15 @@ def _start_interpreter_mode_and_connect_to_backend_socket():
     non_recurring_logger.debug(f"Delayed read: {escape_string(delayed_read)}")
 
 
-def clear_interpreter_mode():
-    send_command_interpreter_socket("clear_interpreter()")
-    recurring_logger.info("Clear command sent")
+def clear_interpreter_mode(clear_id: int = None) -> None:
+    """
+    :param clear_id: If no id is provided, the feedback message will not be generated.
+    """
+    response = send_command("clear_interpreter()", get_interpreter_socket())
+    cleared_feedback_request = InterpreterCleared(clear_id)
+    feedback_response = send_command(URIFY.URIFY_return_string(str(cleared_feedback_request)), get_interpreter_socket())
+
+    recurring_logger.info(f"Clear command sent, response: {response} feedback: {feedback_response}")
 
 
 def _power_on_robot():

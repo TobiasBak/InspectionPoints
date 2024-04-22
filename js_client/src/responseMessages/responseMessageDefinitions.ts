@@ -5,6 +5,7 @@ export enum ResponseMessageType {
     AckResponse = 'Ack_response',
     Feedback = 'Feedback',
     RobotState = 'Robot_state',
+    ReportState = 'Report_state',
     CommandFinished = 'Command_finished',
     UndoResponse = 'Undo_response'
 }
@@ -21,7 +22,7 @@ export enum UndoStatus {
     CommandAlreadyUndone = 'CommandAlreadyUndone'
 }
 
-export type ResponseMessage = AckResponseMessage | FeedbackMessage | RobotStateMessage | CommandFinishedMessage | UndoResponseMessage
+export type ResponseMessage = AckResponseMessage | FeedbackMessage | RobotStateMessage | ReportStateMessage | CommandFinishedMessage | UndoResponseMessage
 
 export type UndoResponseMessageData = {
     id: number,
@@ -55,6 +56,14 @@ export type RobotStateMessageData = {
     payload: number
 }
 
+export type VariableType = 'String' | 'Integer' | 'Float' | 'Boolean' | 'List' | 'Pose'
+
+export type VariableObject = {
+    name: string,
+    type: VariableType,
+    value: string | number | boolean | any[] | [number, number, number, number, number, number]
+}
+
 export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation
 
 export type CommandFinishedMessageData = {
@@ -85,4 +94,9 @@ export type RobotStateMessage = {
 export type CommandFinishedMessage = {
     type: ResponseMessageType.CommandFinished,
     data: CommandFinishedMessageData
+}
+
+export type ReportStateMessage = {
+    type: ResponseMessageType.ReportState,
+    data: VariableObject[]
 }
