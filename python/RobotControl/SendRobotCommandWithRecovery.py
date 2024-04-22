@@ -1,5 +1,5 @@
+import time
 from enum import Enum
-from socket import socket as Socket
 
 from RobotControl.RobotControl import send_command_interpreter_socket, get_safety_status, \
     get_robot_mode, get_running
@@ -25,7 +25,7 @@ class ResponseCodes(Enum):
     DISCARD = "discard"
 
 
-def send_command_with_recovery(command: str, command_id=None) -> str:
+def send_command_with_recovery(command: str, command_id) -> str:
     """Command_id is important if a message containing the error should be sent back to the frontend."""
     result = send_command_interpreter_socket(command)
     recurring_logger.debug(f"Result from robot: {result}")
@@ -58,6 +58,7 @@ def send_command_with_recovery(command: str, command_id=None) -> str:
         return out
 
     # We are in an invalid state, find out which one and recover
+    time.sleep(0.1)  # So the robot has time to react to the command
     robot_state: States = get_state_of_robot(response_message)
     if robot_state is not None:
         recurring_logger.info(f"\t\tRobot state before fixing: {robot_state}")

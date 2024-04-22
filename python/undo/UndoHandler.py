@@ -46,7 +46,7 @@ def undo_command_states(command_states: list[CommandStates]) -> None:
         new_string = sanitize_command(command_undo_string)
         recurring_logger.debug(f"Undoing command: {new_string}")
         clean_variable_code_registry()
-        send_command_with_recovery(command_undo_string)
+        send_command_with_recovery(command_undo_string, None)
 
 
 def remove_undone_command_states(command_ids: list[int]) -> None:

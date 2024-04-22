@@ -77,6 +77,7 @@ def start_robot():
     non_recurring_logger.info("Brake release robot")
     _brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
+    delayed_read = read_from_socket(_get_dashboard_socket())
     _start_interpreter_mode_and_connect_to_backend_socket()
 
 
@@ -157,7 +158,7 @@ def get_value_from_dashboard(command: str):
 def sanitize_dashboard_reads(response: str) -> str:
     message_parts = response.split(":")
     message = message_parts[-1]
-    return message.replace('\\n', '').replace(' ', '')
+    return message.replace('\\n', '').replace(' ', '').replace('\n', '')
 
 
 def _connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):

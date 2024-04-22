@@ -10,7 +10,7 @@ def send_user_command(command: CommandMessage) -> str:
     command_message = command.data.command
     add_command_to_history(command)
 
-    response_from_command = send_command_with_recovery(command_message, command_id=command.data.id)
+    response_from_command = send_command_with_recovery(command_message, command_id)
 
     send_command_finished(command_id, command_message)
 
