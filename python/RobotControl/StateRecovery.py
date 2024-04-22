@@ -2,7 +2,7 @@ from enum import Enum, auto
 
 from RobotControl.ClearingInterpreter import clear_is_pending, call_and_clear_callback, queued_clear_interpreter
 from RobotControl.RobotControl import send_command_interpreter_socket, unlock_protective_stop, \
-    _start_interpreter_mode_and_connect_to_backend_socket, get_interpreter_socket
+    _start_interpreter_mode_and_connect_to_backend_socket
 from RobotControl.RobotSocketMessages import InterpreterCleared
 from SocketMessages import AckResponse
 from WebsocketNotifier import websocket_notifier
@@ -54,8 +54,6 @@ def recover_from_invalid_state(command: str, command_id: int | None):
     send_command_interpreter_socket(command)
 
 
-
-
 def recover_from_too_many_commands(command: str, command_id: int | None):
     if clear_is_pending():
         recurring_logger.debug(f"\t\t\tClear command already pending.")
@@ -64,7 +62,7 @@ def recover_from_too_many_commands(command: str, command_id: int | None):
 
     def callback() -> None:
         __recover_latest_code_state()
-        result = send_command(command, get_interpreter_socket())  # Resend command since it was lost.
+        result = send_command_interpreter_socket(command)  # Resend command since it was lost.
         if command_id is not None:
             ack_response = AckResponse(command_id, command, result)
             websocket_notifier.notify_observers(str(ack_response))

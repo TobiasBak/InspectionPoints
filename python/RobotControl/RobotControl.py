@@ -77,6 +77,7 @@ def start_robot():
     non_recurring_logger.info("Brake release robot")
     _brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
+    delayed_read = read_from_socket(_get_dashboard_socket())
     _start_interpreter_mode_and_connect_to_backend_socket()
 
 
@@ -94,7 +95,7 @@ def apply_variables_to_robot(variables: list[VariableObject]):
 def _start_interpreter_mode_and_connect_to_backend_socket():
     start_interpreter_mode()
     sleep(1)  # Wait for the interpreter to start
-    connect_robot_to_feedback_socket()
+    _connect_robot_to_feedback_socket()
 
     # Ensure that non-user inputted commands are not sent to the websocket.
     # We sleep, because the message has to be processed by the robot first.
@@ -108,9 +109,9 @@ def clear_interpreter_mode(clear_id: int = None) -> None:
     """
     :param clear_id: If no id is provided, the feedback message will not be generated.
     """
-    response = send_command("clear_interpreter()", get_interpreter_socket())
+    response = send_command_interpreter_socket("clear_interpreter()")
     cleared_feedback_request = InterpreterCleared(clear_id)
-    feedback_response = send_command(URIFY.URIFY_return_string(str(cleared_feedback_request)), get_interpreter_socket())
+    feedback_response = send_command_interpreter_socket(URIFY.URIFY_return_string(str(cleared_feedback_request)))
 
     recurring_logger.info(f"Clear command sent, response: {response} feedback: {feedback_response}")
 
@@ -157,7 +158,7 @@ def get_value_from_dashboard(command: str):
 def sanitize_dashboard_reads(response: str) -> str:
     message_parts = response.split(":")
     message = message_parts[-1]
-    return message.replace('\\n', '').replace(' ', '')
+    return message.replace('\\n', '').replace(' ', '').replace('\n', '')
 
 
 def _connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):
