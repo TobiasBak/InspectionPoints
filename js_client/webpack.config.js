@@ -13,6 +13,7 @@ module.exports = {
         robot_3d_plot: './src/robot3dplot.png',
         dark_mode: './src/Toolbox/auto_dark_mode.ts',
         undo_handler: './src/undoEventHandler.ts',
+        executing_feedback: './src/interaction/robot_executing_feedback.ts',
     },
     devtool: 'inline-source-map',
     devServer: {
