@@ -1,5 +1,4 @@
 import {
-    ReportStateMessage,
     ResponseMessage,
     ResponseMessageType,
     stateMessageTypes, VariableObject
