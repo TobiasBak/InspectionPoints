@@ -1,5 +1,16 @@
 import {EventList} from "./EventList";
 import {getChildWithClass, getCommandEntry} from "../Toolbox/DomTools";
+import {createUndoButton} from "../undoEventHandler";
+import {statusWrapperClass} from "../commandHistory";
+
+const spinnerWrapperClass: string = "spinnerWrapper"
+
+document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
+    const commandEntry: HTMLElement = getCommandEntry(e.detail.id);
+    const statusWrapper: HTMLElement = getChildWithClass(commandEntry, statusWrapperClass);
+    if(!statusWrapper) return;
+    statusWrapper.appendChild(createExecutingFeedbackSpinner());
+});
 
 document.addEventListener(EventList.CommandFinished, function (e: CustomEvent): void {
     stopRobotExecutingFeedback(e.detail.id);
@@ -7,19 +18,13 @@ document.addEventListener(EventList.CommandFinished, function (e: CustomEvent): 
 
 function stopRobotExecutingFeedback(id: number): void {
     const commandEntry: HTMLElement = getCommandEntry(id);
-    const statusWrapper: HTMLElement = getChildWithClass(commandEntry, 'statusWrapper');
+    const statusWrapper: HTMLElement = getChildWithClass(commandEntry, statusWrapperClass);
     const spinnerWrapper: HTMLElement = getChildWithClass(statusWrapper, spinnerWrapperClass)
-    const undoButton: HTMLButtonElement = document.createElement('button');
-    undoButton.onclick = function (): void {
-        document.dispatchEvent(new CustomEvent(EventList.UndoEvent, {detail: {id: id}}));
-    }
-    undoButton.textContent = 'Undo up to here';
+    const undoButton: HTMLButtonElement = createUndoButton(id);
 
     spinnerWrapper.remove();
     statusWrapper.appendChild(undoButton);
 }
-
-const spinnerWrapperClass: string = "spinnerWrapper"
 
 export function createExecutingFeedbackSpinner(): HTMLDivElement {
     const wrapper: HTMLDivElement = document.createElement('div');

@@ -1,10 +1,10 @@
 import {
     AckResponseMessage, CommandFinishedMessage,
-    FeedbackMessage,
+    FeedbackMessage, ReportStateMessage,
     ResponseMessage,
     ResponseMessageType,
     RobotStateMessage,
-    Status, UndoResponseMessage, UndoStatus
+    Status, UndoResponseMessage, UndoStatus, VariableObject
 } from "./responseMessageDefinitions";
 
 export function parseMessage(message: string): ResponseMessage {
@@ -18,6 +18,9 @@ export function parseMessage(message: string): ResponseMessage {
             return parseFeedbackMessage(parsed);
         case "Robot_state":
             return parseRobotStateMessage(parsed);
+        case "Report_state":
+            return parseReportStateMessage(parsed);
+            break;
         case "Command_finished":
             return parseCommandFinishedMessage(parsed);
         case "Undo_response":
@@ -96,6 +99,23 @@ function parseRobotStateMessage(message: any): RobotStateMessage {
         }
     };
 }
+
+function parseReportStateMessage(message: any): ReportStateMessage {
+    if (message.type !== "Report_state") {
+        throw new Error(`Invalid message type: ${message.type}`);
+    }
+    return {
+        type: ResponseMessageType.ReportState,
+        data: [...message.data.map((variable: any) => {
+            return {
+                name: noneGuard(variable.name),
+                type: noneGuard(variable.type),
+                value: noneGuard(variable.value)
+            };
+        })]
+    };
+}
+
 
 function parseCommandFinishedMessage(message: any): CommandFinishedMessage {
     if (message.type !== "Command_finished") {

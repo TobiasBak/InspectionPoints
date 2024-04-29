@@ -6,7 +6,8 @@ from typing import Callable
 
 import select
 
-from RobotControl.RobotSocketMessages import VariableObject
+import URIFY
+from RobotControl.RobotSocketMessages import VariableObject, InterpreterCleared
 from RobotControl.RobotSocketVariableTypes import VariableTypes
 from ToolBox import escape_string
 from URIFY import SOCKET_NAME
@@ -76,6 +77,7 @@ def start_robot():
     non_recurring_logger.info("Brake release robot")
     _brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
+    delayed_read = read_from_socket(_get_dashboard_socket())
     _start_interpreter_mode_and_connect_to_backend_socket()
 
 
@@ -92,9 +94,7 @@ def apply_variables_to_robot(variables: list[VariableObject]):
 
 def _start_interpreter_mode_and_connect_to_backend_socket():
     start_interpreter_mode()
-    # Todo: For some reason the robot needs a sleep here, otherwise open_socket does not work.
-    #  I thought the parameters on interpreter_mode would fix this. (clear_queue_on_enter, clear_on_end)
-    sleep(1)
+    sleep(1)  # Wait for the interpreter to start
     _connect_robot_to_feedback_socket()
 
     # Ensure that non-user inputted commands are not sent to the websocket.
@@ -105,9 +105,15 @@ def _start_interpreter_mode_and_connect_to_backend_socket():
     non_recurring_logger.debug(f"Delayed read: {escape_string(delayed_read)}")
 
 
-def clear_interpreter_mode():
-    send_command_interpreter_socket("clear_interpreter()")
-    recurring_logger.info("Clear command sent")
+def clear_interpreter_mode(clear_id: int = None) -> None:
+    """
+    :param clear_id: If no id is provided, the feedback message will not be generated.
+    """
+    response = send_command_interpreter_socket("clear_interpreter()")
+    cleared_feedback_request = InterpreterCleared(clear_id)
+    feedback_response = send_command_interpreter_socket(URIFY.URIFY_return_string(str(cleared_feedback_request)))
+
+    recurring_logger.info(f"Clear command sent, response: {response} feedback: {feedback_response}")
 
 
 def _power_on_robot():
@@ -152,7 +158,7 @@ def get_value_from_dashboard(command: str):
 def sanitize_dashboard_reads(response: str) -> str:
     message_parts = response.split(":")
     message = message_parts[-1]
-    return message.replace('\\n', '').replace(' ', '')
+    return message.replace('\\n', '').replace(' ', '').replace('\n', '')
 
 
 def _connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):

@@ -30,5 +30,14 @@ function generateUndoneFeedbackParagraph(): HTMLElement {
     undoneFeedback.classList.add('undone-feedback');
     return undoneFeedback;
 }
+export function createUndoButton(commandId: number): HTMLButtonElement {
+    const button: HTMLButtonElement = document.createElement('button');
+    button.classList.add('undoButton');
+    button.textContent = 'Undo up to here';
+    button.addEventListener('click', function () {
+        document.dispatchEvent(new CustomEvent(EventList.UndoEvent, {detail: {id: commandId}}));
+    })
+    return button;
+}
 
 

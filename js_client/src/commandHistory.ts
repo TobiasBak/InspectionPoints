@@ -1,13 +1,13 @@
 import {EventList} from "./interaction/EventList";
 import {highlightCommandIntoElement} from "./SyntaxHighlighting/hast-starry-night";
 import {getCommandEntry} from "./Toolbox/DomTools";
-import {createExecutingFeedbackSpinner} from "./interaction/robot_executing_feedback";
 
 document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
     createCommandContainer(e.detail.text, e.detail.id);
 });
 
 export const commandHistoryDisplay: HTMLElement = document.getElementById("commandHistoryDisplay");
+export const statusWrapperClass = "statusWrapper";
 
 function createCommandContainer(text: string, id: number): void {
     const wrapperElement: HTMLDivElement = document.createElement('div');
@@ -21,7 +21,7 @@ function createCommandContainer(text: string, id: number): void {
     contentWrapper.classList.add('contentWrapper', 'column70');
 
     const statusWrapper: HTMLDivElement = document.createElement('div');
-    statusWrapper.classList.add('statusWrapper', 'column20', 'center');
+    statusWrapper.classList.add(statusWrapperClass, 'column20', 'center');
 
     const commandWrapper: HTMLDivElement = document.createElement('div');
     commandWrapper.classList.add('commandWrapper');
@@ -34,7 +34,6 @@ function createCommandContainer(text: string, id: number): void {
     idText.textContent = id.toString();
 
     idWrapper.appendChild(idText);
-    statusWrapper.appendChild(createExecutingFeedbackSpinner());
 
     contentWrapper.appendChild(commandWrapper);
     contentWrapper.appendChild(responseWrapper);
