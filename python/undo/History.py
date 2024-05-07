@@ -88,7 +88,6 @@ class History(object):
             non_recurring_logger.info(f"Resetting command history due to command id mismatch.")
             self.command_state_history = {command.get_id(): CommandStates(command)}
             self.active_command_state = self.command_state_history[command.get_id()]
-
         if self.active_command_state is None:
             self.active_command_state = self.command_state_history[command.get_id()]
             self.debug_print()
