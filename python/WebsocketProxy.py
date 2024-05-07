@@ -14,7 +14,7 @@ from RobotControl.RobotControl import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
 from RobotControl.SendRobotCommandWithRecovery import send_command_finished
-from RobotControl.StateRecovery import handle_cleared_interpreter
+from RobotControl.StateRecovery import handle_cleared_interpreter, generate_command_finished
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage
 from WebsocketNotifier import websocket_notifier
@@ -39,6 +39,16 @@ _new_client = False
 
 def handle_command_message(message: CommandMessage) -> str:
     command_string = message.data.command
+
+    if '#' in command_string and not re.search(r'"[^"]*#[^"]*"', command_string):
+        recurring_logger.debug(f"Command contains a comment: {command_string}")
+        response = AckResponse(message.data.id, command_string, "discard: Command contains a comment")
+
+        command_finished = CommandFinished(message.data.id, command_string)
+        send_to_all_web_clients(str(command_finished))
+
+        return str(response)
+
     result = send_user_command(message)
     if result == "":
         return ""

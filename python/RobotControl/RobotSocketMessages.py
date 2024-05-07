@@ -62,9 +62,6 @@ class CommandFinished:
         return False
 
     def __str__(self):
-        if self.command_contains_comment():
-            raise ValueError("Command contains comment")
-
         return json.dumps(self.dump())
 
     def dump(self):
