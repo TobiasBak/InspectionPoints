@@ -18,7 +18,6 @@ function markCommandElementsWithUndo(id: number): void {
                 let buttonToRemove = statusWrapper.querySelector('button');
                 if(buttonToRemove){
                     buttonToRemove.remove();
-                    statusWrapper.appendChild(generateUndoneFeedbackParagraph());
                 }
             }
             commandEntry.classList.add('undone');
@@ -28,12 +27,6 @@ function markCommandElementsWithUndo(id: number): void {
     }
 }
 
-function generateUndoneFeedbackParagraph(): HTMLElement {
-    const undoneFeedback: HTMLParagraphElement = document.createElement('p');
-    undoneFeedback.textContent = 'Command undone';
-    undoneFeedback.classList.add('undone-feedback');
-    return undoneFeedback;
-}
 export function createUndoButton(commandId: number): HTMLButtonElement {
     const button: HTMLButtonElement = document.createElement('button');
     button.classList.add('undoButton');

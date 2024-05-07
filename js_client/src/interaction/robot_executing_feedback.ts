@@ -16,22 +16,41 @@ document.addEventListener(EventList.CommandFinished, function (e: CustomEvent): 
     stopRobotExecutingFeedback(e.detail.id);
 })
 
+document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
+    const commandEntry = getCommandEntry(e.detail.id)
+    const statusWrapper = getChildWithClass(commandEntry, statusWrapperClass);
+    if(!statusWrapper) return;
+    statusWrapper.appendChild(createExecutingFeedbackSpinner());
+})
+
 function stopRobotExecutingFeedback(id: number): void {
     const commandEntry: HTMLElement = getCommandEntry(id);
     const statusWrapper: HTMLElement = getChildWithClass(commandEntry, statusWrapperClass);
     const spinnerWrapper: HTMLElement = getChildWithClass(statusWrapper, spinnerWrapperClass)
     const undoButton: HTMLButtonElement = createUndoButton(id);
     const responseParagraph: HTMLElement = commandEntry.querySelector('.contentWrapper .responseWrapper .response')
-    const discarded: boolean = responseParagraph.classList.contains('error-response');
+    const isCommandDiscarded: boolean = responseParagraph.classList.contains('error-response');
+    const isCommandUndone: boolean = commandEntry.classList.contains('undone');
 
     if(!statusWrapper || !spinnerWrapper) return;
 
     spinnerWrapper.remove();
 
-    if(!discarded){
+    if(!isCommandDiscarded && !isCommandUndone){
         statusWrapper.appendChild(undoButton);
     }
 
+    if(isCommandUndone){
+        statusWrapper.appendChild(generateUndoneFeedbackParagraph());
+    }
+
+}
+
+function generateUndoneFeedbackParagraph(): HTMLElement {
+    const undoneFeedback: HTMLParagraphElement = document.createElement('p');
+    undoneFeedback.textContent = 'Command undone';
+    undoneFeedback.classList.add('undone-feedback');
+    return undoneFeedback;
 }
 
 export function createExecutingFeedbackSpinner(): HTMLDivElement {
