@@ -22,6 +22,8 @@ function stopRobotExecutingFeedback(id: number): void {
     const spinnerWrapper: HTMLElement = getChildWithClass(statusWrapper, spinnerWrapperClass)
     const undoButton: HTMLButtonElement = createUndoButton(id);
 
+    if(!statusWrapper || !spinnerWrapper) return;
+
     spinnerWrapper.remove();
     statusWrapper.appendChild(undoButton);
 }

@@ -15,8 +15,11 @@ function markCommandElementsWithUndo(id: number): void {
         if (element) {
             const statusWrapper = getChildWithClass(element, statusWrapperClass);
             if(statusWrapper){
-                statusWrapper.querySelector('button').remove();
-                statusWrapper.appendChild(generateUndoneFeedbackParagraph());
+                let buttonToRemove = statusWrapper.querySelector('button');
+                if(buttonToRemove){
+                    buttonToRemove.remove();
+                    statusWrapper.appendChild(generateUndoneFeedbackParagraph());
+                }
             }
             element.classList.add('undone');
         } else {
