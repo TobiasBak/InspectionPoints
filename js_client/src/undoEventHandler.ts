@@ -11,9 +11,9 @@ document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
 function markCommandElementsWithUndo(id: number): void {
     let running = true;
     while (running) {
-        const element = getCommandEntry(id++)
-        if (element) {
-            const statusWrapper = getChildWithClass(element, statusWrapperClass);
+        const commandEntry = getCommandEntry(id++)
+        if (commandEntry) {
+            const statusWrapper = getChildWithClass(commandEntry, statusWrapperClass);
             if(statusWrapper){
                 let buttonToRemove = statusWrapper.querySelector('button');
                 if(buttonToRemove){
@@ -21,7 +21,7 @@ function markCommandElementsWithUndo(id: number): void {
                     statusWrapper.appendChild(generateUndoneFeedbackParagraph());
                 }
             }
-            element.classList.add('undone');
+            commandEntry.classList.add('undone');
         } else {
             running = false;
         }

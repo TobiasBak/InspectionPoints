@@ -21,11 +21,17 @@ function stopRobotExecutingFeedback(id: number): void {
     const statusWrapper: HTMLElement = getChildWithClass(commandEntry, statusWrapperClass);
     const spinnerWrapper: HTMLElement = getChildWithClass(statusWrapper, spinnerWrapperClass)
     const undoButton: HTMLButtonElement = createUndoButton(id);
+    const responseParagraph: HTMLElement = commandEntry.querySelector('.contentWrapper .responseWrapper .response')
+    const discarded: boolean = responseParagraph.classList.contains('error-response');
 
     if(!statusWrapper || !spinnerWrapper) return;
 
     spinnerWrapper.remove();
-    statusWrapper.appendChild(undoButton);
+
+    if(!discarded){
+        statusWrapper.appendChild(undoButton);
+    }
+
 }
 
 export function createExecutingFeedbackSpinner(): HTMLDivElement {
