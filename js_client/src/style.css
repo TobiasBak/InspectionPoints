@@ -162,6 +162,28 @@ p {
     margin-bottom: .5em;
 }
 
+/* Collapsible undone commands */
+.collapsableWrapper {
+    border-radius: .5em;
+    border: .2em solid var(--border-color);
+    margin: 1em;
+    background-color: var(--undone-color);
+}
+.collapsableWrapper > p {
+    color: var(--text-on-background-color);
+    padding: .5em 1em;
+}
+
+.collapsable {
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    max-height: 100vh;
+}
+
+.collapsable.collapsed {
+    max-height: 0;
+}
+
 
 /* Spinner animation */
 .spinner {
