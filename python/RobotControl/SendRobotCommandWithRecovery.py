@@ -25,7 +25,7 @@ class ResponseCodes(Enum):
     DISCARD = "discard"
 
 
-def send_command_with_recovery(command: str, command_id, is_command_finished: bool = False) -> str:
+def send_command_with_recovery(command: str, command_id, is_command_finished: bool = False, is_undo_command: bool = False) -> str:
     """
     Command_id is important if a message containing the error should be sent back to the frontend.
     The is_command_finished was added since this method adds new variables to the variable registry.
@@ -57,13 +57,12 @@ def send_command_with_recovery(command: str, command_id, is_command_finished: bo
 
     response_code = response_array[0]
 
-    print(f"is_command_finished: {is_command_finished} Response code: {response_code} Command: {command}")
 
-    if response_code == ResponseCodes.ACK.value and not is_command_finished:
+    if response_code == ResponseCodes.ACK.value and not is_command_finished and not is_undo_command:
         return out
 
     _list_of_variables = []
-    if response_code == ResponseCodes.ACK.value and is_command_finished:
+    if response_code == ResponseCodes.ACK.value and is_command_finished or response_code == ResponseCodes.ACK.value and is_undo_command:
         # If we get an ack, we need to get all the multiple variable definitions and single them out
         _list_of_variables = find_variables_in_command(command)
         for variable_definition in _list_of_variables:
