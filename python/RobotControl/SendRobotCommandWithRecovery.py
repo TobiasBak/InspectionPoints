@@ -39,7 +39,7 @@ def send_command_with_recovery(command: str, command_id, is_command_finished: bo
         # p1, p2 = p[1,1,1,1,1,1]
         # p3 = p2-p1 Here the robot will return ack for p3 and return ack for command_finished for p3.
         # However, the robot breaks immediately after the second ack, because it realizes that subtracting is not possible
-        time.sleep(0.02)
+        time.sleep(0.1)
         command_to_send = generate_command_finished(command_id, command)
 
     result = send_command_interpreter_socket(command_to_send)
@@ -56,6 +56,8 @@ def send_command_with_recovery(command: str, command_id, is_command_finished: bo
         raise ValueError("Response from robot is not in the expected format.")
 
     response_code = response_array[0]
+
+    print(f"is_command_finished: {is_command_finished} Response code: {response_code} Command: {command}")
 
     if response_code == ResponseCodes.ACK.value and not is_command_finished:
         return out

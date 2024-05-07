@@ -55,6 +55,7 @@ def recover_from_invalid_state(command: str, command_id: int | None):
 
     # Send an extra command finished to release lock
     send_command_interpreter_socket(generate_command_finished(command_id, command))
+    non_recurring_logger.debug(f"Command finished sent to release lock.")
 
 
 def generate_command_finished(command_id: int, command_message: str) -> str:
