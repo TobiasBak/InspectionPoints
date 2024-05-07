@@ -53,7 +53,7 @@ def undo_command_states(command_states: list[CommandStates], command_id: int) ->
         clean_variable_code_registry()
         send_command_with_recovery(command_undo_string, None, is_undo_command=True)
 
-    send_command_with_recovery("", command_id, is_command_finished=True) # Stop spinner on frontend
+    send_command_with_recovery("", command_id, is_command_finished=True)  # Stop spinner on frontend
 
 
 def remove_undone_command_states(command_ids: list[int]) -> None:
