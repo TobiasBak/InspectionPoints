@@ -85,10 +85,14 @@ class History(object):
 
         max_id = max(self.command_state_history.keys())
         if max_id != command.get_id():
-            raise ValueError(f"The provided command does not have the highest id."
-                             f"The highest id is {max_id} and the provided id is {command.get_id()}"
-                             f"The command with that id is"
-                             f" {self.command_state_history[max_id].user_command.data.command}")
+            # raise ValueError(f"The provided command does not have the highest id."
+            #                  f"The highest id is {max_id} and the provided id is {command.get_id()}"
+            #                  f"The command with that id is"
+            #                  f" {self.command_state_history[max_id].user_command.data.command}")
+            non_recurring_logger.info(f"Resetting command history due to command id mismatch.")
+            self.command_state_history = {command.get_id(): CommandStates(command)}
+            self.active_command_state = self.command_state_history[command.get_id()]
+
         if self.active_command_state is None:
             self.active_command_state = self.command_state_history[command.get_id()]
             self.debug_print()
