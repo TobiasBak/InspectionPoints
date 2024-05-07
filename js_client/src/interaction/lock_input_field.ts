@@ -10,6 +10,10 @@ document.addEventListener(EventList.CommandFinished, function (e: CustomEvent): 
     unlockInputField();
 })
 
+document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
+    lockInputField();
+})
+
 function lockInputField(): void {
     inputField.classList.add(lockedClass);
 }
