@@ -32,26 +32,16 @@ function stopRobotExecutingFeedback(id: number): void {
     const isCommandDiscarded: boolean = responseParagraph.classList.contains('error-response');
     const isCommandUndone: boolean = commandEntry.classList.contains('undone');
 
-    if(!statusWrapper || !spinnerWrapper) return;
+    if (!statusWrapper || !spinnerWrapper) return;
 
     spinnerWrapper.remove();
 
-    if(!isCommandDiscarded && !isCommandUndone){
+    if (!isCommandDiscarded && !isCommandUndone) {
         statusWrapper.appendChild(undoButton);
     }
-
-    if(isCommandUndone){
-        statusWrapper.appendChild(generateUndoneFeedbackParagraph());
-    }
-
 }
 
-function generateUndoneFeedbackParagraph(): HTMLElement {
-    const undoneFeedback: HTMLParagraphElement = document.createElement('p');
-    undoneFeedback.textContent = 'Command undone';
-    undoneFeedback.classList.add('undone-feedback');
-    return undoneFeedback;
-}
+
 
 export function createExecutingFeedbackSpinner(): HTMLDivElement {
     const wrapper: HTMLDivElement = document.createElement('div');

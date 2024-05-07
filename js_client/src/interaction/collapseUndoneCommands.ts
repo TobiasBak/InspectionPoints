@@ -4,7 +4,12 @@ import {getCommandEntry} from "../Toolbox/DomTools";
 document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
     const commandDisplay = document.getElementById('commandHistoryDisplay');
     commandDisplay.appendChild(generateCollapsableElement(e.detail.id));
+    closeCollapsableElement(e.detail.id - 1);
 })
+document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
+    closeCollapsableElement(e.detail.id - 1);
+})
+
 
 function generateCollapsableElement(id: number): HTMLElement {
     const collapsableWrapper: HTMLElement = document.createElement('div');
@@ -46,4 +51,27 @@ function getUndoneCommands(id: number): HTMLElement[]{
         listOfElements.push(commandEntry);
     }
     return listOfElements;
+}
+
+export function openCollapsableElement(id: number): void {
+    const commandEntry = getCommandEntry(id)
+    const collapsableElement = commandEntry.parentElement
+    const collapsableWrapper = collapsableElement.parentElement
+    const collapsableParagraph = collapsableWrapper.querySelector('p');
+
+    if (collapsableElement.classList.contains('collapsed')){
+        collapsableParagraph.click();
+    }
+}
+
+export function closeCollapsableElement(id: number): void {
+    const commandEntry = getCommandEntry(id)
+    if (!commandEntry) return;
+    const collapsableElement = commandEntry.parentElement
+    const collapsableWrapper = collapsableElement.parentElement
+    const collapsableParagraph = collapsableWrapper.querySelector('p');
+
+    if (!collapsableElement.classList.contains('collapsed')){
+        collapsableParagraph.click();
+    }
 }

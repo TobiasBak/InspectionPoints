@@ -2,6 +2,7 @@ import {EventList} from "./interaction/EventList";
 import {inputField} from "./interaction/InputField";
 import {indicateToUserThatFieldIsLocked, inputFieldIsLocked} from "./interaction/lock_input_field";
 import {clearHighlightedCommandItems, highlightSelectedCommandItem} from "./commandHistory";
+import {closeCollapsableElement} from "./interaction/collapseUndoneCommands";
 
 let current_id: number = 0;
 
@@ -86,7 +87,13 @@ function handleArrowPresses(textArea: HTMLTextAreaElement, e: KeyboardEvent, dir
     if (isCursorOnFirstOrLastLine(textArea, direction) || getTextFromInput() === '') {
         e.preventDefault();
         if (inputHistoryNavigation(direction)) {
-            highlightSelectedCommandItem(commandInputHistory[historyIndex].id);
+            const id = commandInputHistory[historyIndex].id;
+            if(direction === targetDirection.up){
+                closeCollapsableElement(id+1);
+            } else if(direction === targetDirection.down){
+                closeCollapsableElement(id-1);
+            }
+            highlightSelectedCommandItem(id);
         }
     }
 }
