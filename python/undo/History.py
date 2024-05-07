@@ -1,6 +1,6 @@
 from typing import Self
 
-from RobotControl.RobotSocketMessages import CommandFinished
+from RobotControl.RobotSocketMessages import CommandFinished, ReportState
 from SocketMessages import CommandMessage
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
@@ -101,7 +101,7 @@ class History(object):
     def _add_pre_states(self, command_id: int) -> None:
         if self.active_command_state.get_user_command().get_id() != command_id:
             recurring_logger.error(f"Active command id {self.active_command_state.get_user_command().get_id()} "
-                                      f"does not match the provided command id {command_id}")
+                                   f"does not match the provided command id {command_id}")
             raise ValueError(f"Active command id {self.active_command_state.get_user_command().get_id()} "
                              f"does not match the provided command id {command_id}")
         self.append_state(self.latest_code_state)
@@ -110,7 +110,14 @@ class History(object):
     def close_command(self, command_finished: CommandFinished) -> None:
         if self.active_command_state is None:
             self.debug_print()
-            raise ValueError("There is no active command state, but it was attempted to close a command anyway.")
+            non_recurring_logger.info(f"There is no active command state. But close was called anyway"
+                                      f"Was most likely due to a command_finished send to stop spinner on command undone")
+
+        if command_finished.data.id not in self.command_state_history.keys():
+            non_recurring_logger.info(f"Command id {command_finished.data.id} not found in command history."
+                                      f"Was due to a command_finished send to stop spinner on command undone")
+            return
+
         command_state = self.command_state_history[command_finished.data.id]
         command_state.close()
         if self._max_command_id() > command_finished.data.id:

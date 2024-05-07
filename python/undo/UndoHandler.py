@@ -1,14 +1,16 @@
 from RobotControl.ClearingInterpreter import queued_clear_interpreter
-from RobotControl.RobotControl import sanitize_command
+from RobotControl.RobotControl import sanitize_command, clear_interpreter_mode
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import UndoMessage, UndoResponseMessage, UndoStatus
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
+from undo.History import History
 from undo.HistorySupport import get_command_state_history, remove_command_state_from_history, \
-    clean_variable_code_registry
+    clean_variable_code_registry, get_variable_registry
 from undo.ReadVariableState import stop_read_report_state, start_read_report_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 def handle_undo_message(message: UndoMessage) -> str:
@@ -40,13 +42,18 @@ def find_command_states_to_undo(command_ids: list[int]) -> list[CommandStates]:
     return commands_states_to_undo
 
 
-def undo_command_states(command_states: list[CommandStates]) -> None:
+def undo_command_states(command_states: list[CommandStates], command_id: int) -> None:
+    history = History.get_history()
     for command_state in command_states:
+        non_recurring_logger.debug(f"Active command state: {history.get_active_command_state()}")
         command_undo_string = command_state.get_undo_commands()
         new_string = sanitize_command(command_undo_string)
-        recurring_logger.debug(f"Undoing command: {new_string}")
+        non_recurring_logger.debug(f"Undoing command: {new_string}")
+        non_recurring_logger.debug(f"variable registry: {get_variable_registry()}")
         clean_variable_code_registry()
         send_command_with_recovery(command_undo_string, None, is_undo_command=True)
+
+    send_command_with_recovery("", command_id, is_command_finished=True) # Stop spinner on frontend
 
 
 def remove_undone_command_states(command_ids: list[int]) -> None:
@@ -61,7 +68,7 @@ def handle_undo_request(command_id: int) -> None:
     command_states = find_command_states_to_undo(command_states_keys)
     stop_read_report_state()
     queued_clear_interpreter()
-    undo_command_states(command_states)
+    undo_command_states(command_states, command_id)
     remove_undone_command_states(command_states_keys)
     start_read_report_state()
 

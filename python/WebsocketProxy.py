@@ -87,10 +87,6 @@ def get_handler() -> callable:
                     case UndoMessage():
                         str_response = handle_undo_message(message)
                         handle_undo_request(message.data.id)
-
-                        command_finished = CommandFinished(message.data.id, "") # Used for spinner on undo
-                        send_to_all_web_clients(str(command_finished))
-
                         recurring_logger.debug(f"Message is an UndoMessage")
                     case _:
                         raise ValueError(f"Unknown message type: {message}")

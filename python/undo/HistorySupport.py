@@ -141,6 +141,10 @@ def handle_command_finished(command_finished: CommandFinished):
     history = History.get_history()
     history.close_command(command_finished)
 
+    if history.get_active_command_state() is None:
+        clean_variable_code_registry()
+        clear_interpreter_mode()
+
 
 def new_command(command: CommandMessage):
     history = History.get_history()
