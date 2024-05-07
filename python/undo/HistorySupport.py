@@ -2,9 +2,10 @@ import re
 
 from rtde.serialize import DataObject
 
+from RobotControl.RobotControl import clear_interpreter_mode
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
 
-from SocketMessages import RobotState
+from SocketMessages import RobotState, CommandMessage
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
 from undo.History import History, CommandStateHistory
@@ -84,7 +85,7 @@ def register_code_variable(variable: str, assignment_strategy: AssignmentStrateg
 def add_new_variable(variable: tuple[str, str]):
     variable_name = variable[0]
     variable_value = variable[1]
-    if variable_value.startswith('"'): # Match case removes last ", therefore we only check if starts with
+    if variable_value.startswith('"'):  # Match case removes last ", therefore we only check if starts with
         register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT_STRING)
     else:
         register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT)
@@ -126,13 +127,39 @@ def handle_report_state(reported_state: ReportState):
     history.append_state(state)
 
 
+def history_debug_print():
+    history = History.get_history()
+    history.debug_print()
+
+
 def clean_variable_code_registry():
     _variable_registry.clean_variable_code_registry()
+
 
 def handle_command_finished(command_finished: CommandFinished):
     recurring_logger.debug(f"Handling command finished: {command_finished}")
     history = History.get_history()
     history.close_command(command_finished)
+
+
+def new_command(command: CommandMessage):
+    history = History.get_history()
+
+    if history.active_command_state is None:
+        recurring_logger.debug("No active command state, creating new command state.")
+        history.new_command(command)
+        return
+
+    max_id = max(history.command_state_history.keys())
+
+    if max_id >= command.get_id():
+        non_recurring_logger.info(f"Resetting command history due to command id mismatch.")
+        history.command_state_history = {}
+        history.active_command_state = None
+        clean_variable_code_registry()
+        clear_interpreter_mode()
+
+    history.new_command(command)
 
 
 def get_command_state_history() -> CommandStateHistory:

@@ -1,6 +1,7 @@
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery, send_command_finished
 from SocketMessages import CommandMessage
 from undo.History import History
+from undo.HistorySupport import new_command
 from undo.ReadVariableState import start_read_report_state
 
 
@@ -21,6 +22,4 @@ def send_user_command(command: CommandMessage) -> str:
 
 
 def add_command_to_history(command):
-    history = History.get_history()
-    history.new_command(command)
-    history.debug_print()
+    new_command(command)
