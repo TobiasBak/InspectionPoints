@@ -3,8 +3,9 @@ from enum import Enum, auto
 from RobotControl.ClearingInterpreter import clear_is_pending, call_and_clear_callback, queued_clear_interpreter
 from RobotControl.RobotControl import send_command_interpreter_socket, unlock_protective_stop, \
     _start_interpreter_mode_and_connect_to_backend_socket
-from RobotControl.RobotSocketMessages import InterpreterCleared
+from RobotControl.RobotSocketMessages import InterpreterCleared, CommandFinished
 from SocketMessages import AckResponse
+from URIFY import URIFY_return_string
 from WebsocketNotifier import websocket_notifier
 from custom_logging import LogConfig
 from undo.HistorySupport import get_latest_code_state, get_latest_active_command_state, \
@@ -40,8 +41,8 @@ def recover_from_invalid_state(command: str, command_id: int | None):
     if command_id is not None:
         # Todo: We need ssh to see the logs for optimal feedback
 
-        actual_command_that_caused_invalid_state = get_latest_active_command_state().get_user_command().data.command
-        list_of_definitions = find_variables_in_command(actual_command_that_caused_invalid_state)
+        # actual_command_that_caused_invalid_state = get_latest_active_command_state().get_user_command().data.command
+        list_of_definitions = find_variables_in_command(command)
         delete_variables_from_variable_registry(list_of_definitions)
 
         non_recurring_logger.debug(f"Removing variable definition: {list_of_definitions}")
@@ -51,7 +52,15 @@ def recover_from_invalid_state(command: str, command_id: int | None):
                                    f"2. Reassigning variable to new type.\n"
                                    f"3. Error occurred in the program. Did you write a proper command?\n")
         websocket_notifier.notify_observers(str(ack_response))
-    send_command_interpreter_socket(command)
+
+    # Send an extra command finished to release lock
+    send_command_interpreter_socket(generate_command_finished(command_id, command))
+
+
+def generate_command_finished(command_id: int, command_message: str) -> str:
+    finish_command = CommandFinished(command_id, command_message)
+    string_command = finish_command.dump_ur_string()
+    return URIFY_return_string(string_command)
 
 
 def recover_from_too_many_commands(command: str, command_id: int | None):

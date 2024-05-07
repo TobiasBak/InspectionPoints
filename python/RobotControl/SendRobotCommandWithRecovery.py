@@ -4,7 +4,7 @@ from enum import Enum
 from RobotControl.RobotControl import send_command_interpreter_socket, get_safety_status, \
     get_robot_mode, get_running
 from RobotControl.RobotSocketMessages import CommandFinished
-from RobotControl.StateRecovery import States, recover_state
+from RobotControl.StateRecovery import States, recover_state, generate_command_finished
 from URIFY import URIFY_return_string
 from custom_logging import LogConfig
 from undo.HistorySupport import find_variables_in_command, add_new_variable
@@ -25,9 +25,24 @@ class ResponseCodes(Enum):
     DISCARD = "discard"
 
 
-def send_command_with_recovery(command: str, command_id) -> str:
-    """Command_id is important if a message containing the error should be sent back to the frontend."""
-    result = send_command_interpreter_socket(command)
+def send_command_with_recovery(command: str, command_id, is_command_finished: bool = False) -> str:
+    """
+    Command_id is important if a message containing the error should be sent back to the frontend.
+    The is_command_finished was added since this method adds new variables to the variable registry.
+    And this should only happen if commands are not breaking, which only command_finished knows.
+    """
+
+    command_to_send = command
+
+    if is_command_finished:
+        # Otherwise robot acknowledges variable definitions before trying to set the variable.
+        # p1, p2 = p[1,1,1,1,1,1]
+        # p3 = p2-p1 Here the robot will return ack for p3 and return ack for command_finished for p3.
+        # However, the robot breaks immediately after the second ack, because it realizes that subtracting is not possible
+        time.sleep(0.02)
+        command_to_send = generate_command_finished(command_id, command)
+
+    result = send_command_interpreter_socket(command_to_send)
     recurring_logger.debug(f"Result from robot: {result}")
 
     # TODO: Remove this responsibility from the send_command function
@@ -42,9 +57,11 @@ def send_command_with_recovery(command: str, command_id) -> str:
 
     response_code = response_array[0]
 
-    _list_of_variables = []
+    if response_code == ResponseCodes.ACK.value and not is_command_finished:
+        return out
 
-    if response_code == ResponseCodes.ACK.value:
+    _list_of_variables = []
+    if response_code == ResponseCodes.ACK.value and is_command_finished:
         # If we get an ack, we need to get all the multiple variable definitions and single them out
         _list_of_variables = find_variables_in_command(command)
         for variable_definition in _list_of_variables:
@@ -71,10 +88,10 @@ def send_command_with_recovery(command: str, command_id) -> str:
 
 
 def send_command_finished(command_id: int, command_message: str):
-    finish_command = CommandFinished(command_id, command_message)
-    string_command = finish_command.dump_ur_string()
-    wrapping = URIFY_return_string(string_command)
-    send_command_with_recovery(wrapping, command_id=command_id)
+    # finish_command = CommandFinished(command_id, command_message)
+    # string_command = finish_command.dump_ur_string()
+    # wrapping = URIFY_return_string(string_command)
+    send_command_with_recovery(command_message, command_id=command_id, is_command_finished=True)
 
 
 def get_state_of_robot(response_message: str) -> States | None:

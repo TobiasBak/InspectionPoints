@@ -110,6 +110,7 @@ def clear_interpreter_mode(clear_id: int = None) -> None:
     :param clear_id: If no id is provided, the feedback message will not be generated.
     """
     response = send_command_interpreter_socket("clear_interpreter()")
+    sleep(0.05)  # Wait for the interpreter to clear
     cleared_feedback_request = InterpreterCleared(clear_id)
     feedback_response = send_command_interpreter_socket(URIFY.URIFY_return_string(str(cleared_feedback_request)))
 

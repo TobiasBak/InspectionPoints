@@ -74,7 +74,6 @@ def get_handler() -> callable:
                 match message:
                     case CommandMessage():
                         str_response = handle_command_message(message)
-                        # print(f"Message is a CommandMessage")
                     case UndoMessage():
                         str_response = handle_undo_message(message)
                         handle_undo_request(message.data.id)
@@ -189,8 +188,10 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
             for message in list_of_data:
                 # If message contains multiple start bytes, discard message
                 if message.count(_START_BYTE) > 1:
-                    recurring_logger.warning(f"Discarding message because of multiple start bytes: {message}")
-                    continue
+                    recurring_logger.warning(f"Trying to recover messages because of multiple start bytes: {message}")
+                    messages = message.split(_START_BYTE)
+                    for sub_message in messages:
+                        await recover_mangled_data(sub_message)
 
                 if message:
                     message = message[1:]  # remove the start byte
