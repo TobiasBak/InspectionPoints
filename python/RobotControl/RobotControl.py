@@ -226,7 +226,7 @@ def read_from_socket(socket: Socket) -> str:
     ready_to_read, ready_to_write, in_error = select.select([socket], [], [], 0.1)
     if ready_to_read:
         message = socket.recv(4096)
-        non_recurring_logger.debug(f"Message received after send_command: {message}")
+        recurring_logger.debug(f"Message received after send_command: {message}")
 
         try:
             return message.decode()
