@@ -32,12 +32,6 @@ function sendCommand(command: string): void {
 
 function saveCommandToInputHistory(command: string, commandId: number): void {
     if (command != '') {
-        const existingIndex: number = commandInputHistory.findIndex((item: Command): boolean => item.text === command);
-
-        if (existingIndex > -1) {
-            commandInputHistory.splice(existingIndex, 1);
-        }
-
         commandInputHistory.push({text: command, id: commandId});
         historyIndex = commandInputHistory.length;
     }

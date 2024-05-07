@@ -152,13 +152,11 @@ p {
     background-color: var(--undone-color);
 }
 
-#stateVariablePopup {
-    width: 100%;
-    cursor: pointer;
-    z-index: 1000; /* high z-index */
-    background: #000; /* fallback */
-    background: rgba(0,0,0,0.5);
+.undone-feedback {
+    color: var(--text-on-background-color);
+    padding: .5em;
 }
+
 .stateVariableSelectionWrapper label {
     margin-left: .3em;
     margin-bottom: .5em;

@@ -1,5 +1,6 @@
 import {EventList} from "./interaction/EventList";
-import {getCommandEntry} from "./Toolbox/DomTools";
+import {getChildWithClass, getCommandEntry} from "./Toolbox/DomTools";
+import {statusWrapperClass} from "./commandHistory";
 
 
 document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
@@ -12,6 +13,11 @@ function markCommandElementsWithUndo(id: number): void {
     while (running) {
         const element = getCommandEntry(id++)
         if (element) {
+            const statusWrapper = getChildWithClass(element, statusWrapperClass);
+            if(statusWrapper){
+                statusWrapper.querySelector('button').remove();
+                statusWrapper.appendChild(generateUndoneFeedbackParagraph());
+            }
             element.classList.add('undone');
         } else {
             running = false;
@@ -19,6 +25,12 @@ function markCommandElementsWithUndo(id: number): void {
     }
 }
 
+function generateUndoneFeedbackParagraph(): HTMLElement {
+    const undoneFeedback: HTMLParagraphElement = document.createElement('p');
+    undoneFeedback.textContent = 'Command undone';
+    undoneFeedback.classList.add('undone-feedback');
+    return undoneFeedback;
+}
 export function createUndoButton(commandId: number): HTMLButtonElement {
     const button: HTMLButtonElement = document.createElement('button');
     button.classList.add('undoButton');
