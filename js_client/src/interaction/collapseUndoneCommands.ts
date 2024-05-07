@@ -1,10 +1,11 @@
 import {EventList} from "./EventList";
-import {getCommandEntry} from "../Toolbox/DomTools";
+import {getChildWithTag, getCommandEntry} from "../Toolbox/DomTools";
 
 document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
     const commandDisplay = document.getElementById('commandHistoryDisplay');
     commandDisplay.appendChild(generateCollapsableElement(e.detail.id));
     closeCollapsableElement(e.detail.id - 1);
+    removeEmptyCollapsableElement();
 })
 document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
     closeCollapsableElement(e.detail.id - 1);
@@ -68,10 +69,20 @@ export function closeCollapsableElement(id: number): void {
     const commandEntry = getCommandEntry(id)
     if (!commandEntry) return;
     const collapsableElement = commandEntry.parentElement
+    if (!collapsableElement.classList.contains('collapsable')) return;
     const collapsableWrapper = collapsableElement.parentElement
-    const collapsableParagraph = collapsableWrapper.querySelector('p');
+    const collapsableParagraph = collapsableWrapper.querySelector('p')
 
     if (!collapsableElement.classList.contains('collapsed')){
         collapsableParagraph.click();
     }
+}
+
+function removeEmptyCollapsableElement(): void {
+    document.querySelectorAll('.collapsableWrapper').forEach((elementToRemove) => {
+        const elementToCheck = elementToRemove.querySelector('.collapsable')
+        if (elementToCheck.children.length < 1) {
+            elementToRemove.remove();
+        }
+    })
 }
