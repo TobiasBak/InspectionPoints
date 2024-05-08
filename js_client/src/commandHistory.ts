@@ -52,9 +52,9 @@ export function highlightSelectedCommandItem(id: number): void {
     const selectedElement: HTMLElement = getCommandEntry(id);
     if (selectedElement) {
         selectedElement.classList.add('command-highlighted');
+        openCollapsableElement(id);
         selectedElement.scrollIntoView({behavior: "smooth", block: "nearest", inline: "nearest"});
     }
-    openCollapsableElement(id);
 }
 
 export function clearHighlightedCommandItems():void  {
