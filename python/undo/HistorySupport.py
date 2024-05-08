@@ -110,6 +110,7 @@ def create_state_from_report_state(report_state: ReportState) -> State:
         variable_name = variable.name
         if variable_name not in code_variable_dict:
             non_recurring_logger.debug(f"Variable {variable_name} not found in code variable dict.")
+            continue
         code_variable = code_variable_dict[variable_name]
         state_values.append(StateValue(variable.value, code_variable))
 
