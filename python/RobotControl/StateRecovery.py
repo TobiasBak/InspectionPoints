@@ -42,10 +42,10 @@ def recover_from_invalid_state(command: str, command_id: int | None):
         # Todo: We need ssh to see the logs for optimal feedback
 
         # actual_command_that_caused_invalid_state = get_latest_active_command_state().get_user_command().data.command
-        list_of_definitions = find_variables_in_command(command)
-        delete_variables_from_variable_registry(list_of_definitions)
+        # list_of_definitions = find_variables_in_command(command)
+        # delete_variables_from_variable_registry(list_of_definitions)
 
-        non_recurring_logger.debug(f"Removing variable definition: {list_of_definitions}")
+        # non_recurring_logger.debug(f"Removing variable definition: {list_of_definitions}")
         ack_response = AckResponse(command_id, "",
                                    f"discard: Command caused invalid state. Can be due to following reasons:\n"
                                    f"1. array out of bounds.\n"

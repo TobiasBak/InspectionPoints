@@ -2,18 +2,22 @@ from enum import Enum, auto
 
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery, send_command_finished
 from SocketMessages import CommandMessage
-from undo.History import History
-from undo.HistorySupport import new_command
+from undo.HistorySupport import new_command, get_variable_registry
 from undo.ReadVariableState import start_read_report_state
+
 
 class not_good_response_codes(Enum):
     discard = auto()
+
 
 def send_user_command(command: CommandMessage) -> str:
     start_read_report_state()
     command_id = command.data.id
     command_message = command.data.command
     add_command_to_history(command)
+
+    vr = get_variable_registry()
+    print(f"Variable registry: {vr}")
 
     response_from_command = send_command_with_recovery(command_message, command_id)
 
