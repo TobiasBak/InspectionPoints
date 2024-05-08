@@ -109,13 +109,13 @@ def create_state_from_report_state(report_state: ReportState) -> State:
     for variable in received_variables:
         variable_name = variable.name
         if variable_name not in code_variable_dict:
-            raise ValueError(f"Variable {variable_name} not found in code variables")
+            non_recurring_logger.debug(f"Variable {variable_name} not found in code variable dict.")
         code_variable = code_variable_dict[variable_name]
         state_values.append(StateValue(variable.value, code_variable))
 
     if len(state_values) != len(received_variables):
-        raise ValueError(f"Received state has {len(received_variables)} variables,"
-                         f" but only {len(state_values)} were processed.")
+        non_recurring_logger.debug(f"Received state has {len(received_variables)} variables,"
+                                    f" but only {len(state_values)} were processed.")
 
     return State(StateType.code_state, state_values)
 
