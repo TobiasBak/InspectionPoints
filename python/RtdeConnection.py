@@ -83,7 +83,11 @@ def states_are_equal(obj1: DataObject, obj2: DataObject):
 
 
 async def send_state_through_websocket(state: DataObject) -> None:
-    websocket_notifier.notify_observers(str(RobotState(state)))
+    robot_state = RobotState(state)
+    # Round to nearest 4 decimals for all floats
+    robot_state.round_values()
+
+    websocket_notifier.notify_observers(str(robot_state))
 
 
 def state_is_new(new_state: DataObject | None, old_state: DataObject | None):

@@ -370,6 +370,20 @@ class RobotState:
         payload: float = ensure_type_of_payload(state.__getattribute__(TransmittedInformationOptions.payload.value))
         self.data: RobotStateData = RobotStateData(status, runtime_state, robot_mode, joints, tcp, payload)
 
+    def round_values(self):
+        round_to = 5
+        for key, value in self.data.joints.__dict__.items():
+            self.data.joints.__dict__[key] = "{:.5f}".format(round(value, round_to))
+
+        for key, value in self.data.tcp.pose.__dict__.items():
+            self.data.tcp.pose.__dict__[key] = "{:.5f}".format(round(value, round_to))
+
+        for key, value in self.data.tcp.speed.__dict__.items():
+            self.data.tcp.speed.__dict__[key] = "{:.5f}".format(round(value, round_to))
+
+        for key, value in self.data.tcp.force.__dict__.items():
+            self.data.tcp.force.__dict__[key] = "{:.5f}".format(round(value, round_to))
+
     def __str__(self):
         return json.dumps({
             "type": self.type.name,
