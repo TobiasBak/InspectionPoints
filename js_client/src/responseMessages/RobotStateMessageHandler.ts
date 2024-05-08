@@ -67,7 +67,19 @@ function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: 
     column45Text.textContent = messageDataKey;
 
     const column55Text: HTMLParagraphElement = document.createElement('p');
-    column55Text.textContent = prettyPrint(messageDataValue);
+    if (Array.isArray(messageDataValue)) {
+        for (let i = 0; i < messageDataValue.length; i++) {
+            column55Text.appendChild(document.createTextNode("[" + (i + 1) + "]: " + prettyPrint(messageDataValue[i])));
+            column55Text.appendChild(document.createElement('br'));
+        }
+
+        // for (const messageDataValueItem of messageDataValue) {
+        //     column55Text.appendChild(document.createTextNode(prettyPrint(messageDataValueItem)));
+        //     column55Text.appendChild(document.createElement('br'));
+        // }
+    }else{
+        column55Text.textContent = prettyPrint(messageDataValue);
+    }
 
     sectionColumn45.appendChild(column45Text);
     sectionColumn55.appendChild(column55Text);

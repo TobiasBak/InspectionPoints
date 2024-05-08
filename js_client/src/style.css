@@ -60,7 +60,7 @@ p {
 }
 
 .commandArea {
-    width: 40%;
+    flex: 1;
     height: 95vh;
 }
 
@@ -110,17 +110,11 @@ p {
 }
 
 .visualizationArea {
-    width: 55%;
-}
-
-.robotVisualization {
-    height: 45vh;
-    width: 100%;
-    box-sizing: border-box;
+    flex: 1;
 }
 
 .variableView {
-    height: 45vh;
+    height: 95vh;
     width: 100%;
     box-sizing: border-box;
     padding: .8em;
