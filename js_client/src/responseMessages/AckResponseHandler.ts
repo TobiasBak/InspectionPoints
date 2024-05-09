@@ -1,5 +1,6 @@
 import {ResponseMessage, ResponseMessageType} from "./responseMessageDefinitions";
 import {getChildWithClass, getCommandEntry} from "../Toolbox/DomTools";
+import {EventList} from "../interaction/EventList";
 
 const errorClass = "error-response"
 const successClass = "success-response"
@@ -29,12 +30,30 @@ export function handleAckResponseMessage(message: ResponseMessage): void {
         responseParagraph.classList.add(errorClass);
 
         responseParagraph.innerHTML = statusType + messageParts.join(':');
+        emitCommandRejectedEvent(message.data.id)
     } else {
         responseParagraph.innerHTML = frontend_text_for_ack_success
+        emitCommandAcceptedEvent(message.data.id)
     }
 
 
     responseWrapper.appendChild(responseParagraph);
 
     console.log(message);
+}
+
+function emitCommandAcceptedEvent(id: number):void{
+    document.dispatchEvent(new CustomEvent(EventList.CommandAccepted,{
+        detail: {
+            id: id,
+        },
+    }));
+}
+
+function emitCommandRejectedEvent(id: number):void{
+    document.dispatchEvent(new CustomEvent(EventList.CommandRejected, {
+        detail: {
+            id: id,
+        },
+    }));
 }

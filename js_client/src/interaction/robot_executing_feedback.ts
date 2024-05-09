@@ -5,7 +5,7 @@ import {statusWrapperClass} from "../commandHistory";
 
 const spinnerWrapperClass: string = "spinnerWrapper"
 
-document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
+document.addEventListener(EventList.CommandAccepted, function (e: CustomEvent): void {
     const commandEntry: HTMLElement = getCommandEntry(e.detail.id);
     const statusWrapper: HTMLElement = getChildWithClass(commandEntry, statusWrapperClass);
     if(!statusWrapper) return;
