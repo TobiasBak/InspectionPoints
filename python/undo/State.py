@@ -14,32 +14,26 @@ class StateType(Enum):
 
 
 class State:
-    def __init__(self, state_type: StateType, state_values: list[VariableValue] = None):
+    def __init__(self, state_type: StateType, variable_values: list[VariableValue] = None):
         self.state_type = state_type
-        self.state_values = state_values
-
-    def __str__(self):
-        return str(self.state_values) if len(self.state_values) > 0 else "Empty State"
-
-    def __repr__(self):
-        return self.__str__()
+        self.variable_values = variable_values
 
     def get_apply_commands(self) -> str:
         output = ""
-        for state_value in self.state_values:
-            output += state_value.get_apply_command()
+        for variable_value in self.variable_values:
+            output += variable_value.get_apply_command()
         output += "\n"
         return output
 
     def has_un_collapsible_difference(self, other: Self) -> bool:
-        if self.state_values is None:
+        if self.variable_values is None:
             recurring_logger.warning("self.state is None")
             return False
 
         # Sort variables by name or reference to their StateVariable
-        if len(self.state_values) != len(other.state_values):
+        if len(self.variable_values) != len(other.variable_values):
             return True
-        for self_state, other_state in zip(self.state_values, other.state_values):
+        for self_state, other_state in zip(self.variable_values, other.variable_values):
             if self_state.variable_definition.is_collapsible:
                 continue
             if self_state.value != other_state.value:
@@ -49,12 +43,18 @@ class State:
     def __eq__(self, other: Self) -> bool:
         match other:
             case State():
-                other_state_list = other.state_values
-                if len(self.state_values) != len(other_state_list):
+                other_state_list = other.variable_values
+                if len(self.variable_values) != len(other_state_list):
                     return False
-                for self_state, other_state in zip(self.state_values, other_state_list):
+                for self_state, other_state in zip(self.variable_values, other_state_list):
                     if self_state != other_state:
                         return False
                 return True
             case _:
                 return False
+
+    def __str__(self):
+        return str(self.variable_values) if len(self.variable_values) > 0 else "Empty State"
+
+    def __repr__(self):
+        return self.__str__()

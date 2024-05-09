@@ -42,7 +42,7 @@ def create_state_from_rtde_state(state: DataObject) -> State:
                 f" with keys: {received_variables.keys()}")
         if variable_value is None:
             raise ValueError(
-                f"Variable {variable_definition.name} not found in received state,"
+                f"Variable {variable_definition.name} is none in received state,"
                 f" with keys: {received_variables.keys()}")
 
         state_values.append(VariableValue(variable_value, variable_definition))

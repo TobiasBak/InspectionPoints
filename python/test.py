@@ -1,7 +1,7 @@
 from RobotControl.RobotControl import send_command_interpreter_socket
 
-def test():
 
+def test():
     # Thread move kill
     # commands = [
     #     'thread myThread(): movej([0,1,0,0,0,0], a=0.1, v=0.1) return False end',
@@ -25,6 +25,11 @@ def test():
 
     for command in commands:
         send_command_interpreter_socket(command)
+
+
+RtdeVariableDefinition("joints", "joints", False,
+                       VariableAssignmentCommandBuilder("movej(%,r=0.005)",
+                                                        AssignmentStrategies.FUNCTION_CALL))
 
 if __name__ == '__main__':
     test()
