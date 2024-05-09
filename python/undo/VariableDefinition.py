@@ -8,7 +8,7 @@ recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
-class StateVariable(ABC):
+class VariableDefinition(ABC):
     def __init__(self, name: str, is_collapsible: bool = True,
                  command_for_changing: VariableAssignmentCommandBuilder = None):
         self.name = name
@@ -22,7 +22,7 @@ class StateVariable(ABC):
         return self.name + ": " + collapsible + " " + str(self.command_for_changing)
 
 
-class RtdeStateVariable(StateVariable):
+class RtdeVariableDefinition(VariableDefinition):
     def __init__(self, name: str, rtde_variable_name: str, is_collapsible: bool = True,
                  command_for_changing: VariableAssignmentCommandBuilder = None):
         super().__init__(name, is_collapsible, command_for_changing)
@@ -30,7 +30,7 @@ class RtdeStateVariable(StateVariable):
         self.rtde_variable_name = rtde_variable_name
 
 
-class CodeStateVariable(StateVariable):
+class CodeVariableDefinition(VariableDefinition):
     def __init__(self, name: str, command_for_reading: str, is_collapsible: bool = True,
                  command_for_changing: VariableAssignmentCommandBuilder = None):
         super().__init__(name, is_collapsible, command_for_changing)

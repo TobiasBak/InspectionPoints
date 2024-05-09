@@ -1,6 +1,6 @@
 from RobotControl.RobotSocketMessages import VariableObject
 from custom_logging import LogConfig
-from undo.StateVariable import CodeStateVariable, RtdeStateVariable
+from undo.VariableDefinition import CodeVariableDefinition, RtdeVariableDefinition
 from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder, AssignmentStrategies
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -9,17 +9,17 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 class VariableRegistry:
     def __init__(self):
-        self._code_variables: list[CodeStateVariable] = []
-        self._code_variable_dict: dict[str, CodeStateVariable] = {}
-        self._rtde_variables: list[RtdeStateVariable] = []
+        self._code_variables: list[CodeVariableDefinition] = []
+        self._code_variable_dict: dict[str, CodeVariableDefinition] = {}
+        self._rtde_variables: list[RtdeVariableDefinition] = []
 
-    def register_code_variable(self, variable: CodeStateVariable) -> None:
+    def register_code_variable(self, variable: CodeVariableDefinition) -> None:
         recurring_logger.debug(f"Registering variable: {variable.name}")
         self._code_variables.append(variable)
         self._code_variable_dict[variable.name] = variable
         recurring_logger.debug(f"Code variables: {self._code_variables}")
 
-    def remove_code_variable(self, variable: CodeStateVariable) -> None:
+    def remove_code_variable(self, variable: CodeVariableDefinition) -> None:
         self._code_variables.remove(variable)
         self._code_variable_dict.pop(variable.name)
         recurring_logger.debug(f"Removed variable: {variable.name}")
@@ -39,7 +39,7 @@ class VariableRegistry:
         recurring_logger.debug(f"Cleaned code variables: {self._code_variables}")
         recurring_logger.debug(f"Cleaned code variable dict: {self._code_variable_dict}")
 
-    def register_rtde_variable(self, variable: RtdeStateVariable) -> None:
+    def register_rtde_variable(self, variable: RtdeVariableDefinition) -> None:
         self._rtde_variables.append(variable)
         # and some handling of how to enable rtde listening for this variable
 
@@ -52,13 +52,13 @@ class VariableRegistry:
                 raise ValueError("Variable in code list is not a code variable")
         return output_list
 
-    def get_code_variables(self) -> list[CodeStateVariable]:
+    def get_code_variables(self) -> list[CodeVariableDefinition]:
         return self._code_variables
 
-    def get_code_variable_dict(self) -> dict[str, CodeStateVariable]:
+    def get_code_variable_dict(self) -> dict[str, CodeVariableDefinition]:
         return self._code_variable_dict
 
-    def get_rtde_variables(self) -> list[RtdeStateVariable]:
+    def get_rtde_variables(self) -> list[RtdeVariableDefinition]:
         return self._rtde_variables
 
     def __str__(self):
@@ -73,8 +73,8 @@ def register_all_rtde_variables(in_registry: VariableRegistry):
         # RtdeStateVariable("safety status", "safety_status"),
         # RtdeStateVariable("runtime state", "runtime_state"),
         # RtdeStateVariable("robot mode", "robot_mode"),
-        RtdeStateVariable("joints", "joints", False,
-                          VariableAssignmentCommandBuilder("movej",
+        RtdeVariableDefinition("joints", "joints", False,
+                               VariableAssignmentCommandBuilder("movej(%,r=0.005)",
                                                            AssignmentStrategies.FUNCTION_CALL)),
         # RtdeStateVariable("tcp", "tcp"),
         # RtdeStateVariable("payload", "payload"),

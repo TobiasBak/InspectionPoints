@@ -10,8 +10,8 @@ from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
 from undo.History import History, CommandStateHistory
 from undo.State import State, StateType
-from undo.StateValue import StateValue
-from undo.StateVariable import CodeStateVariable
+from undo.VariableValue import VariableValue
+from undo.VariableDefinition import CodeVariableDefinition
 from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder, AssignmentStrategies
 from undo.VariableRegistry import VariableRegistry, register_all_rtde_variables
 
@@ -26,7 +26,7 @@ def get_variable_registry():
 
 
 def create_state_from_rtde_state(state: DataObject) -> State:
-    state_values: list[StateValue] = []
+    state_values: list[VariableValue] = []
     robot_state = RobotState(state)
 
     rtde_variables = get_variable_registry().get_rtde_variables()
@@ -45,7 +45,7 @@ def create_state_from_rtde_state(state: DataObject) -> State:
                 f"Variable {variable_definition.name} not found in received state,"
                 f" with keys: {received_variables.keys()}")
 
-        state_values.append(StateValue(variable_value, variable_definition))
+        state_values.append(VariableValue(variable_value, variable_definition))
 
     if len(state_values) != len(received_variables):
         # raise ValueError(f"Received state has {len(received_variables)} variables,"
@@ -78,7 +78,7 @@ def find_variables_in_command(command: str) -> list[tuple[str, str]]:
 
 def register_code_variable(variable: str, assignment_strategy: AssignmentStrategies):
     variable_assignment_builder = VariableAssignmentCommandBuilder(variable, assignment_strategy)
-    code_variable = CodeStateVariable(variable, variable, command_for_changing=variable_assignment_builder)
+    code_variable = CodeVariableDefinition(variable, variable, command_for_changing=variable_assignment_builder)
     _variable_registry.register_code_variable(code_variable)
 
 
@@ -102,7 +102,7 @@ def delete_variables_from_variable_registry(variables: list[tuple[str, str]]):
 
 
 def create_state_from_report_state(report_state: ReportState) -> State:
-    state_values: list[StateValue] = []
+    state_values: list[VariableValue] = []
     code_variable_dict = get_variable_registry().get_code_variable_dict()
     received_variables = report_state.variables
 
@@ -112,7 +112,7 @@ def create_state_from_report_state(report_state: ReportState) -> State:
             non_recurring_logger.debug(f"Variable {variable_name} not found in code variable dict.")
             continue
         code_variable = code_variable_dict[variable_name]
-        state_values.append(StateValue(variable.value, code_variable))
+        state_values.append(VariableValue(variable.value, code_variable))
 
     if len(state_values) != len(received_variables):
         non_recurring_logger.debug(f"Received state has {len(received_variables)} variables,"

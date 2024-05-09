@@ -14,6 +14,9 @@ class AssignmentStrategies(Enum):
 
 class VariableAssignmentCommandBuilder:
     def __init__(self, command: str, strategy: AssignmentStrategies):
+        """If the assignment strategy is Function call, you can use % to define where the value should land.
+                otherwise the function will be built like:
+                command(value)"""
         self.command = command
         self.strategy = strategy
 
@@ -29,8 +32,16 @@ class VariableAssignmentCommandBuilder:
             raise ValueError(f"Unknown strategy: {self.strategy}")
 
     def _build_function_call(self, value: str) -> str:
-        out = f"{self.command}({value}) "
-        non_recurring_logger.debug(f"Building function call with value: {value}. This results in '{out}'")
+        cmd_string = f"{self.command}"
+        percentage_modulation = False
+        if "%" in self.command:
+            out = cmd_string.replace("%", str(value))
+            percentage_modulation = True
+        else:
+            out = f"{self.command}({value})"
+        out += " "
+        non_recurring_logger.debug(f"Building function call with value: {value}. This results in '{out}', "
+                                   f"we {'used' if percentage_modulation else 'did not use'}percentage")
         return out
 
     def _build_variable_assignment(self, value: str) -> str:
