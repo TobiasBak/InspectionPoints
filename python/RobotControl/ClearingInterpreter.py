@@ -12,9 +12,7 @@ _pending_clears = {
 }
 
 type CallbackSignature = Callable[[], None]
-_clear_callbacks: dict[int, CallbackSignature] = {
-
-}
+_clear_callbacks: dict[int, CallbackSignature] = {}
 
 
 def clear_is_pending() -> bool:
