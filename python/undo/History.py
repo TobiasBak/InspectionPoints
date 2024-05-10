@@ -47,8 +47,8 @@ class History(object):
         recurring_logger.debug(f"we made it out from trying to append to the active command state.")
 
     def pop_command_state_from_history(self, command_id: int) -> CommandStates:
-        # if the active command state is the command_id we are looking for, we need to change the active command state
-        # to the previous command state
+        # if the active command state is the command_id we are looking for,
+        # we need to change the active command state to the previous command state
         if self.active_command_state.get_user_command().get_id() == command_id:
             if len(self.command_state_history) == 1:
                 self.active_command_state = None
@@ -80,6 +80,7 @@ class History(object):
 
         raise ValueError(f"Could not find a command id less than {from_index}")
 
+    # Rest of class cut out
     def new_command(self, command: CommandMessage) -> None:
         self.command_state_history[command.get_id()] = CommandStates(command)
 

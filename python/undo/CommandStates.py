@@ -13,9 +13,6 @@ class CommandStates:
         self.is_closed = False
         self.previous_states: dict[StateType, tuple[int, State]] = {}
 
-    def get_user_command(self) -> CommandMessage:
-        return self.user_command
-
     def append_state(self, state: State):
         if state.state_type not in self.previous_states:
             recurring_logger.debug(f"state appended because it is the first state of its type: {state.state_type}.")
@@ -45,9 +42,6 @@ class CommandStates:
         self.previous_states[state.state_type] = (len(self.states) - 1, state)
         recurring_logger.debug(f"Previous states: {self.previous_states}")
 
-    def close(self):
-        self.is_closed = True
-
     def get_undo_commands(self) -> str:
         output = ""
         for state in reversed(self.states):
@@ -58,6 +52,12 @@ class CommandStates:
         for state in reversed(self.states):
             if state.state_type == StateType.rtde_state:
                 return state
+
+    def get_user_command(self) -> CommandMessage:
+        return self.user_command
+
+    def close(self):
+        self.is_closed = True
 
     def get_latest_code_state(self):
         for state in reversed(self.states):
