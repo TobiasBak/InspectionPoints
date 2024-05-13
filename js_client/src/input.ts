@@ -126,8 +126,21 @@ inputField.addEventListener('keydown', function (e: KeyboardEvent): void {
         case "2":
             if (e.ctrlKey) {
                 e.preventDefault();
-                sendCommand("movej(p[-0.594, 0.261, 0.251, 2.61, -1.806, -0.019], a=0.3, v=0.3)");
+                sendCommand("movej(p[-0.194, -0.6, 0.066, 2.61, -1.806, -0.019], a=0.3, v=0.3)");
             }
             break;
+        case "3":
+            if (e.ctrlKey) {
+                e.preventDefault();
+                sendCommand("movej(p[-0.194, -0.6, 0.066, 2.61, -1.806, -0.019], a=0.05, v=0.05)");
+            }
+            break;
+        case "4":
+            if (e.ctrlKey) {
+                e.preventDefault();
+                sendCommand("movej(p[-0.194, -0.6, 0.066, 2.61, -1.806, -0.019], a=0.05, v=0.05)");
+            }
+            break;
+
     }
 })

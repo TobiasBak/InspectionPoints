@@ -45,15 +45,22 @@ def find_command_states_to_undo(command_ids: list[int]) -> list[CommandStates]:
 def undo_command_states(command_states: list[CommandStates], command_id: int) -> None:
     history = History.get_history()
     for command_state in command_states:
-        non_recurring_logger.debug(f"Active command state: {history.get_active_command_state()}")
-        command_undo_string = command_state.get_undo_commands()
-        new_string = sanitize_command(command_undo_string)
-        non_recurring_logger.debug(f"Undoing command: {new_string}")
-        non_recurring_logger.debug(f"variable registry: {get_variable_registry()}")
-        clean_variable_code_registry()
-        send_command_with_recovery(command_undo_string, None, is_undo_command=True)
+        apply_undo_state(command_state, history.get_active_command_state())
+
+    apply_undo_state(command_states[-1], history.get_active_command_state())
 
     send_command_with_recovery("", command_id, is_command_finished=True)  # Stop spinner on frontend
+
+
+def apply_undo_state(command_state: CommandStates, active_command_state: CommandStates) -> None:
+    non_recurring_logger.debug(f"Active command state: {active_command_state}")
+    command_undo_string = command_state.get_undo_commands()
+    new_string = sanitize_command(command_undo_string)
+    non_recurring_logger.debug(f"Undoing command: {new_string}")
+    non_recurring_logger.debug(f"variable registry: {get_variable_registry()}")
+    clean_variable_code_registry()
+    queued_clear_interpreter()
+    send_command_with_recovery(command_undo_string, None, is_undo_command=True)
 
 
 def remove_undone_command_states(command_ids: list[int]) -> None:
