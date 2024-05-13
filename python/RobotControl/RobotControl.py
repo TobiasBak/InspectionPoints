@@ -11,7 +11,8 @@ from RobotControl.RobotSocketMessages import VariableObject, InterpreterCleared
 from RobotControl.RobotSocketVariableTypes import VariableTypes
 from ToolBox import escape_string
 from URIFY import SOCKET_NAME
-from constants import ROBOT_FEEDBACK_PORT, ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, INTERPRETER_PORT
+from constants import ROBOT_FEEDBACK_PORT, ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, INTERPRETER_PORT, \
+    ROBOT_FEEDBACK_HOST
 from custom_logging import LogConfig
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -95,7 +96,7 @@ def apply_variables_to_robot(variables: list[VariableObject]):
 def _start_interpreter_mode_and_connect_to_backend_socket():
     start_interpreter_mode()
     sleep(1)  # Wait for the interpreter to start
-    _connect_robot_to_feedback_socket()
+    _connect_robot_to_feedback_socket(host=ROBOT_FEEDBACK_HOST)
 
     # Ensure that non-user inputted commands are not sent to the websocket.
     # We sleep, because the message has to be processed by the robot first.
