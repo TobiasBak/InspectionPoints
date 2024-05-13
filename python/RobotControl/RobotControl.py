@@ -164,6 +164,12 @@ def sanitize_dashboard_reads(response: str) -> str:
 
 
 def _connect_robot_to_feedback_socket(host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT):
+    non_recurring_logger.debug(f"Hostname before checking hostname {host}")
+    try:
+        socket.inet_aton(host)
+    except socket.error:
+        host = gethostbyname(host)
+    non_recurring_logger.debug(f"Hostname after checking hostname {host}")
     non_recurring_logger.debug(f"Connecting robot to feedback socket: {host}:{port}")
     send_command_interpreter_socket(f"socket_open(\"{host}\", {port}, {SOCKET_NAME})\n")
 
