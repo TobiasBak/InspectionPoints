@@ -95,7 +95,8 @@ function parseRobotStateMessage(message: any): RobotStateMessage {
                 speed: noneGuard(message.data.tcp.speed),
                 force: noneGuard(message.data.tcp.force)
             },
-            payload: noneGuard(message.data.payload)
+            payload: noneGuard(message.data.payload),
+            digital_out: [noneGuard(message.data.digital_out_0), noneGuard(message.data.digital_out_1), noneGuard(message.data.digital_out_2), noneGuard(message.data.digital_out_3), noneGuard(message.data.digital_out_4), noneGuard(message.data.digital_out_5), noneGuard(message.data.digital_out_6), noneGuard(message.data.digital_out_7)],
         }
     };
 }

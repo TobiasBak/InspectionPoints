@@ -33,6 +33,7 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
             handleFeedbackMessage(message);
             break;
         case ResponseMessageType.RobotState:
+            console.log('robot state: ', message)
             handleRobotStateMessage(message);
             break;
         case ResponseMessageType.CommandFinished:

@@ -323,13 +323,14 @@ lookup_robot_mode_types: dict[int, RobotModeTypes] = {element.value: element for
 
 class RobotStateData:
     def __init__(self, safety_status: SafetyStatusTypes, runtime_state: RuntimeStateTypes, robot_mode: RobotModeTypes,
-                 joints: JointState, tcp: TCPState, payload: float):
+                 joints: JointState, tcp: TCPState, payload: float, digital_out: list[bool]):
         self.safety_status: SafetyStatusTypes = safety_status
         self.runtime_state: RuntimeStateTypes = runtime_state
         self.robot_mode: RobotModeTypes = robot_mode
         self.joints: JointState = joints
         self.tcp: TCPState = tcp
         self.payload: float = payload
+        self.digital_out = digital_out
 
     def dump(self):
         """Dumps the data to a dictionary that can be converted to JSON."""
@@ -339,7 +340,15 @@ class RobotStateData:
             "robot_mode": self.robot_mode.name,
             "joints": self.joints.dump(),
             "tcp": self.tcp.dump(),
-            "payload": self.payload
+            "payload": self.payload,
+            "digital_out_0": self.digital_out[0],
+            "digital_out_1": self.digital_out[1],
+            "digital_out_2": self.digital_out[2],
+            "digital_out_3": self.digital_out[3],
+            "digital_out_4": self.digital_out[4],
+            "digital_out_5": self.digital_out[5],
+            "digital_out_6": self.digital_out[6],
+            "digital_out_7": self.digital_out[7]
         }
 
 
@@ -352,6 +361,7 @@ class TransmittedInformationOptions(Enum):
     tcp_speed = "actual_TCP_speed"
     tcp_force = "actual_TCP_force"
     payload = "payload"
+    digital_out = "actual_digital_output_bits"
 
 
 class RobotState:
@@ -368,7 +378,9 @@ class RobotState:
                                            state.__getattribute__(TransmittedInformationOptions.tcp_speed.value),
                                            state.__getattribute__(TransmittedInformationOptions.tcp_force.value))
         payload: float = ensure_type_of_payload(state.__getattribute__(TransmittedInformationOptions.payload.value))
-        self.data: RobotStateData = RobotStateData(status, runtime_state, robot_mode, joints, tcp, payload)
+        digital_out = get_digital_out_values(state.__getattribute__(TransmittedInformationOptions.digital_out.value))
+        print(f"Digital out: {digital_out}")
+        self.data: RobotStateData = RobotStateData(status, runtime_state, robot_mode, joints, tcp, payload, digital_out)
 
     def round_values(self):
         round_to = 5
@@ -389,6 +401,10 @@ class RobotState:
             "type": self.type.name,
             "data": self.data.dump()
         })
+
+
+def get_digital_out_values(digital_out: int) -> list[bool]:
+    return [digital_out & 1 << i > 0 for i in range(8)]
 
 
 def ensure_type_of_status(status: any) -> SafetyStatusTypes:

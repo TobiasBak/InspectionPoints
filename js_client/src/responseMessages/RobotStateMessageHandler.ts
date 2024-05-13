@@ -101,4 +101,7 @@ function prettyPrint(information: stateMessageTypes): string {
     if (typeof information === 'object') {
         return JSON.stringify(information);
     }
+    if (typeof information === 'boolean') {
+        return information ? 'True' : 'False';
+    }
 }

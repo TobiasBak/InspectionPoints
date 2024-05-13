@@ -54,6 +54,7 @@ export type RobotStateMessageData = {
     joints: [number, number, number, number, number, number],
     tcp: TCPInformation,
     payload: number
+    digital_out: [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean]
 }
 
 export type VariableType = 'String' | 'Integer' | 'Float' | 'Boolean' | 'List' | 'Pose'
@@ -64,7 +65,7 @@ export type VariableObject = {
     value: string | number | boolean | any[] | [number, number, number, number, number, number]
 }
 
-export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation
+export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation | [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean] | boolean
 
 export type CommandFinishedMessageData = {
     id: number,

@@ -57,7 +57,7 @@ def send_command_with_recovery(command: str, command_id, is_command_finished: bo
 
     response_code = response_array[0]
 
-    print(f"Command_finished: {is_command_finished} Response code: {response_code} Command: {command}")
+    # print(f"Command_finished: {is_command_finished} Response code: {response_code} Command: {command}")
 
     if response_code == ResponseCodes.ACK.value and not is_command_finished and not is_undo_command:
         return out

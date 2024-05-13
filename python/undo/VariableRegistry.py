@@ -69,6 +69,7 @@ class VariableRegistry:
 
 
 def register_all_rtde_variables(in_registry: VariableRegistry):
+
     variables = [
         # RtdeStateVariable("safety status", "safety_status"),
         # RtdeStateVariable("runtime state", "runtime_state"),
@@ -79,6 +80,9 @@ def register_all_rtde_variables(in_registry: VariableRegistry):
         # RtdeStateVariable("tcp", "tcp"),
         RtdeVariableDefinition("payload", "payload", False,
                                VariableAssignmentCommandBuilder("set_payload", AssignmentStrategies.FUNCTION_CALL)),
+        RtdeVariableDefinition("digital_out_0", "digital_out_0", False,
+                               VariableAssignmentCommandBuilder("set_digital_out(0, %)",
+                                                                AssignmentStrategies.FUNCTION_CALL)),
         RtdeVariableDefinition("digital_out_1", "digital_out_1", False,
                                VariableAssignmentCommandBuilder("set_digital_out(1, %)",
                                                                 AssignmentStrategies.FUNCTION_CALL)),
@@ -99,11 +103,7 @@ def register_all_rtde_variables(in_registry: VariableRegistry):
                                                                 AssignmentStrategies.FUNCTION_CALL)),
         RtdeVariableDefinition("digital_out_7", "digital_out_7", False,
                                VariableAssignmentCommandBuilder("set_digital_out(7, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_8", "digital_out_8", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(8, %)",
                                                                 AssignmentStrategies.FUNCTION_CALL))
     ]
-
     for variable in variables:
         in_registry.register_rtde_variable(variable)

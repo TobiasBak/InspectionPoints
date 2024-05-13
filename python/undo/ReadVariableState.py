@@ -43,18 +43,18 @@ def get_closured_functions() -> tuple[Callable[[], None], Callable[[], None]]:
 
     def read_variable_state():
         if not _read_report_state:
-            non_recurring_logger.debug("Read report state is false, skipping read_variable_state")
+            recurring_logger.debug("Read report state is false, skipping read_variable_state")
             return
 
         if get_read_in_progress():
-            non_recurring_logger.debug("Read in progress, skipping read_variable_state")
+            recurring_logger.debug("Read in progress, skipping read_variable_state")
             return
         set_read_in_progress(True)
-        print(f"Reading variable state with the values: {_variable_registry}")
+        # print(f"Reading variable state with the values: {_variable_registry}")
         read_commands = _variable_registry.generate_read_commands()
         report_state = ReportState(read_commands)
         response = send_command_with_recovery(report_state.dump_string_post_urify(), None)
-        non_recurring_logger.debug(f"Read variable state response: {response}")
+        recurring_logger.debug(f"Read variable state response: {response}")
 
     return read_variable_state, report_state_received
 
