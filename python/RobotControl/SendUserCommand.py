@@ -16,9 +16,6 @@ def send_user_command(command: CommandMessage) -> str:
     command_message = command.data.command
     add_command_to_history(command)
 
-    vr = get_variable_registry()
-    print(f"Variable registry: {vr}")
-
     response_from_command = send_command_with_recovery(command_message, command_id)
 
     # Fix since command_finished has the command that is discarded, but it is not discarded, when it is wrapped
@@ -26,6 +23,7 @@ def send_user_command(command: CommandMessage) -> str:
     response_parts = response_from_command.split(":")
     if response_parts[0] == not_good_response_codes.discard.name:
         send_command_finished(command_id, "")
+
         return response_from_command
 
     send_command_finished(command_id, command_message)

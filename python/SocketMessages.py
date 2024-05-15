@@ -379,7 +379,6 @@ class RobotState:
                                            state.__getattribute__(TransmittedInformationOptions.tcp_force.value))
         payload: float = ensure_type_of_payload(state.__getattribute__(TransmittedInformationOptions.payload.value))
         digital_out = get_digital_out_values(state.__getattribute__(TransmittedInformationOptions.digital_out.value))
-        print(f"Digital out: {digital_out}")
         self.data: RobotStateData = RobotStateData(status, runtime_state, robot_mode, joints, tcp, payload, digital_out)
 
     def round_values(self):
