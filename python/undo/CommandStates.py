@@ -48,6 +48,12 @@ class CommandStates:
             output += state.get_apply_commands()
         return output
 
+    def get_first_rtde_state(self) -> str:
+        for state in self.states:
+            if state.state_type == StateType.rtde_state:
+                return state.get_apply_commands()
+        return ""
+
     def get_latest_rtde_state(self):
         for state in reversed(self.states):
             if state.state_type == StateType.rtde_state:
