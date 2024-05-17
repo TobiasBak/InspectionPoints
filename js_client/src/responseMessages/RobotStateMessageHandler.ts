@@ -69,7 +69,7 @@ function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: 
     const column55Text: HTMLParagraphElement = document.createElement('p');
     if (Array.isArray(messageDataValue)) {
         for (let i = 0; i < messageDataValue.length; i++) {
-            column55Text.appendChild(document.createTextNode("[" + (i + 1) + "]: " + prettyPrint(messageDataValue[i])));
+            column55Text.appendChild(document.createTextNode("[" + (i) + "]: " + prettyPrint(messageDataValue[i])));
             column55Text.appendChild(document.createElement('br'));
         }
 

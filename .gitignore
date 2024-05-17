@@ -165,4 +165,6 @@ cython_debug/
 interpreter-examples/interpreter-examples/
 /urprograms
 logs/
-/testing.csv
+/usecases-memory-all.csv
+
+usecases-memory.csv

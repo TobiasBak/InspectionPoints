@@ -1,4 +1,5 @@
 import re
+from time import sleep
 
 from RobotControl.ClearingInterpreter import queued_clear_interpreter
 from RobotControl.RobotControl import sanitize_command, clear_interpreter_mode
@@ -49,6 +50,7 @@ def undo_command_states(command_states: list[CommandStates], command_id: int) ->
     for command_state in command_states:
         apply_undo_state(command_state, history.get_active_command_state())
 
+    non_recurring_logger.debug(f"After sleep")
     apply_undo_state(command_states[-1], history.get_active_command_state(), last=True)
 
     send_command_with_recovery("", command_id, is_command_finished=True)  # Stop spinner on frontend
@@ -56,20 +58,31 @@ def undo_command_states(command_states: list[CommandStates], command_id: int) ->
 
 def apply_undo_state(command_state: CommandStates, active_command_state: CommandStates, last=False) -> None:
     non_recurring_logger.debug(f"Active command state: {active_command_state}")
-    command_undo_string = command_state.get_first_rtde_state() if last else command_state.get_undo_commands()
-    new_string = sanitize_command(command_undo_string)
     if last:
+        new_string = command_state.get_first_rtde_state()
+        new_string = sanitize_command(new_string)
         print(f"new_string: {new_string}")
         expression = r'(movej\([^)]*)(,\s*r\s*=\s*\d+\.\d+)'
         print(re.findall(expression, new_string))
         new_string = re.sub(expression, r'\1', new_string)
         print(f"modified command replaced r=" + new_string)
-    non_recurring_logger.debug(f"Undoing command: {new_string}")
-    non_recurring_logger.debug(f"variable registry: {get_variable_registry()}")
-    if not last:
+        result = send_command_with_recovery(new_string, None, is_undo_command=True)
+    else:
         clean_variable_code_registry()
         queued_clear_interpreter()
-    send_command_with_recovery(command_undo_string, None, is_undo_command=True)
+        command_undo_strings = command_state.get_undo_commands()
+        result = ""
+        start = 0
+        end = len(command_undo_strings)
+        step = int(end / 10) + 1
+        for i in range(start, end, step):
+            for command_undo_string in command_undo_strings[i:i+step]:
+                sanitized = sanitize_command(command_undo_string)
+                result += send_command_with_recovery(sanitized, None, is_undo_command=True)
+                # sleep(1/60)
+
+    if last:
+        non_recurring_logger.debug(f"Result from last command: {result}")
 
 
 def remove_undone_command_states(command_ids: list[int]) -> None:

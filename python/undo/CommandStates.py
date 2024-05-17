@@ -42,10 +42,8 @@ class CommandStates:
         self.previous_states[state.state_type] = (len(self.states) - 1, state)
         recurring_logger.debug(f"Previous states: {self.previous_states}")
 
-    def get_undo_commands(self) -> str:
-        output = ""
-        for state in reversed(self.states):
-            output += state.get_apply_commands()
+    def get_undo_commands(self) -> list[str]:
+        output = [state.get_apply_commands() for state in reversed(self.states)]
         return output
 
     def get_first_rtde_state(self) -> str:

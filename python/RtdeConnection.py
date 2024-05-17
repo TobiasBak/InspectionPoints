@@ -40,7 +40,7 @@ from undo.State import State
 conf = rtde_config.ConfigFile(RTDE_CONFIG_FILE)
 state_names, state_types = conf.get_recipe("state")
 
-TRANSMIT_FREQUENCY_IN_HERTZ = 60
+TRANSMIT_FREQUENCY_IN_HERTZ = 30
 SLEEP_TIME = 1 / TRANSMIT_FREQUENCY_IN_HERTZ
 
 type ListenerFunction = Callable[[DataObject], Coroutine[None, None, None]]
