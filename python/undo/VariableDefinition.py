@@ -37,7 +37,6 @@ class CodeVariableDefinition(VariableDefinition):
         self.is_code = True
         self.command_for_reading = command_for_reading
         "This must be the urscript code that is necessary to return a value for this variable."
-        # TODO: Correct typing on the variableTypes.string
         self.socket_representation = VariableObject(name, VariableTypes.String, command_for_reading)
 
     def __str__(self):

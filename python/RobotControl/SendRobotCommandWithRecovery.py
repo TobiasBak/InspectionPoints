@@ -45,7 +45,6 @@ def send_command_with_recovery(command: str, command_id, is_command_finished: bo
     result = send_command_interpreter_socket(command_to_send)
     recurring_logger.debug(f"Result from robot: {result}")
 
-    # TODO: Remove this responsibility from the send_command function
     out = result
     if out == "nothing":
         raise ValueError("Response from robot is nothing. This is not expected.")
@@ -56,8 +55,6 @@ def send_command_with_recovery(command: str, command_id, is_command_finished: bo
         raise ValueError("Response from robot is not in the expected format.")
 
     response_code = response_array[0]
-
-    # print(f"Command_finished: {is_command_finished} Response code: {response_code} Command: {command}")
 
     if response_code == ResponseCodes.ACK.value and not is_command_finished and not is_undo_command:
         return out

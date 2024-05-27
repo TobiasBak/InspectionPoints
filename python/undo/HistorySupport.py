@@ -48,8 +48,8 @@ def create_state_from_rtde_state(state: DataObject) -> State:
         state_values.append(VariableValue(variable_value, variable_definition))
 
     if len(state_values) != len(received_variables):
-        # raise ValueError(f"Received state has {len(received_variables)} variables,"
-        #                  f" but only {len(state_values)} were processed.")
+        non_recurring_logger.debug(f"Received state has {len(received_variables)} variables,"
+                                   f" but only {len(state_values)} were processed.")
         pass
 
     return State(StateType.rtde_state, state_values)

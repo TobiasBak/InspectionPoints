@@ -42,7 +42,6 @@ class History(object):
         if self.active_command_state is None:
             recurring_logger.debug("There is no active command state.")
             return
-            # raise ValueError("There is no active command state.")
         self.active_command_state.append_state(state)
         recurring_logger.debug(f"we made it out from trying to append to the active command state.")
 

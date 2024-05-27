@@ -55,7 +55,6 @@ class CommandFinished:
         self.type = RobotSocketMessageTypes.Command_finished
         self.data: CommandFinishedData = CommandFinishedData(id, command)
 
-    # Issue later should handle the case where the command contains a comment
     def command_contains_comment(self):
         if "#" in self.data.command:
             return True

@@ -72,11 +72,6 @@ function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: 
             column55Text.appendChild(document.createTextNode("[" + (i) + "]: " + prettyPrint(messageDataValue[i])));
             column55Text.appendChild(document.createElement('br'));
         }
-
-        // for (const messageDataValueItem of messageDataValue) {
-        //     column55Text.appendChild(document.createTextNode(prettyPrint(messageDataValueItem)));
-        //     column55Text.appendChild(document.createElement('br'));
-        // }
     }else{
         column55Text.textContent = prettyPrint(messageDataValue);
     }

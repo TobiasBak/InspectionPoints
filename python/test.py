@@ -2,21 +2,6 @@ from RobotControl.RobotControl import send_command_interpreter_socket
 
 
 def test():
-    # Thread move kill
-    # commands = [
-    #     'thread myThread(): movej([0,1,0,0,0,0], a=0.1, v=0.1) return False end',
-    #     'thrd = run myThread()',
-    #     'sleep(1)'
-    #     # 'kill thrd'
-    # ]
-
-    # Thread exception
-    # commands = [
-    #     'thread myThread(): a=[0,0] b=a[2] return False end',
-    #     'thrd = run myThread()'
-    # ]
-
-    # Secondary program
     commands = [
         'sec secondaryProgram(): set_digital_out(1,True) end',
         'secp = run secondaryProgram()',
@@ -27,9 +12,6 @@ def test():
         send_command_interpreter_socket(command)
 
 
-RtdeVariableDefinition("joints", "joints", False,
-                       VariableAssignmentCommandBuilder("movej(%,r=0.005)",
-                                                        AssignmentStrategies.FUNCTION_CALL))
 
 if __name__ == '__main__':
     test()

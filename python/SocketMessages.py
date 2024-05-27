@@ -487,7 +487,6 @@ def ensure_type_of_payload(payload: any) -> float:
 
 def parse_message(message: str) -> CommandMessage | UndoMessage:
     parsed = json.loads(message)
-    # print(f"parsed: {parsed}")
 
     match parsed:
         case {

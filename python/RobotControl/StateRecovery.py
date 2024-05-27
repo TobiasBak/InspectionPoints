@@ -8,8 +8,7 @@ from SocketMessages import AckResponse
 from URIFY import URIFY_return_string
 from WebsocketNotifier import websocket_notifier
 from custom_logging import LogConfig
-from undo.HistorySupport import get_latest_code_state, get_latest_active_command_state, \
-    find_variables_in_command, delete_variables_from_variable_registry
+from undo.HistorySupport import get_latest_code_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -39,13 +38,6 @@ def recover_from_invalid_state(command: str, command_id: int | None):
     _start_interpreter_mode_and_connect_to_backend_socket()
     __recover_latest_code_state()
     if command_id is not None:
-        # Todo: We need ssh to see the logs for optimal feedback
-
-        # actual_command_that_caused_invalid_state = get_latest_active_command_state().get_user_command().data.command
-        # list_of_definitions = find_variables_in_command(command)
-        # delete_variables_from_variable_registry(list_of_definitions)
-
-        # non_recurring_logger.debug(f"Removing variable definition: {list_of_definitions}")
         ack_response = AckResponse(command_id, "",
                                    f"discard: Command caused invalid state. Can be due to following reasons:\n"
                                    f"1. array out of bounds.\n"
@@ -88,7 +80,6 @@ def handle_cleared_interpreter(robot_message: InterpreterCleared) -> None:
 def recover_from_protective_stop(command: str, command_id: int | None):
     recurring_logger.warning(f"\t\t\tRobot is in protective stop. Attempting to unlock; Command id: {command_id}")
     if command_id is not None:
-        # Todo: We need ssh to see the logs for optimal feedback
         ack_response = AckResponse(command_id, command,
                                    f"discard: Command caused protective stop. Please investigate the cause before continuuing. Unlocking in 5 seconds. \n")
         websocket_notifier.notify_observers(str(ack_response))

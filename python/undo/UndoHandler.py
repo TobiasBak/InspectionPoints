@@ -61,11 +61,8 @@ def apply_undo_state(command_state: CommandStates, active_command_state: Command
     if last:
         new_string = command_state.get_first_rtde_state()
         new_string = sanitize_command(new_string)
-        print(f"new_string: {new_string}")
         expression = r'(movej\([^)]*)(,\s*r\s*=\s*\d+\.\d+)'
-        print(re.findall(expression, new_string))
         new_string = re.sub(expression, r'\1', new_string)
-        print(f"modified command replaced r=" + new_string)
         result = send_command_with_recovery(new_string, None, is_undo_command=True)
     else:
         clean_variable_code_registry()
@@ -79,7 +76,6 @@ def apply_undo_state(command_state: CommandStates, active_command_state: Command
             for command_undo_string in command_undo_strings[i:i+step]:
                 sanitized = sanitize_command(command_undo_string)
                 result += send_command_with_recovery(sanitized, None, is_undo_command=True)
-                # sleep(1/60)
 
     if last:
         non_recurring_logger.debug(f"Result from last command: {result}")
