@@ -7,8 +7,7 @@ import {
 
 export function handleReportStateMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.ReportState) {
-        console.log('not a ReportState message: ', message);
-        return;
+        throw new Error(`Invalid message type: ${message.type}`);
     }
 
     iterateMessageData(message.data);

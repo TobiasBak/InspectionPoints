@@ -6,7 +6,6 @@ document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): v
 })
 
 document.addEventListener(EventList.CommandFinished, function (e: CustomEvent): void {
-    console.log('command finished event received from document', e.detail);
     unlockInputField();
 })
 
@@ -29,5 +28,5 @@ export function inputFieldIsLocked(): boolean {
 export const lockedClass = "locked"
 
 export function indicateToUserThatFieldIsLocked(): void {
-    console.log('field is locked');
+    // Indicate to the user that the input field is locked
 }

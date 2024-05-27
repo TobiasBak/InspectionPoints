@@ -126,7 +126,6 @@ const grammar : Grammar = {
             "patterns": [
                 {
                     "begin": "\\b(def|thread)\\b",
-                    // "end": "\\(.*\\):\\s",
                     "end": "\\(",
                     "beginCaptures": {
                         "1": {

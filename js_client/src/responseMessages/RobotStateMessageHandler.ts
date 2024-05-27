@@ -11,8 +11,7 @@ let lastRobotStateMessage: RobotStateMessage;
 
 export function handleRobotStateMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.RobotState) {
-        console.log('not a Robot_state message: ', message);
-        return;
+        throw new Error(`Invalid message type: ${message.type}`);
     }
 
     lastRobotStateMessage = message;

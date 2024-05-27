@@ -19,8 +19,6 @@ function get_socket(ip: string, port: number) {
         handleMessageFromProxyServer(response);
     }
 
-    console.log(out)
-
     return out
 }
 
@@ -33,20 +31,18 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
             handleFeedbackMessage(message);
             break;
         case ResponseMessageType.RobotState:
-            console.log('robot state: ', message)
             handleRobotStateMessage(message);
             break;
         case ResponseMessageType.CommandFinished:
             handleCommandFinishedMessage(message);
             break;
         case ResponseMessageType.UndoResponse:
-            console.log('undo response: ', message);
             break;
         case ResponseMessageType.ReportState:
             handleReportStateMessage(message);
             break;
         default:
-            console.warn('invalid message type: ', message);
+            break;
     }
 }
 
@@ -57,11 +53,9 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
  */
 function send(socket: WebSocket, message: UserMessage) {
     if (socket.readyState === WebSocket.CLOSED) {
-        console.log('socket closed');
         return;
     }
 
-    console.log('sending command: ' + JSON.stringify(message));
     socket.send(JSON.stringify(message));
 }
 
@@ -69,7 +63,6 @@ async function testCommands() {
     const proxyServer = get_socket("localhost", 8767);
 
     proxyServer.onopen = () => {
-        console.log('proxy server opened');
         document.addEventListener(EventList.CommandEntered, function (e: CustomEvent) {
             const commandMessage = createCommandMessage(e.detail.id, e.detail.text);
             send(proxyServer, commandMessage)

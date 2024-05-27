@@ -9,13 +9,11 @@ const frontend_text_for_ack_success = "Command accepted by robot"
 
 export function handleAckResponseMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.AckResponse) {
-        console.log('not an Ack_response message: ', message);
-        return
+        throw new Error(`Invalid message type: ${message.type}`);
     }
 
     const commandWrapper: HTMLElement = getCommandEntry(message.data.id);
     if (!commandWrapper) {
-        console.log(`no command with id: ${message.data.id}`, message);
         return
     }
     const contentWrapper: HTMLElement = getChildWithClass(commandWrapper, 'contentWrapper');
@@ -39,7 +37,6 @@ export function handleAckResponseMessage(message: ResponseMessage): void {
 
     responseWrapper.appendChild(responseParagraph);
 
-    console.log(message);
 }
 
 function emitCommandAcceptedEvent(id: number):void{
