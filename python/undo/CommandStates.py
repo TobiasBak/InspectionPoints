@@ -31,7 +31,7 @@ class CommandStates:
         elif from_state != state:
             self.states.pop(from_index)
             self._append_state(state)
-            recurring_logger.debug(f"Collapsable state difference, replacing state at index {from_index} : {state}")
+            recurring_logger.debug(f"Collapsible state difference, replacing state at index {from_index} : {state}")
         else:
             recurring_logger.debug(
                 f"State is the same as the previous state from_index: {from_index}, no further action: {state}")

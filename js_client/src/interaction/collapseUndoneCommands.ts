@@ -3,42 +3,42 @@ import {getChildWithTag, getCommandEntry} from "../Toolbox/DomTools";
 
 document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
     const commandDisplay: HTMLElement = document.getElementById('commandHistoryDisplay');
-    commandDisplay.appendChild(generateCollapsableElement(e.detail.id));
-    closeCollapsableElement(e.detail.id - 1);
-    removeEmptyCollapsableElement();
+    commandDisplay.appendChild(generateCollapsibleElement(e.detail.id));
+    closeCollapsibleElement(e.detail.id - 1);
+    removeEmptyCollapsibleElement();
 })
 document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
-    closeCollapsableElement(e.detail.id - 1);
+    closeCollapsibleElement(e.detail.id - 1);
 })
 
 
-function generateCollapsableElement(id: number): HTMLElement {
-    const collapsableWrapper: HTMLElement = document.createElement('div');
-    const collapsableElement: HTMLElement = document.createElement('div');
-    const collapsableParagraph: HTMLParagraphElement = document.createElement('p');
-    collapsableParagraph.textContent = 'Press here to hide Undone commands';
+function generateCollapsibleElement(id: number): HTMLElement {
+    const collapsibleWrapper: HTMLElement = document.createElement('div');
+    const collapsibleElement: HTMLElement = document.createElement('div');
+    const collapsibleParagraph: HTMLParagraphElement = document.createElement('p');
+    collapsibleParagraph.textContent = 'Press here to hide Undone commands';
 
-    collapsableParagraph.addEventListener('click', function () {
-        collapsableElement.classList.toggle('collapsed');
-        if (collapsableElement.classList.contains('collapsed')) {
-            collapsableParagraph.textContent = 'Press here to see Undone commands';
+    collapsibleParagraph.addEventListener('click', function () {
+        collapsibleElement.classList.toggle('collapsed');
+        if (collapsibleElement.classList.contains('collapsed')) {
+            collapsibleParagraph.textContent = 'Press here to see Undone commands';
         } else {
-            collapsableParagraph.textContent = 'Press here to hide Undone commands';
+            collapsibleParagraph.textContent = 'Press here to hide Undone commands';
         }
     })
 
-    collapsableWrapper.appendChild(collapsableParagraph);
-    collapsableWrapper.appendChild(collapsableElement);
+    collapsibleWrapper.appendChild(collapsibleParagraph);
+    collapsibleWrapper.appendChild(collapsibleElement);
 
-    collapsableWrapper.classList.add('collapsableWrapper');
-    collapsableElement.classList.add('collapsable');
+    collapsibleWrapper.classList.add('collapsibleWrapper');
+    collapsibleElement.classList.add('collapsible');
 
     const undoneCommands: HTMLElement[] = getUndoneCommands(id);
     undoneCommands.forEach((element: HTMLElement): void => {
-        collapsableElement.appendChild(element);
+        collapsibleElement.appendChild(element);
     })
 
-    return collapsableWrapper;
+    return collapsibleWrapper;
 }
 
 function getUndoneCommands(id: number): HTMLElement[]{
@@ -54,33 +54,33 @@ function getUndoneCommands(id: number): HTMLElement[]{
     return listOfElements;
 }
 
-export function openCollapsableElement(id: number): void {
+export function openCollapsibleElement(id: number): void {
     const commandEntry: HTMLElement = getCommandEntry(id)
-    const collapsableElement: HTMLElement = commandEntry.parentElement
-    const collapsableWrapper: HTMLElement = collapsableElement.parentElement
-    const collapsableParagraph: HTMLParagraphElement = collapsableWrapper.querySelector('p');
+    const collapsibleElement: HTMLElement = commandEntry.parentElement
+    const collapsibleWrapper: HTMLElement = collapsibleElement.parentElement
+    const collapsibleParagraph: HTMLParagraphElement = collapsibleWrapper.querySelector('p');
 
-    if (collapsableElement.classList.contains('collapsed')){
-        collapsableParagraph.click();
+    if (collapsibleElement.classList.contains('collapsed')){
+        collapsibleParagraph.click();
     }
 }
 
-export function closeCollapsableElement(id: number): void {
+export function closeCollapsibleElement(id: number): void {
     const commandEntry: HTMLElement = getCommandEntry(id)
     if (!commandEntry) return;
-    const collapsableElement: HTMLElement = commandEntry.parentElement
-    if (!collapsableElement.classList.contains('collapsable')) return;
-    const collapsableWrapper: HTMLElement = collapsableElement.parentElement
-    const collapsableParagraph: HTMLParagraphElement = collapsableWrapper.querySelector('p')
+    const collapsibleElement: HTMLElement = commandEntry.parentElement
+    if (!collapsibleElement.classList.contains('collapsible')) return;
+    const collapsibleWrapper: HTMLElement = collapsibleElement.parentElement
+    const collapsibleParagraph: HTMLParagraphElement = collapsibleWrapper.querySelector('p')
 
-    if (!collapsableElement.classList.contains('collapsed')){
-        collapsableParagraph.click();
+    if (!collapsibleElement.classList.contains('collapsed')){
+        collapsibleParagraph.click();
     }
 }
 
-function removeEmptyCollapsableElement(): void {
-    document.querySelectorAll('.collapsableWrapper').forEach((elementToRemove: Element): void => {
-        const elementToCheck: Element = elementToRemove.querySelector('.collapsable')
+function removeEmptyCollapsibleElement(): void {
+    document.querySelectorAll('.collapsibleWrapper').forEach((elementToRemove: Element): void => {
+        const elementToCheck: Element = elementToRemove.querySelector('.collapsible')
         if (elementToCheck.children.length < 1) {
             elementToRemove.remove();
         }

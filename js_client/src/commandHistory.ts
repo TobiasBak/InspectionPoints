@@ -1,7 +1,7 @@
 import {EventList} from "./interaction/EventList";
 import {highlightCommandIntoElement} from "./SyntaxHighlighting/hast-starry-night";
 import {getCommandEntry} from "./Toolbox/DomTools";
-import {closeCollapsableElement, openCollapsableElement} from "./interaction/collapseUndoneCommands";
+import {openCollapsibleElement} from "./interaction/collapseUndoneCommands";
 
 document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
     createCommandContainer(e.detail.text, e.detail.id);
@@ -52,7 +52,7 @@ export function highlightSelectedCommandItem(id: number): void {
     const selectedElement: HTMLElement = getCommandEntry(id);
     if (selectedElement) {
         selectedElement.classList.add('command-highlighted');
-        openCollapsableElement(id);
+        openCollapsibleElement(id);
         selectedElement.scrollIntoView({behavior: "smooth", block: "nearest", inline: "nearest"});
     }
 }

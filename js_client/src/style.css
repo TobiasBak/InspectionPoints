@@ -157,23 +157,23 @@ p {
 }
 
 /* Collapsible undone commands */
-.collapsableWrapper {
+.collapsibleWrapper {
     border-radius: .5em;
     border: .2em solid var(--border-color);
     margin: 1em;
     background-color: var(--undone-color);
 }
-.collapsableWrapper > p {
+.collapsibleWrapper > p {
     color: var(--text-on-background-color);
     padding: .5em 1em;
 }
 
-.collapsable {
+.collapsible {
     overflow: hidden;
     max-height: 100%;
 }
 
-.collapsable.collapsed {
+.collapsible.collapsed {
     max-height: 0;
 }
 
