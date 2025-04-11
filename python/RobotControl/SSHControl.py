@@ -1,11 +1,17 @@
+import os
+import shutil
 import socket
 from socket import socket as Socket
 from time import sleep
 from typing import Callable
 import select
 
-
 from constants import ROBOT_IP, DASHBOARD_PORT
+from custom_logging import LogConfig
+
+recurring_logger = LogConfig.get_recurring_logger(__name__)
+non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
+
 
 def create_get_socket_function() -> Callable[[str, int], Socket]:
     inner_socket_bank: dict[tuple[str, int], Socket] = dict()
@@ -69,16 +75,59 @@ def send_command_dashboard_socket(command: str) -> str:
     dashboard_socket.send(sanitized_command.encode())
     return read_from_socket(dashboard_socket)
 
-def load_urp_program(program_name: str):
+def run_script_on_robot(script: str):
+    """
+    This function runs a script on the robot.
+    It first loads the script and then starts it.
+    """
+    _write_script_to_robot(script)
+    _load_urp_program()
+    _start_loaded_program()
+
+def _load_urp_program(program_name: str = "program.urp"):
     assert(program_name.endswith(".urp"), "Program name must end with .urp")
     send_command_dashboard_socket(f"load {program_name}")
+    non_recurring_logger.debug("Loaded program: " + program_name)
 
-def start_loaded_program():
+def _start_loaded_program():
     send_command_dashboard_socket("play")
+    non_recurring_logger.debug("Started loaded program")
 
+def startup_script(filename: str = "program.urp"):
+    """
+    This function must be called when robot starts up.
+    It copies the urp program, that will run when user executes a script.
+    """
+    # print all files in urprograms directory
+    urprograms_dir = os.path.join(os.getcwd(), "ursim/programs")
+    for file in os.listdir(urprograms_dir):
+        non_recurring_logger.debug(file)
+    
 
-# TODO SSH and write urp file to server (maybe we can juste write to the urprograms)
+    file_path = os.path.join(os.getcwd(), "RobotControl", filename)
+    
+    #Use shutil to copy the file to the urprograms directory
+    destination_path = os.path.join(os.getcwd(), "ursim/programs", filename)
+    try:
+        shutil.copy(file_path, destination_path)
+        non_recurring_logger.debug(f"Copied {file_path} to {destination_path}")
+    except FileNotFoundError:
+        non_recurring_logger.error(f"File {file_path} not found.")
+    except Exception as e:
+        non_recurring_logger.error(f"Failed to copy file: {e}")
 
-# TODO SSH and read the log file to get variables
+    
+def _write_script_to_robot(content: str, filename: str = "script_code.script"):
+    """
+    This function writes a script to the robot.
+    It first creates a file with the given content and then copies it to the robot.
+    """
+    destination_path = os.path.join(os.getcwd(), "ursim/programs", filename)
+
+    # write content to destination_path
+    with open(destination_path, "w") as f:
+        f.write(content)
+        non_recurring_logger.debug(f"Wrote script to {destination_path}")
+    
 
 

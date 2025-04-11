@@ -86,10 +86,10 @@ def recover_from_protective_stop(command: str, command_id: int | None):
 
     unlock_protective_stop()
     _start_interpreter_mode_and_connect_to_backend_socket()
-    __recover_latest_code_state()
-    send_command_interpreter_socket(command)
+    # __recover_latest_code_state()
+    # send_command_interpreter_socket(command)
 
 
-def __recover_latest_code_state() -> None:
-    send_command_interpreter_socket(get_latest_code_state().get_apply_commands())
-    recurring_logger.debug(f"Recovering latest code state: {get_latest_code_state()}")
+# def __recover_latest_code_state() -> None:
+#     send_command_interpreter_socket(get_latest_code_state().get_apply_commands())
+#     recurring_logger.debug(f"Recovering latest code state: {get_latest_code_state()}")
