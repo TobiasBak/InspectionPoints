@@ -6,7 +6,10 @@ import { wireTmGrammars } from 'monaco-editor-textmate';
 // Inspired by the following:
 //https://stackblitz.com/edit/1-monaco-editor-textmate-grammar-loading-example?file=src%2Fmain.ts
 // https://www.npmjs.com/package/monaco-editor-textmate?activeTab=readme
-//
+// needed https://github.com/Nishkalkashyap/monaco-vscode-textmate-theme-converter/tree/master/src to convert the theme and get nicer colors
+
+//as always, shoutout to Ahern guo for the TextMate grammar
+// https://github.com/ahernguo/urscript-extension/blob/master/syntaxes/urscript.tmLanguage.json
 
 const code = `
 while True:
