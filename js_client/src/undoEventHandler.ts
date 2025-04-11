@@ -1,6 +1,7 @@
 import {EventList} from "./interaction/EventList";
 import {getChildWithClass, getCommandEntry} from "./Toolbox/DomTools";
-import {statusWrapperClass} from "./commandHistory";
+
+export const statusWrapperClass: string = "statusWrapper"
 
 
 document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
