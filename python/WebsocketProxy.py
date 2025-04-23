@@ -51,11 +51,12 @@ def handle_command_message(message: CommandMessage) -> str:
     #     return str(response)
 
     result = run_script_on_robot(command_string)
+    non_recurring_logger.debug(f"Result of command: {result}")
     if result == "":
         return ""
     response = AckResponse(message.data.id, command_string, result)
     str_response = str(response)
-    recurring_logger.debug(f"Sending response: {str_response}")
+    non_recurring_logger.debug(f"Sending response: {str_response}")
     return str_response
 
 
@@ -99,6 +100,13 @@ def get_handler() -> callable:
             raise e
     return echo
 
+async def cleanup_stale_clients():
+    while True:
+        removed_clients = [ws for ws in _connected_web_clients if ws.closed]
+        for ws in removed_clients:
+            _connected_web_clients.remove(ws)
+            non_recurring_logger.debug(f"Removed stale WebSocket client: {ws}")
+        await asyncio.sleep(2)  # Run cleanup every 2 seconds
 
 def send_to_all_web_clients(message: str):
     removed_clients = []
@@ -107,7 +115,7 @@ def send_to_all_web_clients(message: str):
         if websocket.closed:
             removed_clients.append(websocket)
             continue
-        recurring_logger.debug(f"Sending message to webclient: {message}")
+        non_recurring_logger.debug(f"Sending message to webclient: {message}")
         asyncio.create_task(websocket.send(message))
         recurring_logger.debug(f"Message sent to webclient: {message}")
 
@@ -293,6 +301,8 @@ async def start_webserver():
     non_recurring_logger.info(f"Polyscope is ready. The robot mode is: {get_robot_mode()}")
 
     start_robot()
+
+    asyncio.create_task(cleanup_stale_clients())  # Start cleanup task
 
     recurring_logger.info("Starting websocket server")
     async with serve(get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):

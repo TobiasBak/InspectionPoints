@@ -148,12 +148,10 @@ def _write_to_file_with_ssh(content: str, filepath: str, ssh: paramiko.SSHClient
 
 def check_for_compile_error(log: str) -> bool:
     last_line: str = log
-    non_recurring_logger.debug(f"Last line of error log: {last_line}")
     if last_line == "":
         non_recurring_logger.error("Exception in error log reading")
         return False
-
-    if "compile error" in last_line:
+    if "compile error" in last_line.lower():
         recurring_logger.error("Compile error detected in the latest error log")
         return True
     return False
