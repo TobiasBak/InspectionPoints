@@ -80,7 +80,7 @@ def start_robot():
     _brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
     delayed_read = read_from_socket(_get_dashboard_socket())
-    run_script_on_robot(
+    error_message = run_script_on_robot(
         """
             a=[0,0,0,0,0,0]
             movej(a)
@@ -90,6 +90,7 @@ def start_robot():
             movej(c)
         """
     )
+    non_recurring_logger.debug(f"Delayed read: {error_message}")
     #_start_interpreter_mode_and_connect_to_backend_socket()
 
 
