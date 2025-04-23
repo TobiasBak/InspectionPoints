@@ -16,6 +16,7 @@ module.exports = {
         executing_feedback: './src/interaction/robot_executing_feedback.ts',
         collapseUndoneCommands: './src/interaction/collapseUndoneCommands.ts',
         monacoEditor: './src/monacoExperiment.ts',
+        input: './src/input.ts',
     },
     devtool: 'inline-source-map',
     devServer: {

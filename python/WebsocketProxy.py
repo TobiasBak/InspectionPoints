@@ -9,7 +9,7 @@ from typing import Final
 from websockets.server import serve
 
 
-from RobotControl.SendUserCommand import send_user_command
+from RobotControl.SSHControl import run_script_on_robot
 from RobotControl.RobotControl import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
@@ -39,17 +39,18 @@ _new_client = False
 
 def handle_command_message(message: CommandMessage) -> str:
     command_string = message.data.command
+    non_recurring_logger.debug(f"Command string: {command_string}")
 
-    if '#' in command_string and not re.search(r'"[^"]*#[^"]*"', command_string):
-        recurring_logger.debug(f"Command contains a comment: {command_string}")
-        response = AckResponse(message.data.id, command_string, "discard: Command contains a comment")
+    # if '#' in command_string and not re.search(r'"[^"]*#[^"]*"', command_string):
+    #     recurring_logger.debug(f"Command contains a comment: {command_string}")
+    #     response = AckResponse(message.data.id, command_string, "discard: Command contains a comment")
 
-        command_finished = CommandFinished(message.data.id, command_string)
-        send_to_all_web_clients(str(command_finished))
+    #     command_finished = CommandFinished(message.data.id, command_string)
+    #     send_to_all_web_clients(str(command_finished))
 
-        return str(response)
+    #     return str(response)
 
-    result = send_user_command(message)
+    result = run_script_on_robot(command_string)
     if result == "":
         return ""
     response = AckResponse(message.data.id, command_string, result)
