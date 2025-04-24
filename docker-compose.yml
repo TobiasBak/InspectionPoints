@@ -30,9 +30,6 @@ services:
       - type: bind
         source: ./python
         target: /app
-      - type: bind
-        source: ./urprograms
-        target: /app/ursim/programs
     tty: true
     stdin_open: true
     environment:
