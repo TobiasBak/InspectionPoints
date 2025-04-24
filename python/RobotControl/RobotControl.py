@@ -14,7 +14,6 @@ from URIFY import SOCKET_NAME
 from constants import ROBOT_FEEDBACK_PORT, ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, INTERPRETER_PORT, \
     ROBOT_FEEDBACK_HOST
 from custom_logging import LogConfig
-from RobotControl.SSHControl import run_script_on_robot
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -80,17 +79,6 @@ def start_robot():
     _brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
     delayed_read = read_from_socket(_get_dashboard_socket())
-    error_message = run_script_on_robot(
-        """
-            a=[0,0,0,0,0,0]
-            movej(a)
-            b=[1,0,0,0,0,0]
-            movej(b)
-            c=[0,-1,0,0,0,0]
-            movej(c)
-        """
-    )
-    non_recurring_logger.debug(f"Delayed read: {error_message}")
     #_start_interpreter_mode_and_connect_to_backend_socket()
 
 

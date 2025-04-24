@@ -13,7 +13,6 @@ from RobotControl.SSHControl import run_script_on_robot
 from RobotControl.RobotControl import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
-from RobotControl.SendRobotCommandWithRecovery import send_command_finished
 from RobotControl.StateRecovery import handle_cleared_interpreter, generate_command_finished
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage
@@ -22,7 +21,7 @@ from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
 from undo.HistorySupport import handle_report_state, handle_command_finished
 from undo.UndoHandler import handle_undo_message, handle_undo_request
-from undo.ReadVariableState import start_read_loop, report_state_received
+from undo.ReadVariableState import report_state_received
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -68,6 +67,7 @@ def handle_new_client():
 def has_new_client() -> bool:
     global _new_client
     if _new_client:
+        non_recurring_logger.debug("New client connected")
         _new_client = False
         return True
     return False
@@ -100,13 +100,6 @@ def get_handler() -> callable:
             raise e
     return echo
 
-async def cleanup_stale_clients():
-    while True:
-        removed_clients = [ws for ws in _connected_web_clients if ws.closed]
-        for ws in removed_clients:
-            _connected_web_clients.remove(ws)
-            non_recurring_logger.debug(f"Removed stale WebSocket client: {ws}")
-        await asyncio.sleep(2)  # Run cleanup every 2 seconds
 
 def send_to_all_web_clients(message: str):
     removed_clients = []
@@ -115,7 +108,7 @@ def send_to_all_web_clients(message: str):
         if websocket.closed:
             removed_clients.append(websocket)
             continue
-        non_recurring_logger.debug(f"Sending message to webclient: {message}")
+        recurring_logger.debug(f"Sending message to webclient: {message}")
         asyncio.create_task(websocket.send(message))
         recurring_logger.debug(f"Message sent to webclient: {message}")
 
@@ -133,7 +126,7 @@ async def open_robot_server():
     non_recurring_logger.info(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         non_recurring_logger.info('server listening for robot connections')
-        await asyncio.create_task(start_read_loop())
+        # await asyncio.create_task(start_read_loop()) COMMENTED BECAUSE IT BREAKS WHEN INTERPRETER IS NOT RUNNING
         await srv.serve_forever()
 
 
@@ -302,11 +295,12 @@ async def start_webserver():
 
     start_robot()
 
-    asyncio.create_task(cleanup_stale_clients())  # Start cleanup task
-
-    recurring_logger.info("Starting websocket server")
-    async with serve(get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
-        await asyncio.Future()  # run forever
+    try:
+        non_recurring_logger.debug("Starting websocket server")
+        async with serve(get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
+            await asyncio.Future()  # run forever
+    except Exception as e:
+        recurring_logger.error(f"Error starting websocket server: {e}")
 
 
 def ensure_polyscope_is_ready():
