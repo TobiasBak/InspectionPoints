@@ -21,12 +21,7 @@ movej(b, a=0.3, v=0.3)
 
 const editorElement = document.getElementById('editor');
 
-export let editor: monaco.editor.IStandaloneCodeEditor;
-
-export const editorReady = new Promise<monaco.editor.IStandaloneCodeEditor>((resolve, reject) => {
-    // @ts-ignore
-    (async () => {
-        try {
+export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
             const onigasmResponse = await fetch(
                 'https://cdn.jsdelivr.net/npm/onigasm@latest/lib/onigasm.wasm' // use for web (to prevent CORS etc.)
                 // 'onigasm/lib/onigasm.wasm' // use while working on local or custom loaders (webpack, vite, etc.)
@@ -95,13 +90,6 @@ export const editorReady = new Promise<monaco.editor.IStandaloneCodeEditor>((res
         
             await wireTmGrammars(monaco, registry, grammars, editor);
 
-            resolve(editor); // Resolve the promise when the editor is ready
-        } catch (error) {
-            reject(error); // Reject the promise if an error occurs
-        }
+            return editor;
     })();
-}
-);
-
-
 
