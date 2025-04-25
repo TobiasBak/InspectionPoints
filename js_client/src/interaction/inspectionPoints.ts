@@ -3,7 +3,6 @@ import { editorReady } from "../monacoExperiment";
 
 /**
  * Updates the decorations in the editor.
- * @param editor The Monaco editor instance.
  * @param lineCount The total number of lines in the editor.
  * @param clickedLines A set of line numbers that are clicked.
  * @param decorationsCollection The decorations collection to update.
@@ -22,14 +21,14 @@ editorReady
         const clickedLines = new Set<number>();
 
         // Initialize decorations
-        updateDecorations(editor, lineCount, clickedLines, decorationsCollection);
+        updateDecorations(lineCount, clickedLines, decorationsCollection);
 
         // Update decorations on content change
         model.onDidChangeContent(() => {
             const newLineCount = model.getLineCount();
             if (newLineCount !== lineCount) {
                 lineCount = newLineCount;
-                updateDecorations(editor, lineCount, clickedLines, decorationsCollection);
+                updateDecorations(lineCount, clickedLines, decorationsCollection);
             }
         });
 
@@ -46,14 +45,13 @@ editorReady
                     } else {
                         clickedLines.add(lineNumber);
                     }
-                    updateDecorations(editor, lineCount, clickedLines, decorationsCollection);
+                    updateDecorations(lineCount, clickedLines, decorationsCollection);
                 }
             }
         });
     })
     
     function updateDecorations(
-        editor: monaco.editor.IStandaloneCodeEditor,
         lineCount: number,
         clickedLines: Set<number>,
         decorationsCollection: monaco.editor.IEditorDecorationsCollection
