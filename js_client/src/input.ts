@@ -1,4 +1,5 @@
 import {EventList} from "./interaction/EventList";
+import { editor } from "./monacoExperiment";
 
 let current_id: number = 0;
 
@@ -13,6 +14,12 @@ function sendCommand(command: string): void {
     document.dispatchEvent(customEvent);
 }
 
+document.getElementById('runEditorContentButton')?.addEventListener('click', function () {
+    const command = editor.getValue();
+    console.log(`Command: ${command}`);
+    if (command === '') return;
+    sendCommand(command);
+});
 
 document.body.addEventListener('keydown', function (e: KeyboardEvent): void {
     switch (e.key) {

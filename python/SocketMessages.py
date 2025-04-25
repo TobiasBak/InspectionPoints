@@ -27,7 +27,7 @@ class Status(Enum):
     def parse(cls, message: str):
         if message.startswith("ack:"):
             return cls.Ok
-        elif message.startswith("discard:"):
+        elif ("Compile error" in message):
             return cls.Error
         else:
             raise ValueError(f"Unknown status message: '{message}'")

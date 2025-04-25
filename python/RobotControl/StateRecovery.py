@@ -91,5 +91,6 @@ def recover_from_protective_stop(command: str, command_id: int | None):
 
 
 def __recover_latest_code_state() -> None:
-    send_command_interpreter_socket(get_latest_code_state().get_apply_commands())
-    recurring_logger.debug(f"Recovering latest code state: {get_latest_code_state()}")
+    # send_command_interpreter_socket(get_latest_code_state().get_apply_commands())
+    # recurring_logger.debug(f"Recovering latest code state: {get_latest_code_state()}")
+    print("Temporary fix for recovering latest code state.")
