@@ -28,6 +28,9 @@ p {
     text-align: center;
     margin: auto;
 }
+.opacity {
+    opacity: 0;
+}
 
 .column10 {
     min-width: 10%;
@@ -243,4 +246,12 @@ p {
 #popup-close {
     margin-top: 10px;
     font-weight: bold;
+}
+
+/* DECORATIONS */
+.red-circle-decoration {
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 1em;
 }
