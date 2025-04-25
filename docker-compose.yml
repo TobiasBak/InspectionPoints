@@ -36,6 +36,7 @@ services:
       - ROBOT_IP=polyscope
       - ROBOT_FEEDBACK_PORT=8000
       - ROBOT_FEEDBACK_HOST=proxy
+      - SSH_USERNAME=root
     profiles:
         - ""
   test:

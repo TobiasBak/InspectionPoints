@@ -72,11 +72,14 @@ def start_interpreter_mode():
     non_recurring_logger.debug("Interpreter mode command sent")
 
 
+def stop_interpreter_mode():
+    _send_small_command_on_interpreter("stop_interpreter_mode()")
+
 def start_robot():
     non_recurring_logger.debug("Power on robot")
-    _power_on_robot()
+    power_on_robot()
     non_recurring_logger.info("Brake release robot")
-    _brake_release_on_robot()
+    brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
     delayed_read = read_from_socket(_get_dashboard_socket())
     #_start_interpreter_mode_and_connect_to_backend_socket()
@@ -118,13 +121,20 @@ def clear_interpreter_mode(clear_id: int = None) -> None:
     recurring_logger.info(f"Clear command sent, response: {response} feedback: {feedback_response}")
 
 
-def _power_on_robot():
+def power_on_robot():
     send_command_dashboard_socket("power on")
 
+def power_off_robot():
+    send_command_dashboard_socket("power off")
 
-def _brake_release_on_robot():
+def brake_release_on_robot():
     send_command_dashboard_socket("brake release")
 
+def restart_safety():
+    send_command_dashboard_socket("restart safety")
+
+def stop_program():
+    send_command_dashboard_socket("stop")
 
 def unlock_protective_stop():
     # Unlock of the protective stop fails if less than 5 seconds have passed since the protective stop was triggered.
@@ -151,6 +161,23 @@ def get_robot_mode():
 def get_running():
     return get_value_from_dashboard("running")
 
+def get_program_state():
+    return get_value_from_dashboard("programState")
+
+def close_popup():
+    sleep(1)
+    result = send_command_dashboard_socket("close popup")
+    non_recurring_logger.debug(f"Popup closed: {result}")
+
+def close_safety_popup():
+    sleep(1) 
+    result = send_command_dashboard_socket("close safety popup")
+    non_recurring_logger.debug(f"safetypopup closed: {result}")
+
+def send_popup(message: str):
+    command = f"popup {message}"
+    result = send_command_dashboard_socket(command)
+    non_recurring_logger.debug(f"Popup: {result}")
 
 def get_value_from_dashboard(command: str):
     response = send_command_dashboard_socket(command)
