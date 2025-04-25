@@ -17,6 +17,7 @@ class MessageType(Enum):
     Feedback = auto()
     Robot_state = auto()
     Undo_response = auto()
+    Debug = auto()
 
 
 class Status(Enum):
@@ -68,6 +69,82 @@ class CommandMessage:
 
     def __repr__(self):
         return self.__str__()
+
+
+class InspectionPointFormatFromFrontend:
+    def __init__(self, id: int, lineNumber: int, command: str):
+        self.id = id
+        self.lineNumber = lineNumber
+        self.command = command
+
+    def get_id(self):
+        return self.id
+
+    def __str__(self):
+        return json.dumps({
+            "id": self.id,
+            "lineNumber": self.lineNumber,
+            "command": self.command
+        })
+
+    def __repr__(self):
+        return self.__str__()
+
+
+# let newCommandExec2 = {
+#     type: "Debug",
+#     script: [
+#         "movej()",
+#         "for",
+#         "ehkd",
+#         "end"
+#     ],
+#     inspectionPoints: [
+#         {
+#             id: 1,
+#             lineNumber: 1,
+#             command: "movej()"
+#         },
+#         {
+#             id: 2,
+#             lineNumber: 3,
+#             command: "ehkd",
+#         }
+#     ]
+# }
+class InspectionPointMessage:
+    def __init__(self, scriptText: [str], inspectionPoints: [dict]):
+        self.type = MessageType.Debug
+        self.scriptText: [str] = scriptText
+        self.inspectionPoints: [InspectionPointFormatFromFrontend] = []
+
+        if not isinstance(scriptText, list):
+            raise ValueError(f"Script text is not a list: {scriptText}")
+
+        for point in inspectionPoints:
+            self.inspectionPoints.append(
+                InspectionPointFormatFromFrontend(point["id"], point["lineNumber"] - 1, point["command"])
+            )
+
+
+        #     Check that the commands in the inspection points match the line numbers received.
+        for point in inspectionPoints:
+            if point.lineNumber > len(scriptText):
+                raise ValueError(f"Line number {point.lineNumber} is greater than the length of the script text.")
+            if point.command != scriptText[point.lineNumber]:
+                raise ValueError(f"Command '{point.command}' does not match the script text ({scriptText[point.lineNumber]}) at line {point.lineNumber}.")
+
+    def __str__(self):
+        return json.dumps({
+            "type": self.type.name,
+            "script": self.scriptText,
+            "inspectionPoints": self.inspectionPoints
+        })
+
+    def __repr__(self):
+        return self.__str__()
+
+
 
 class AckResponse:
     def __init__(self, id: int, command: str, message: str):
@@ -436,8 +513,7 @@ def ensure_type_of_payload(payload: any) -> float:
         raise ValueError(f"Payload is not of type float: {payload}")
     return payload
 
-
-def parse_message(message: str) -> CommandMessage:
+def parse_message(message: str) -> CommandMessage | InspectionPointMessage:
     parsed = json.loads(message)
 
     match parsed:
@@ -449,5 +525,13 @@ def parse_message(message: str) -> CommandMessage:
             }
         }:
             return CommandMessage(id, command)
+        case {
+            'type': MessageType.Debug.name,
+            'data': {
+                'script': scriptText,
+                'inspectionPoints': inspectionPoints
+            }
+        }:
+            return InspectionPointMessage(scriptText, inspectionPoints)
         case _:
             raise ValueError(f"Unknown message structure: {parsed}")

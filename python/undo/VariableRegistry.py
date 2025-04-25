@@ -73,17 +73,24 @@ def register_all_rtde_variables(in_registry: VariableRegistry):
         # RtdeStateVariable("safety status", "safety_status"),
         # RtdeStateVariable("runtime state", "runtime_state"),
         # RtdeStateVariable("robot mode", "robot_mode"),
-        RtdeVariableDefinition("joints", "joints", False),
         # RtdeStateVariable("tcp", "tcp"),
-        RtdeVariableDefinition("payload", "payload", False),
-        RtdeVariableDefinition("digital_out_0", "digital_out_0", False),
-        RtdeVariableDefinition("digital_out_1", "digital_out_1", False),
-        RtdeVariableDefinition("digital_out_2", "digital_out_2", False),
-        RtdeVariableDefinition("digital_out_3", "digital_out_3", False),
-        RtdeVariableDefinition("digital_out_4", "digital_out_4", False),
-        RtdeVariableDefinition("digital_out_5", "digital_out_5", False),
-        RtdeVariableDefinition("digital_out_6", "digital_out_6", False),
-        RtdeVariableDefinition("digital_out_7", "digital_out_7", False)
+
+        # RtdeVariableDefinition("joints", "joints", False),
+        # RtdeVariableDefinition("payload", "payload", False),
+        # RtdeVariableDefinition("digital_out_0", "digital_out_0", False),
+        # RtdeVariableDefinition("digital_out_1", "digital_out_1", False),
+        # RtdeVariableDefinition("digital_out_2", "digital_out_2", False),
+        # RtdeVariableDefinition("digital_out_3", "digital_out_3", False),
+        # RtdeVariableDefinition("digital_out_4", "digital_out_4", False),
+        # RtdeVariableDefinition("digital_out_5", "digital_out_5", False),
+        # RtdeVariableDefinition("digital_out_6", "digital_out_6", False),
+        # RtdeVariableDefinition("digital_out_7", "digital_out_7", False)
+    ]
+    code_variables: list[CodeVariableDefinition] = [
+        CodeVariableDefinition("joints", "get_actual_joint_positions()", False),
     ]
     for variable in variables:
         in_registry.register_rtde_variable(variable)
+
+    for variable in code_variables:
+        in_registry.register_code_variable(variable)

@@ -1,6 +1,7 @@
 import asyncio
 from typing import Callable
 
+from RobotControl.SSHControl import run_script_on_robot
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from RobotControl.RobotSocketMessages import ReportState
 from custom_logging import LogConfig
@@ -52,7 +53,8 @@ def get_closured_functions() -> tuple[Callable[[], None], Callable[[], None]]:
         set_read_in_progress(True)
         read_commands = _variable_registry.generate_read_commands()
         report_state = ReportState(read_commands)
-        response = send_command_with_recovery(report_state.dump_string_post_urify(), None)
+        response = run_script_on_robot(report_state.dump_string_post_urify())
+        # response = send_command_with_recovery(report_state.dump_string_post_urify(), None)
         recurring_logger.debug(f"Read variable state response: {response}")
 
     return read_variable_state, report_state_received
