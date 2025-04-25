@@ -1,13 +1,8 @@
-import {EventList} from "./EventList";
+import {CommandEnteredEvent, EventList} from "./EventList";
 import {getChildWithTag, getCommandEntry} from "../Toolbox/DomTools";
 
-document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
-    const commandDisplay: HTMLElement = document.getElementById('commandHistoryDisplay');
-    commandDisplay.appendChild(generateCollapsibleElement(e.detail.id));
-    closeCollapsibleElement(e.detail.id - 1);
-    removeEmptyCollapsibleElement();
-})
-document.addEventListener(EventList.CommandEntered, function (e: CustomEvent): void {
+
+document.addEventListener(EventList.CommandEntered, function (e: CommandEnteredEvent): void {
     closeCollapsibleElement(e.detail.id - 1);
 })
 

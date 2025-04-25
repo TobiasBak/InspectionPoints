@@ -15,12 +15,6 @@ document.addEventListener(EventList.CommandFinished, function (e: CustomEvent): 
     stopRobotExecutingFeedback(e.detail.id);
 })
 
-document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
-    const commandEntry = getCommandEntry(e.detail.id)
-    const statusWrapper = getChildWithClass(commandEntry, statusWrapperClass);
-    if(!statusWrapper) return;
-    statusWrapper.appendChild(createExecutingFeedbackSpinner());
-})
 
 function stopRobotExecutingFeedback(id: number): void {
     const commandEntry: HTMLElement = getCommandEntry(id);

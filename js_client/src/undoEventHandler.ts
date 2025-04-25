@@ -4,10 +4,6 @@ import {getChildWithClass, getCommandEntry} from "./Toolbox/DomTools";
 export const statusWrapperClass: string = "statusWrapper"
 
 
-document.addEventListener(EventList.UndoEvent, function (e: CustomEvent): void {
-    markCommandElementsWithUndo(e.detail.id);
-});
-
 
 function markCommandElementsWithUndo(id: number): void {
     let running = true;
@@ -33,7 +29,7 @@ export function createUndoButton(commandId: number): HTMLButtonElement {
     button.classList.add('undoButton');
     button.textContent = 'Undo up to here';
     button.addEventListener('click', function () {
-        document.dispatchEvent(new CustomEvent(EventList.UndoEvent, {detail: {id: commandId}}));
+        // document.dispatchEvent(new CustomEvent(EventList.UndoEvent, {detail: {id: commandId}}));
     })
     return button;
 }

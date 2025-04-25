@@ -3,18 +3,14 @@
 
 export enum UserMessageType {
     Command = 'Command',
-    Undo = 'Undo'
+    Debug = 'Debug'
 }
 
-export type UserMessage = CommandMessage | UndoMessage
+export type UserMessage = CommandMessage | InspectionPointMessage
 
 export type CommandMessageData = {
     id: number,
     command: string,
-}
-
-export type UndoMessageData = {
-    id: number
 }
 
 export type CommandMessage = {
@@ -22,7 +18,18 @@ export type CommandMessage = {
     data: CommandMessageData
 }
 
-export type UndoMessage = {
-    type: UserMessageType.Undo,
-    data: UndoMessageData
+export type InspectionPointFormat = {
+    id: number,
+    lineNumber: number,
+    command: string,
+}
+
+export type InspectionPointMessageData = {
+    script: string[],
+    inspectionPoints: InspectionPointFormat[],
+}
+
+export type InspectionPointMessage = {
+    type: UserMessageType.Debug,
+    data: InspectionPointMessageData
 }

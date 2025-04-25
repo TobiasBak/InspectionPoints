@@ -1,15 +1,13 @@
-import {EventList} from "./interaction/EventList";
+import {CommandEnteredDetail, CommandEnteredEvent, EventList} from "./interaction/EventList";
 import { editor } from "./monacoExperiment";
 
 let current_id: number = 0;
 
 function sendCommand(command: string): void {
     if (command === '') return;
-    const customEvent: CustomEvent<{ text: string, id: number }> = new CustomEvent(EventList.CommandEntered, {
-        detail: {
-            text: command,
-            id: current_id++,
-        },
+    const customEvent: CommandEnteredEvent = new CommandEnteredEvent({
+        text: command,
+        id: current_id++,
     });
     document.dispatchEvent(customEvent);
 }
