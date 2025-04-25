@@ -2,7 +2,7 @@ import re
 
 from rtde.serialize import DataObject
 
-from RobotControl.RobotControl import clear_interpreter_mode
+from RobotControl.old_robot_controls import clear_interpreter_mode
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
 
 from SocketMessages import RobotState, CommandMessage

@@ -1,7 +1,7 @@
 import time
 from enum import Enum
 
-from RobotControl.RobotControl import send_command_interpreter_socket, get_safety_status, \
+from RobotControl.old_robot_controls import send_command_interpreter_socket, get_safety_status, \
     get_robot_mode, get_running
 from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.StateRecovery import States, recover_state, generate_command_finished
