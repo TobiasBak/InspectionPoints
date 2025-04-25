@@ -46,21 +46,35 @@ editor.onMouseDown((event) => {
     }
 });
 
-
-function getDecoratedLines(): { lineNumber: number; lineContent: string }[] {
-    const decoratedLines: { lineNumber: number; lineContent: string }[] = [];
+//WIP
+function getDecoratedLines(): { type: string; data: { script: string[]; inspectionPoints: { id: number; lineNumber: number; command: string }[] } } {
+    const decoratedLines: { id: number; lineNumber: number; command: string }[] = [];
+    let idCounter = 1;
 
     decorationIds.forEach((lineNumber, id) => {
         const range = model.getDecorationRange(id);
         if (range) {
             const currentLineNumber = range.startLineNumber;
             const lineContent = model.getLineContent(currentLineNumber);
-            decoratedLines.push({ lineNumber: currentLineNumber, lineContent });
+            decoratedLines.push({
+                id: idCounter++,
+                lineNumber: currentLineNumber,
+                command: lineContent.trim(),
+            });
         }
     });
-    
-    return decoratedLines;
+
+    const scriptAndInspectionPoints = {
+        type: "Debug",
+        data: {
+            script: model.getLinesContent(),
+            inspectionPoints: decoratedLines,
+        },
+    };
+
+    return scriptAndInspectionPoints;
 }
+
 
 // MOVE THIS AND MAKE IT EMIT A CUSTOM EVENT
 // This is just for testing purposes
