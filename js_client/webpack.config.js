@@ -15,6 +15,7 @@ module.exports = {
         undo_handler: './src/undoEventHandler.ts',
         executing_feedback: './src/interaction/robot_executing_feedback.ts',
         collapseUndoneCommands: './src/interaction/collapseUndoneCommands.ts',
+        inspectionPoints: './src/interaction/inspectionPoints.ts',
         monacoEditor: './src/monacoExperiment.ts',
     },
     devtool: 'inline-source-map',
