@@ -21,77 +21,87 @@ movej(b, a=0.3, v=0.3)
 
 const editorElement = document.getElementById('editor');
 
-export let editor: monaco.editor.IStandaloneCodeEditor | null = null;
+export let editor: monaco.editor.IStandaloneCodeEditor;
 
-// @ts-ignore
-(async () => {
-    const onigasmResponse = await fetch(
-        'https://cdn.jsdelivr.net/npm/onigasm@latest/lib/onigasm.wasm' // use for web (to prevent CORS etc.)
-        // 'onigasm/lib/onigasm.wasm' // use while working on local or custom loaders (webpack, vite, etc.)
-    );
+export const editorReady = new Promise<monaco.editor.IStandaloneCodeEditor>((resolve, reject) => {
+    // @ts-ignore
+    (async () => {
+        try {
+            const onigasmResponse = await fetch(
+                'https://cdn.jsdelivr.net/npm/onigasm@latest/lib/onigasm.wasm' // use for web (to prevent CORS etc.)
+                // 'onigasm/lib/onigasm.wasm' // use while working on local or custom loaders (webpack, vite, etc.)
+            );
+        
+            if (
+                onigasmResponse.status !== 200 ||
+                onigasmResponse.headers.get('content-type') !== 'application/wasm'
+            ) {
+                console.warn("Failed to load onigasm.wasm");
+                return null;
+            }
+        
+            const wasmContent = await onigasmResponse.arrayBuffer();
+        
+            if (wasmContent) {
+                await loadWASM(wasmContent);
+            }
+        
+            const registry = new Registry({
+                getGrammarDefinition: async (scopeName: string): Promise<any> => {
+                    console.log('scopeName', scopeName);
+        
+                    const res: any = {
+                        format: 'json',
+                        content: await (
+                            await fetch('https://raw.githubusercontent.com/ahernguo/urscript-extension/refs/heads/master/syntaxes/urscript.tmLanguage.json')
+                        ).text(),
+                    };
+        
+                    console.log('grammarContent', res);
+        
+                    return res;
+                },
+            });
+        
+            const grammars = new Map();
+        
+            monaco.languages.register({ id: 'urscript' });
+        
+            grammars.set('urscript', 'source.urscript');
+        
+            console.log(grammars);
+        
+            // #endregion
+        
+        
+            console.log(await (await fetch("theme/monaco-dark-modern.json")).text())
+            const monacoTheme = JSON.parse(await (await fetch("theme/monaco-dark-modern.json")).text())
+            // #region Init Editor
+            monaco.editor.defineTheme('vs-code-theme-converted', monacoTheme);
+        
+            editor = monaco.editor.create(editorElement!, {
+                value: code,
+                language: 'urscript',
+                theme: 'vs-code-theme-converted',
+                glyphMargin: true,
+                minimap: {
+                    enabled: false,
+                },
+            });
+        
+            // #endregion
+        
+            // #region Wire Grammars
+        
+            await wireTmGrammars(monaco, registry, grammars, editor);
 
-    if (
-        onigasmResponse.status !== 200 ||
-        onigasmResponse.headers.get('content-type') !== 'application/wasm'
-    ) {
-        console.warn("Failed to load onigasm.wasm");
-        return null;
-    }
+            resolve(editor); // Resolve the promise when the editor is ready
+        } catch (error) {
+            reject(error); // Reject the promise if an error occurs
+        }
+    })();
+}
+);
 
-    const wasmContent = await onigasmResponse.arrayBuffer();
-
-    if (wasmContent) {
-        await loadWASM(wasmContent);
-    }
-
-    const registry = new Registry({
-        getGrammarDefinition: async (scopeName: string): Promise<any> => {
-            console.log('scopeName', scopeName);
-
-            const res: any = {
-                format: 'json',
-                content: await (
-                    await fetch('https://raw.githubusercontent.com/ahernguo/urscript-extension/refs/heads/master/syntaxes/urscript.tmLanguage.json')
-                ).text(),
-            };
-
-            console.log('grammarContent', res);
-
-            return res;
-        },
-    });
-
-    const grammars = new Map();
-
-    monaco.languages.register({ id: 'urscript' });
-
-    grammars.set('urscript', 'source.urscript');
-
-    console.log(grammars);
-
-    // #endregion
-
-
-    console.log(await (await fetch("theme/monaco-dark-modern.json")).text())
-    const monacoTheme = JSON.parse(await (await fetch("theme/monaco-dark-modern.json")).text())
-    // #region Init Editor
-    monaco.editor.defineTheme('vs-code-theme-converted', monacoTheme);
-
-    editor = monaco.editor.create(editorElement!, {
-        value: code,
-        language: 'urscript',
-        theme: 'vs-code-theme-converted',
-        minimap: {
-            enabled: false,
-        },
-    });
-
-    // #endregion
-
-    // #region Wire Grammars
-
-    await wireTmGrammars(monaco, registry, grammars, editor);
-
-})();
 
 
