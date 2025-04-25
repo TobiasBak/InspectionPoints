@@ -45,3 +45,29 @@ editor.onMouseDown((event) => {
         }
     }
 });
+
+
+function getDecoratedLines(): { lineNumber: number; lineContent: string }[] {
+    const decoratedLines: { lineNumber: number; lineContent: string }[] = [];
+
+    decorationIds.forEach((lineNumber, id) => {
+        const range = model.getDecorationRange(id);
+        if (range) {
+            const currentLineNumber = range.startLineNumber;
+            const lineContent = model.getLineContent(currentLineNumber);
+            decoratedLines.push({ lineNumber: currentLineNumber, lineContent });
+        }
+    });
+    
+    return decoratedLines;
+}
+
+// MOVE THIS AND MAKE IT EMIT A CUSTOM EVENT
+// This is just for testing purposes
+// to see the decorated lines in the console
+const button = document.getElementById("debugEditorButton");
+if (button) {
+    button.addEventListener("click", () => {
+        console.log(getDecoratedLines());
+    });
+}
