@@ -9,11 +9,10 @@ from typing import Final
 from websockets.server import serve
 
 
-from RobotControl.SendUserCommand import send_user_command
+from RobotControl.SSHControl import run_script_on_robot
 from RobotControl.RobotControl import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
-from RobotControl.SendRobotCommandWithRecovery import send_command_finished
 from RobotControl.StateRecovery import handle_cleared_interpreter, generate_command_finished
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, UndoMessage
@@ -22,7 +21,7 @@ from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
 from undo.HistorySupport import handle_report_state, handle_command_finished
 from undo.UndoHandler import handle_undo_message, handle_undo_request
-from undo.ReadVariableState import start_read_loop, report_state_received
+from undo.ReadVariableState import report_state_received
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -39,22 +38,24 @@ _new_client = False
 
 def handle_command_message(message: CommandMessage) -> str:
     command_string = message.data.command
+    non_recurring_logger.debug(f"Command string: {command_string}")
 
-    if '#' in command_string and not re.search(r'"[^"]*#[^"]*"', command_string):
-        recurring_logger.debug(f"Command contains a comment: {command_string}")
-        response = AckResponse(message.data.id, command_string, "discard: Command contains a comment")
+    # if '#' in command_string and not re.search(r'"[^"]*#[^"]*"', command_string):
+    #     recurring_logger.debug(f"Command contains a comment: {command_string}")
+    #     response = AckResponse(message.data.id, command_string, "discard: Command contains a comment")
 
-        command_finished = CommandFinished(message.data.id, command_string)
-        send_to_all_web_clients(str(command_finished))
+    #     command_finished = CommandFinished(message.data.id, command_string)
+    #     send_to_all_web_clients(str(command_finished))
 
-        return str(response)
+    #     return str(response)
 
-    result = send_user_command(message)
+    result = run_script_on_robot(command_string)
+    non_recurring_logger.debug(f"Result of command: {result}")
     if result == "":
         return ""
     response = AckResponse(message.data.id, command_string, result)
     str_response = str(response)
-    recurring_logger.debug(f"Sending response: {str_response}")
+    non_recurring_logger.debug(f"Sending response: {str_response}")
     return str_response
 
 
@@ -66,6 +67,7 @@ def handle_new_client():
 def has_new_client() -> bool:
     global _new_client
     if _new_client:
+        non_recurring_logger.debug("New client connected")
         _new_client = False
         return True
     return False
@@ -124,7 +126,7 @@ async def open_robot_server():
     non_recurring_logger.info(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         non_recurring_logger.info('server listening for robot connections')
-        await asyncio.create_task(start_read_loop())
+        # await asyncio.create_task(start_read_loop()) COMMENTED BECAUSE IT BREAKS WHEN INTERPRETER IS NOT RUNNING
         await srv.serve_forever()
 
 
@@ -293,9 +295,12 @@ async def start_webserver():
 
     start_robot()
 
-    recurring_logger.info("Starting websocket server")
-    async with serve(get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
-        await asyncio.Future()  # run forever
+    try:
+        non_recurring_logger.debug("Starting websocket server")
+        async with serve(get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
+            await asyncio.Future()  # run forever
+    except Exception as e:
+        recurring_logger.error(f"Error starting websocket server: {e}")
 
 
 def ensure_polyscope_is_ready():

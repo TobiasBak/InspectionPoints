@@ -12,16 +12,16 @@ import { wireTmGrammars } from 'monaco-editor-textmate';
 // https://github.com/ahernguo/urscript-extension/blob/master/syntaxes/urscript.tmLanguage.json
 
 const code = `
-while True:
-  set_digital_out(0,True)
-end
+a = p[-0.421, -0.436, 0.1, 2.61, -1.806, -0.019]
+movej(a, a=0.3, v=0.3)
 
-if a== False:
-  movej(a, [1,2,3,4,5,6])
-end
+b = p[-0.194, -0.6, 0.066, 2.61, -1.806, -0.019]
+movej(b, a=0.3, v=0.3)
 `;
 
 const editorElement = document.getElementById('editor');
+
+export let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 
 // @ts-ignore
 (async () => {
@@ -77,7 +77,7 @@ const editorElement = document.getElementById('editor');
     // #region Init Editor
     monaco.editor.defineTheme('vs-code-theme-converted', monacoTheme);
 
-    const editor = monaco.editor.create(editorElement!, {
+    editor = monaco.editor.create(editorElement!, {
         value: code,
         language: 'urscript',
         theme: 'vs-code-theme-converted',

@@ -12,30 +12,35 @@ export function handleAckResponseMessage(message: ResponseMessage): void {
         throw new Error(`Invalid message type: ${message.type}`);
     }
 
-    const commandWrapper: HTMLElement = getCommandEntry(message.data.id);
-    if (!commandWrapper) {
-        return
-    }
-    const contentWrapper: HTMLElement = getChildWithClass(commandWrapper, 'contentWrapper');
-    const responseWrapper: HTMLElement = getChildWithClass(contentWrapper, 'responseWrapper');
+    // const commandWrapper: HTMLElement = getCommandEntry(message.data.id);
+    // if (!commandWrapper) {
+    //     return
+    // }
+    // const contentWrapper: HTMLElement = getChildWithClass(commandWrapper, 'contentWrapper');
+    // const responseWrapper: HTMLElement = getChildWithClass(contentWrapper, 'responseWrapper');
 
-    const responseParagraph: HTMLParagraphElement = document.createElement('p');
-    responseParagraph.classList.add("response");
+    // const responseParagraph: HTMLParagraphElement = document.createElement('p');
+    // responseParagraph.classList.add("response");
 
-    if (message.data.status !== 'Ok') {
-        const messageParts = message.data.message.split(':')
-        const statusType = `<span>${messageParts.shift()}:</span>`
-        responseParagraph.classList.add(errorClass);
+    const messageString = message.data.message;
+    console.log(`AckResponse: ${messageString}`);
+    showPopup(messageString);
 
-        responseParagraph.innerHTML = statusType + messageParts.join(':');
-        emitCommandRejectedEvent(message.data.id)
-    } else {
-        responseParagraph.innerHTML = frontend_text_for_ack_success
-        emitCommandAcceptedEvent(message.data.id)
-    }
+    // if (message.data.status !== 'Ok') {
+    //     const messageParts = message.data.message.split(':')
+    //     const statusType = `<span>${messageParts.shift()}:</span>`
+    //     responseParagraph.classList.add(errorClass);
+
+    //     responseParagraph.innerHTML = statusType + messageParts.join(':');
+    //     emitCommandRejectedEvent(message.data.id)
+    // } else {
+    //     responseParagraph.innerHTML = frontend_text_for_ack_success
+    //     emitCommandAcceptedEvent(message.data.id)
+
+    // }
 
 
-    responseWrapper.appendChild(responseParagraph);
+    // responseWrapper.appendChild(responseParagraph);
 
 }
 
@@ -53,4 +58,20 @@ function emitCommandRejectedEvent(id: number):void{
             id: id,
         },
     }));
+}
+
+
+function showPopup(message: string): void {
+    const popup = document.getElementById('popup');
+    const popupMessage = document.getElementById('popup-message');
+    const popupClose = document.getElementById('popup-close');
+
+    if (popup && popupMessage && popupClose) {
+        popupMessage.textContent = message;
+        popup.classList.remove('hidden');
+
+        popupClose.onclick = () => {
+            popup.classList.add('hidden');
+        };
+    }
 }

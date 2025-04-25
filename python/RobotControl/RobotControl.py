@@ -79,7 +79,7 @@ def start_robot():
     _brake_release_on_robot()
     non_recurring_logger.info("Start interpreter mode and connect to backend socket")
     delayed_read = read_from_socket(_get_dashboard_socket())
-    _start_interpreter_mode_and_connect_to_backend_socket()
+    #_start_interpreter_mode_and_connect_to_backend_socket()
 
 
 def apply_variables_to_robot(variables: list[VariableObject]):

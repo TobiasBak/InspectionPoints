@@ -23,6 +23,7 @@ function get_socket(ip: string, port: number) {
 }
 
 function handleMessageFromProxyServer(message: ResponseMessage) {
+    console.log("Message from proxy server:", message);
     switch (message.type) {
         case ResponseMessageType.AckResponse:
             handleAckResponseMessage(message);

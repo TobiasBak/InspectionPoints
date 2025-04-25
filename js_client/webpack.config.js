@@ -17,6 +17,7 @@ module.exports = {
         collapseUndoneCommands: './src/interaction/collapseUndoneCommands.ts',
         inspectionPoints: './src/interaction/inspectionPoints.ts',
         monacoEditor: './src/monacoExperiment.ts',
+        input: './src/input.ts',
     },
     devtool: 'inline-source-map',
     devServer: {
