@@ -12,7 +12,6 @@ from undo.History import History, CommandStateHistory
 from undo.State import State, StateType
 from undo.VariableValue import VariableValue
 from undo.VariableDefinition import CodeVariableDefinition
-from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder, AssignmentStrategies
 from undo.VariableRegistry import VariableRegistry, register_all_rtde_variables
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -76,19 +75,14 @@ def find_variables_in_command(command: str) -> list[tuple[str, str]]:
     return list_of_matches
 
 
-def register_code_variable(variable: str, assignment_strategy: AssignmentStrategies):
-    variable_assignment_builder = VariableAssignmentCommandBuilder(variable, assignment_strategy)
-    code_variable = CodeVariableDefinition(variable, variable, command_for_changing=variable_assignment_builder)
+def register_code_variable(variable: str):
+    code_variable = CodeVariableDefinition(variable, variable)
     _variable_registry.register_code_variable(code_variable)
 
 
 def add_new_variable(variable: tuple[str, str]):
     variable_name = variable[0]
-    variable_value = variable[1]
-    if variable_value.startswith('"'):  # Match case removes last ", therefore we only check if starts with
-        register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT_STRING)
-    else:
-        register_code_variable(variable_name, AssignmentStrategies.VARIABLE_ASSIGNMENT)
+    register_code_variable(variable_name)
 
 
 def delete_variables_from_variable_registry(variables: list[tuple[str, str]]):

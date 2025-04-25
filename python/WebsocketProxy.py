@@ -8,19 +8,18 @@ from typing import Final
 
 from websockets.server import serve
 
-
-from RobotControl.SSHControl import run_script_on_robot
 from RobotControl.RobotControl import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
-from RobotControl.StateRecovery import handle_cleared_interpreter, generate_command_finished
+from RobotControl.SSHControl import run_script_on_robot
+from RobotControl.StateRecovery import handle_cleared_interpreter
 from SocketMessages import AckResponse
-from SocketMessages import parse_message, CommandMessage, UndoMessage
+from SocketMessages import parse_message, CommandMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
+from RobotControl.SendRobotCommandWithRecovery import send_command_finished
 from undo.HistorySupport import handle_report_state, handle_command_finished
-from undo.UndoHandler import handle_undo_message, handle_undo_request
 from undo.ReadVariableState import report_state_received
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -86,10 +85,6 @@ def get_handler() -> callable:
                 match message:
                     case CommandMessage():
                         str_response = handle_command_message(message)
-                    case UndoMessage():
-                        str_response = handle_undo_message(message)
-                        handle_undo_request(message.data.id)
-                        recurring_logger.debug(f"Message is an UndoMessage")
                     case _:
                         raise ValueError(f"Unknown message type: {message}")
 

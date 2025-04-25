@@ -1,7 +1,6 @@
 from RobotControl.RobotSocketMessages import VariableObject
 from custom_logging import LogConfig
 from undo.VariableDefinition import CodeVariableDefinition, RtdeVariableDefinition
-from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder, AssignmentStrategies
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -74,36 +73,17 @@ def register_all_rtde_variables(in_registry: VariableRegistry):
         # RtdeStateVariable("safety status", "safety_status"),
         # RtdeStateVariable("runtime state", "runtime_state"),
         # RtdeStateVariable("robot mode", "robot_mode"),
-        RtdeVariableDefinition("joints", "joints", False,
-                               VariableAssignmentCommandBuilder("movej(%,r=0.005)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
+        RtdeVariableDefinition("joints", "joints", False),
         # RtdeStateVariable("tcp", "tcp"),
-        RtdeVariableDefinition("payload", "payload", False,
-                               VariableAssignmentCommandBuilder("set_payload", AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_0", "digital_out_0", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(0, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_1", "digital_out_1", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(1, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_2", "digital_out_2", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(2, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_3", "digital_out_3", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(3, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_4", "digital_out_4", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(4, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_5", "digital_out_5", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(5, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_6", "digital_out_6", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(6, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL)),
-        RtdeVariableDefinition("digital_out_7", "digital_out_7", False,
-                               VariableAssignmentCommandBuilder("set_digital_out(7, %)",
-                                                                AssignmentStrategies.FUNCTION_CALL))
+        RtdeVariableDefinition("payload", "payload", False),
+        RtdeVariableDefinition("digital_out_0", "digital_out_0", False),
+        RtdeVariableDefinition("digital_out_1", "digital_out_1", False),
+        RtdeVariableDefinition("digital_out_2", "digital_out_2", False),
+        RtdeVariableDefinition("digital_out_3", "digital_out_3", False),
+        RtdeVariableDefinition("digital_out_4", "digital_out_4", False),
+        RtdeVariableDefinition("digital_out_5", "digital_out_5", False),
+        RtdeVariableDefinition("digital_out_6", "digital_out_6", False),
+        RtdeVariableDefinition("digital_out_7", "digital_out_7", False)
     ]
     for variable in variables:
         in_registry.register_rtde_variable(variable)
