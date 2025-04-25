@@ -4,8 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     mode: 'development', // For production, use 'production' (is set to development for dev server to work properly)
     entry: {
-        input: './src/input.ts',
-        input_highlight: './src/SyntaxHighlighting/inputFieldHighlight.ts',
+        // input: './src/input.ts',
+        // input_highlight: './src/SyntaxHighlighting/inputFieldHighlight.ts',
         robot_socket: './src/robot_socket.ts',
         style: './src/style.css',
         colors: './src/colors.css',
@@ -15,6 +15,7 @@ module.exports = {
         undo_handler: './src/undoEventHandler.ts',
         executing_feedback: './src/interaction/robot_executing_feedback.ts',
         collapseUndoneCommands: './src/interaction/collapseUndoneCommands.ts',
+        monacoEditor: './src/monacoExperiment.ts',
     },
     devtool: 'inline-source-map',
     devServer: {
@@ -28,19 +29,22 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /\.css$/i,
+                test: /\.css$/,
                 use: ['style-loader', 'css-loader'],
-                exclude: /node_modules/,
+                // exclude: /node_modules/,
             },
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
                 type: 'asset/resource',
                 exclude: /node_modules/,
-            },
+            }
         ],
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
+        fallback: {
+            path: require.resolve('path-browserify'), // Add the fallback for 'path'
+        },
     },
     output: {
         filename: '[name].js',

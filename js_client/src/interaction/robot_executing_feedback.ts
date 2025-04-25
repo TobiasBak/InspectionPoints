@@ -1,7 +1,6 @@
 import {EventList} from "./EventList";
 import {getChildWithClass, getCommandEntry} from "../Toolbox/DomTools";
-import {createUndoButton} from "../undoEventHandler";
-import {statusWrapperClass} from "../commandHistory";
+import {createUndoButton, statusWrapperClass} from "../undoEventHandler";
 
 const spinnerWrapperClass: string = "spinnerWrapper"
 
