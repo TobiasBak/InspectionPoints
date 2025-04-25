@@ -22,14 +22,15 @@ def run_script_on_robot(script: str) -> str:
 
     start_interpreter_mode()
     sleep(2) # Wait for interpreter mode to start
-    interpreter_script = script
+    interpreter_script = "halt\n" + script
     result = _send_small_command_on_interpreter(interpreter_script)
     non_recurring_logger.debug(f"Result of sending script to interpreter: {result}")
     if "error" in result.lower():
+        stop_program()
         recurring_logger.error("Error detected in the script sent to interpreter")
-        response = stop_program()
-        non_recurring_logger.debug(f"Result of stopping interpreter mode: {response}")
         return f"{result.split(":")[1].strip()}: {result.split(":")[2].strip()}"
+
+    stop_program()
 
     _write_script_with_ssh(script)
     _load_urp_program()

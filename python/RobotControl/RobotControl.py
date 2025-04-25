@@ -214,7 +214,7 @@ def _send_small_command_on_interpreter(command: str) -> str:
     _interpreter_socket = _get_interpreter_socket()
     sanitized_command = sanitize_command(command)
     _interpreter_socket.send(sanitized_command.encode())
-    return read_from_socket(_interpreter_socket)
+    return read_from_socket_till_end(_interpreter_socket)
 
 
 def send_command_dashboard_socket(command: str) -> str:
@@ -276,7 +276,7 @@ def read_from_socket_till_end(socket: Socket) -> str:
     out = ""
     message = read_from_socket(socket)
     while message != "nothing":
-        out += message
+        out = message
         message = read_from_socket(socket)
     return out
 
