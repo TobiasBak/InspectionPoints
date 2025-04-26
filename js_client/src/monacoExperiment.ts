@@ -74,7 +74,7 @@ export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
     // #region Init Editor
     monaco.editor.defineTheme('vs-code-theme-converted', monacoTheme);
 
-    editor = monaco.editor.create(editorElement!, {
+    const out = monaco.editor.create(editorElement!, {
         value: code,
         language: 'urscript',
         theme: 'vs-code-theme-converted',
@@ -87,9 +87,9 @@ export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
 
     // #region Wire Grammars
 
-    await wireTmGrammars(monaco, registry, grammars, editor);
+    await wireTmGrammars(monaco, registry, grammars, out);
 
-    return editor;
+    return out;
 })();
 
 
