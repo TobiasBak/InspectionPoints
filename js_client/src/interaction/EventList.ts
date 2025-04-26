@@ -1,3 +1,4 @@
+import {InspectionPointMessageData} from "../userMessages/userMessageDefinitions";
 
 export enum EventList {
     CommandEntered = "commandEntered",
@@ -19,17 +20,9 @@ export class CommandEnteredEvent extends CustomEvent<CommandEnteredDetail> {
     }
 }
 
-export type BeginDebugDetail = {
-    script: string[],
-    inspectionPoints: {
-        id: number,
-        lineNumber: number,
-        command: string,
-    }[],
-}
 
-export class BeginDebugEvent extends CustomEvent<BeginDebugDetail> {
-    constructor(detail: BeginDebugDetail) {
+export class BeginDebugEvent extends CustomEvent<InspectionPointMessageData> {
+    constructor(detail: InspectionPointMessageData) {
         super(EventList.BeginDebug, { detail });
     }
 }
