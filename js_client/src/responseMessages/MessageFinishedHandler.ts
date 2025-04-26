@@ -1,5 +1,5 @@
 import {CommandFinishedMessage, ResponseMessage, ResponseMessageType} from "./responseMessageDefinitions";
-import {EventList} from "../interaction/EventList";
+import {CommandFinishedEvent, EventList} from "../interaction/EventList";
 
 export function handleCommandFinishedMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.CommandFinished) {
@@ -14,11 +14,9 @@ export function emitCommandFinishedEvent(message: ResponseMessage): void {
         return;
     }
     const message_copy: CommandFinishedMessage = <CommandFinishedMessage>message;
-    const event = new CustomEvent(EventList.CommandFinished, {
-        detail: {
+    const event = new CommandFinishedEvent({
             command: message_copy.data.command,
-            id: message_copy.data.id,
-        },
+            id: message_copy.data.id
     });
     document.dispatchEvent(event);
 }

@@ -79,7 +79,6 @@ class History(object):
 
         raise ValueError(f"Could not find a command id less than {from_index}")
 
-    # Rest of class cut out
     def new_command(self, command: CommandMessage) -> None:
         self.command_state_history[command.get_id()] = CommandStates(command)
 

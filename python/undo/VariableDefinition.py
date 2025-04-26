@@ -2,38 +2,33 @@ from abc import ABC
 
 from RobotControl.RobotSocketMessages import VariableObject, VariableTypes
 from custom_logging import LogConfig
-from undo.VariableAssignmentCommandBuilder import VariableAssignmentCommandBuilder
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class VariableDefinition(ABC):
-    def __init__(self, name: str, is_collapsible: bool = True,
-                 command_for_changing: VariableAssignmentCommandBuilder = None):
+    def __init__(self, name: str, is_collapsible: bool = True):
         self.name = name
         self.is_collapsible = is_collapsible
-        self.command_for_changing = command_for_changing
         self.is_rtde = False
         self.is_code = False
 
     def __str__(self):
         collapsible = "Collapsible" if self.is_collapsible else "Not Collapsible"
-        return self.name + ": " + collapsible + " " + str(self.command_for_changing)
+        return self.name + ": " + collapsible
 
 
 class RtdeVariableDefinition(VariableDefinition):
-    def __init__(self, name: str, rtde_variable_name: str, is_collapsible: bool = True,
-                 command_for_changing: VariableAssignmentCommandBuilder = None):
-        super().__init__(name, is_collapsible, command_for_changing)
+    def __init__(self, name: str, rtde_variable_name: str, is_collapsible: bool = True):
+        super().__init__(name, is_collapsible)
         self.is_rtde = True
         self.rtde_variable_name = rtde_variable_name
 
 
 class CodeVariableDefinition(VariableDefinition):
-    def __init__(self, name: str, command_for_reading: str, is_collapsible: bool = True,
-                 command_for_changing: VariableAssignmentCommandBuilder = None):
-        super().__init__(name, is_collapsible, command_for_changing)
+    def __init__(self, name: str, command_for_reading: str, is_collapsible: bool = True):
+        super().__init__(name, is_collapsible)
         self.is_code = True
         self.command_for_reading = command_for_reading
         "This must be the urscript code that is necessary to return a value for this variable."
