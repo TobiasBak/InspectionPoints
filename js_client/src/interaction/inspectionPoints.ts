@@ -1,5 +1,8 @@
 import * as monaco from 'monaco-editor';
 import { editor } from "../monacoExperiment";
+import { createInspectionPointFormat, createDebugMessage } from '../userMessages/userMessageFactory';
+import { InspectionPointMessageData, InspectionPointFormat } from '../userMessages/userMessageDefinitions';
+import { BeginDebugEvent } from './EventList';
 
 const model = editor.getModel();
 if (!model) {
@@ -46,42 +49,35 @@ editor.onMouseDown((event) => {
     }
 });
 
-//WIP
-function getDecoratedLines(): { type: string; data: { script: string[]; inspectionPoints: { id: number; lineNumber: number; command: string }[] } } {
-    const decoratedLines: { id: number; lineNumber: number; command: string }[] = [];
+// Function to collect decorated lines and create a debug message
+function collectDecoratedLines(): InspectionPointMessageData {
+    const inspectionPoints: InspectionPointFormat[] = [];
     let idCounter = 1;
 
-    decorationIds.forEach((lineNumber, id) => {
-        const range = model.getDecorationRange(id);
+    decorationIds.forEach((lineNumber, decorationId) => {
+        const range = model.getDecorationRange(decorationId);
         if (range) {
             const currentLineNumber = range.startLineNumber;
             const lineContent = model.getLineContent(currentLineNumber);
-            decoratedLines.push({
-                id: idCounter++,
-                lineNumber: currentLineNumber,
-                command: lineContent.trim(),
-            });
+            inspectionPoints.push(
+                createInspectionPointFormat(idCounter++, currentLineNumber, lineContent)
+            );
         }
     });
 
-    const scriptAndInspectionPoints = {
-        type: "Debug",
-        data: {
-            script: model.getLinesContent(),
-            inspectionPoints: decoratedLines,
-        },
-    };
-
-    return scriptAndInspectionPoints;
+    const debugMessage = createDebugMessage(model.getLinesContent(), inspectionPoints).data;
+    return debugMessage;
 }
 
+const debugButton = document.getElementById("debugEditorButton");
+//Ensure the button exists
+if (debugButton) {
+    debugButton.addEventListener("click", () => {
+        const debugData = collectDecoratedLines();
 
-// MOVE THIS AND MAKE IT EMIT A CUSTOM EVENT
-// This is just for testing purposes
-// to see the decorated lines in the console
-const button = document.getElementById("debugEditorButton");
-if (button) {
-    button.addEventListener("click", () => {
-        console.log(getDecoratedLines());
+        const debugEvent = new BeginDebugEvent(debugData);
+        document.dispatchEvent(debugEvent);
+
+        console.log("Debug event dispatched:", debugEvent);
     });
 }
