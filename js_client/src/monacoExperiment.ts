@@ -71,6 +71,7 @@ export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
         value: code,
         language: 'urscript',
         theme: 'vs-code-theme-converted',
+        glyphMargin: true,
         minimap: {
             enabled: false,
         },
