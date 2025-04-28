@@ -138,7 +138,6 @@ class RobotController:
     def start_program(self):
         return self.send_command(self.dashboard_socket, "play")
 
-
     def unlock_protective_stop(self):
         sleep(5)  # Wait for 5 seconds before attempting to unlock
         result = self.__get_value_from_dashboard("unlock protective stop")
