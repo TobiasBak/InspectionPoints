@@ -145,41 +145,10 @@ p {
     border-style: dashed;
 }
 
-.field.undone {
-    background-color: var(--undone-color);
-}
-
-.undone-feedback {
-    color: var(--text-on-background-color);
-    padding: .5em;
-}
-
 .stateVariableSelectionWrapper label {
     margin-left: .3em;
     margin-bottom: .5em;
 }
-
-/* Collapsible undone commands */
-.collapsibleWrapper {
-    border-radius: .5em;
-    border: .2em solid var(--border-color);
-    margin: 1em;
-    background-color: var(--undone-color);
-}
-.collapsibleWrapper > p {
-    color: var(--text-on-background-color);
-    padding: .5em 1em;
-}
-
-.collapsible {
-    overflow: hidden;
-    max-height: 100%;
-}
-
-.collapsible.collapsed {
-    max-height: 0;
-}
-
 
 /* Spinner animation */
 .spinner {

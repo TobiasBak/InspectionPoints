@@ -37,8 +37,6 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
         case ResponseMessageType.CommandFinished:
             handleCommandFinishedMessage(message);
             break;
-        case ResponseMessageType.UndoResponse:
-            break;
         case ResponseMessageType.ReportState:
             handleReportStateMessage(message);
             break;
