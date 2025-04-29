@@ -31,42 +31,42 @@ def URIFY_return_string(string_to_urify: str) -> str:
             if i > 0:
                 sub_string = sub_string[1:]
 
-            out += _urify_string(sub_string)
+            out += __urify_string(sub_string)
         else:
-            out += create_socket_send_string_variable(list_of_strings[i])
+            out += __create_socket_send_string_variable(list_of_strings[i])
 
     out += f" socket_send_byte(3, {SOCKET_NAME}) "  # End byte
     return out
 
 
-def _urify_string(string: str) -> str:
+def __urify_string(string: str) -> str:
     urified_string = ""
 
     # Split the string by quotes
     between_quotes = string.split('"')
     if len(between_quotes) == 1:
-        return create_socket_send_string(string)
+        return __create_socket_send_string(string)
 
     first = between_quotes.pop(0)
     if first != "":
-        urified_string += create_socket_send_string(first)
+        urified_string += __create_socket_send_string(first)
     else:
-        urified_string += create_quote_send()
+        urified_string += __create_quote_send()
 
     for part in between_quotes:
         # We want to send strings if empty string
         # This is due to a="Hi" resulting in "a=\\"Hi\\"" before urify_string is called.
         if part == "":
-            urified_string += create_quote_send()
+            urified_string += __create_quote_send()
             continue
 
-        urified_string += create_quote_send()
-        urified_string += create_socket_send_string(part)
+        urified_string += __create_quote_send()
+        urified_string += __create_socket_send_string(part)
 
     return urified_string
 
 
-def create_socket_send_string_variable(string_to_send: str) -> str:
+def __create_socket_send_string_variable(string_to_send: str) -> str:
     if string_to_send == "":
         return ""
 
@@ -85,16 +85,16 @@ def create_socket_send_string_variable(string_to_send: str) -> str:
     out = f" socket_send_string({string_to_send}, {SOCKET_NAME}) "
 
     if wrap_in_quotes:
-        out = create_quote_send() + out + create_quote_send()
+        out = __create_quote_send() + out + __create_quote_send()
 
     return out
 
 
-def create_socket_send_string(string_to_send: str) -> str:
+def __create_socket_send_string(string_to_send: str) -> str:
     if string_to_send == "":
         return ""
     return f" socket_send_string(\"{string_to_send}\", {SOCKET_NAME}) "
 
 
-def create_quote_send() -> str:
+def __create_quote_send() -> str:
     return f" socket_send_byte(34, {SOCKET_NAME}) "
