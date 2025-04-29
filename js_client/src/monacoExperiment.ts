@@ -12,10 +12,18 @@ import { wireTmGrammars } from 'monaco-editor-textmate';
 // https://github.com/ahernguo/urscript-extension/blob/master/syntaxes/urscript.tmLanguage.json
 
 const code = `
+
 a = p[-0.421, -0.436, 0.1, 2.61, -1.806, -0.019]
 movej(a, a=0.3, v=0.3)
 
 b = p[-0.194, -0.6, 0.066, 2.61, -1.806, -0.019]
+
+i = 0
+while i < 5:
+    sleep(2)
+    i = i + 1
+end
+
 movej(b, a=0.3, v=0.3)
 `;
 

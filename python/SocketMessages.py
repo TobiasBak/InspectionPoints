@@ -122,10 +122,13 @@ class InspectionPointMessage:
         if not isinstance(script_text, list):
             raise ValueError(f"Script text is not a list: {script_text}")
 
-        for point in inspection_points:
+        sorted_inspection_points = sorted(inspection_points, key=lambda i: i["lineNumber"])
+
+        for point in sorted_inspection_points:
             self.inspectionPoints.append(
                 InspectionPointFormatFromFrontend(point["id"], point["lineNumber"] - 1, point["command"])
             )
+
 
 
         #     Check that the commands in the inspection points match the line numbers received.
