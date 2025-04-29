@@ -2,6 +2,7 @@ from time import sleep
 import re
 import asyncio
 import threading
+from typing import Callable
 
 from custom_logging import LogConfig
 from RobotControl.Robot import Robot
@@ -27,7 +28,7 @@ def run_script_on_robot(script: str) -> str:
     robot.ssh.write_script(script)
     robot.controller.load_program()
     robot.controller.start_program()
-    sleep(0.2)
+    sleep(0.1)
 
     latest_errors = robot.ssh.read_lines_from_log(2)
 
@@ -37,7 +38,7 @@ def run_script_on_robot(script: str) -> str:
         parts = re.split(r'ERROR\s+-', error, maxsplit=1)
         return parts[1]
 
-    #Start thread to check for errors
+    #Start thread to check for runtime errors
     def run_async_checker():
         asyncio.run(run_script_finished_error_checker(script))
 
@@ -57,33 +58,79 @@ async def run_script_finished_error_checker(script: str):
         Returns: 
             None
     """
-    max_wait_time = 60
-    sleep_time = 0.1
-    runs = 0
-
-    while "Starting" in robot.controller.robot_mode:
-        sleep(sleep_time)
-        runs += 1
-
-    while "PLAYING" in robot.controller.program_state and runs < max_wait_time / sleep_time:
-        sleep(0.1)
-        runs += 1
+    non_recurring_logger.debug(f"Robot mode: {robot.controller.robot_mode}")
+    __wait_for_condition(lambda: "Starting" not in robot.controller.robot_mode)
     
-    non_recurring_logger.debug(f"Run took {runs * sleep_time} seconds")
+    non_recurring_logger.debug(f"Program state: {robot.controller.program_state}")
+    __wait_for_condition(lambda: "PLAYING" not in robot.controller.program_state)
     
     latest_errors = robot.ssh.read_lines_from_log(3)
     non_recurring_logger.debug(f"Latest errors:\n{latest_errors}")
     if "Type error" in latest_errors or "Runtime error" in latest_errors:
-        error = latest_errors.split("\n")[0]
-        parts = re.split(r'ERROR\s+-', error, maxsplit=1)
+        error_line = latest_errors.split("\n")[0]
+        error_text = re.split(r'ERROR\s+-', error_line, maxsplit=1)[1]
 
-        # Subtract 29 from the line number
-        # TODO
+        error = retrieve_line_number_text(error_text)
+        __send_error_message_to_web_clients(error)
+        return
+    
+    if "New safety mode: SAFETY_MODE_PROTECTIVE_STOP" in latest_errors:
+        error_text = """
+        PROTECTIVE STOP: Reconsider how the robot is moving.
+        You will not be able to run a program for five seconds.
+        """
+        __send_error_message_to_web_clients(error_text)
 
-        response = AckResponse(0, script, parts[1]) # id 0, cause I dunno
-        str_response = str(response)
-        non_recurring_logger.debug(f"Sending error to web clients: {str_response}")
-        websocket_notifier.notify_observers(str_response)
+        # Close safety popup
+        robot.controller.close_safety_popup()
+        robot.controller.unlock_protective_stop()
+        return
 
+def retrieve_line_number_text(text: str) -> str:
+    """
+    Modifies the text to include line number. 
+    Uses 29 as the constant for the line difference.
 
+        Args:
+            text (str): The error message.
+    
+        Returns: 
+            str: The modified error message with line number.
+    """
+    line_difference = 29
+    match = re.search(r'\((\d+:\d+)\)', text)
+    if match:
+        line_number = match.group(1)  # Extracts '36:5'
+        number = int(line_number.split(":")[0])
+        text = text.replace(match.group(0), f"(line {number - line_difference})")  # Remove line number from the text
+        return text
+    return text
+
+def __send_error_message_to_web_clients(message: str):
+    """
+    Sends an error message to all web clients.
+
+        Args:
+            message (str): The error message.
+    
+        Returns: 
+            None
+    """
+    response = AckResponse(0, "Error", message) # id 0, cause I dunno
+    str_response = str(response)
+    non_recurring_logger.debug(f"Sending error to web clients: {str_response}")
+    websocket_notifier.notify_observers(str_response)
+
+def __wait_for_condition(condition: Callable[[], bool]):
+    max_wait_time = 60
+    sleep_time = 0.1
+    runs = 0
+    
+    while True:
+        if condition() or runs >= max_wait_time / sleep_time:
+            non_recurring_logger.debug(f"Condition met: {condition}")
+            non_recurring_logger.debug(f"Run took {runs * sleep_time} seconds")
+            break
+        sleep(sleep_time)
+        runs += 1
     
