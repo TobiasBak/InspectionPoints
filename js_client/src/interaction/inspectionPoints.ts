@@ -21,8 +21,9 @@ editor.onMouseDown((event) => {
 
         // Check if decoration is on this line
         let existingId: string | undefined;
-        decorationIds.forEach((line, id) => {
-            if (line === lineNumber) {
+        decorationIds.forEach((_, id) => {
+            const range = model.getDecorationRange(id);
+            if (range && range.startLineNumber === lineNumber) {
                 existingId = id;
             }
         });
