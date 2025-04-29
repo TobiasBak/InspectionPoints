@@ -20,18 +20,18 @@ editor.onMouseDown((event) => {
         if (!lineNumber) return;
 
         // Check if decoration is on this line
-        let existingId: string | undefined;
-        decorationIds.forEach((_, id) => {
-            const range = model.getDecorationRange(id);
+        let existingDecorationId: string | undefined;
+        decorationIds.forEach((_, decorationId) => {
+            const range = model.getDecorationRange(decorationId);
             if (range && range.startLineNumber === lineNumber) {
-                existingId = id;
+                existingDecorationId = decorationId;
             }
         });
 
-        if (existingId) {
+        if (existingDecorationId) {
             // Remove decoration
-            model.deltaDecorations([existingId], []);
-            decorationIds.delete(existingId);
+            model.deltaDecorations([existingDecorationId], []);
+            decorationIds.delete(existingDecorationId);
         } else {
             // Add decoration
             const [newId] = model.deltaDecorations([], [
