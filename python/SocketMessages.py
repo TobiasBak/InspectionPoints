@@ -1,4 +1,5 @@
 import json
+from array import ArrayType
 from builtins import list
 from enum import Enum, auto
 
@@ -113,26 +114,28 @@ class InspectionPointFormatFromFrontend:
 #     ]
 # }
 class InspectionPointMessage:
-    def __init__(self, scriptText: [str], inspectionPoints: [dict]):
+    def __init__(self, script_text: list[str], inspection_points: list[dict]):
         self.type = MessageType.Debug
-        self.scriptText: [str] = scriptText
-        self.inspectionPoints: [InspectionPointFormatFromFrontend] = []
+        self.scriptText: list[str] = script_text
+        self.inspectionPoints: list[InspectionPointFormatFromFrontend] = []
 
-        if not isinstance(scriptText, list):
-            raise ValueError(f"Script text is not a list: {scriptText}")
+        if not isinstance(script_text, list):
+            raise ValueError(f"Script text is not a list: {script_text}")
 
-        for point in inspectionPoints:
+        for point in inspection_points:
             self.inspectionPoints.append(
                 InspectionPointFormatFromFrontend(point["id"], point["lineNumber"] - 1, point["command"])
             )
 
 
         #     Check that the commands in the inspection points match the line numbers received.
-        for point in inspectionPoints:
-            if point.lineNumber > len(scriptText):
-                raise ValueError(f"Line number {point.lineNumber} is greater than the length of the script text.")
-            if point.command != scriptText[point.lineNumber]:
-                raise ValueError(f"Command '{point.command}' does not match the script text ({scriptText[point.lineNumber]}) at line {point.lineNumber}.")
+        for point in self.inspectionPoints:
+            line_number = point.lineNumber
+            supposed_command = point.command
+            if line_number > len(script_text):
+                raise ValueError(f"Line number {line_number} is greater than the length of the script text.")
+            if supposed_command != script_text[line_number]:
+                raise ValueError(f"Command '{supposed_command}' does not match the script text ({script_text[line_number]}) at line {line_number}.")
 
     def __str__(self):
         return json.dumps({

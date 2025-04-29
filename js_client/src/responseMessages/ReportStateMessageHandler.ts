@@ -10,14 +10,18 @@ export function handleReportStateMessage(message: ResponseMessage): void {
         throw new Error(`Invalid message type: ${message.type}`);
     }
 
-    iterateMessageData(message.data);
+    console.log(`Received message:`, message);
+
+    iterateMessageData(message.data, message.id);
 }
 
-function iterateMessageData(data: VariableObject[]): void {
+function iterateMessageData(data: VariableObject[], log_id: number): void {
     const id: 'codeVariableDisplay' = "codeVariableDisplay"
     const oldStateVariableView: HTMLElement = document.getElementById(id);
     const codeVariableView: HTMLElement = document.createElement('div');
     codeVariableView.id = id;
+
+    console.log("Provided_id from last logged report state", log_id)
 
     data.forEach((variable): void => {
         generateHtmlFromMessageData(variable.name, codeVariableView, variable.value)

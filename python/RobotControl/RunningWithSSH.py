@@ -3,6 +3,8 @@ import re
 import asyncio
 import threading
 
+from URIFY import SOCKET_NAME
+from constants import ROBOT_FEEDBACK_HOST, ROBOT_FEEDBACK_PORT
 from custom_logging import LogConfig
 from RobotControl.Robot import Robot
 from SocketMessages import AckResponse
@@ -14,6 +16,13 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 robot = Robot.get_instance()
 
+def augment_script(script: str) -> str:
+
+    socket_connection_text = robot.controller.open_feedback_socket_string
+    out = socket_connection_text + script
+
+    return out
+
 def run_script_on_robot(script: str) -> str:
     """
     Run a script on the robot using SSH.
@@ -24,7 +33,8 @@ def run_script_on_robot(script: str) -> str:
         Returns: 
             An error message or an empty string.
     """
-    robot.ssh.write_script(script)
+    augmented_script = augment_script(script)
+    robot.ssh.write_script(augmented_script)
     robot.controller.load_program()
     robot.controller.start_program()
     sleep(0.2)
@@ -33,13 +43,14 @@ def run_script_on_robot(script: str) -> str:
 
     if "Compile error" in latest_errors or "Lexer exception" in latest_errors:
         non_recurring_logger.debug("Compile error or Lexer exception found")
+        recurring_logger.debug(f"Error in script: {latest_errors}")
         error = latest_errors.split("\n")[1]
         parts = re.split(r'ERROR\s+-', error, maxsplit=1)
         return parts[1]
 
     #Start thread to check for errors
     def run_async_checker():
-        asyncio.run(run_script_finished_error_checker(script))
+        asyncio.run(run_script_finished_error_checker(augmented_script))
 
     error_checker_thread = threading.Thread(target=run_async_checker)
     error_checker_thread.start()
@@ -72,7 +83,7 @@ async def run_script_finished_error_checker(script: str):
     non_recurring_logger.debug(f"Run took {runs * sleep_time} seconds")
     
     latest_errors = robot.ssh.read_lines_from_log(3)
-    non_recurring_logger.debug(f"Latest errors:\n{latest_errors}")
+    # non_recurring_logger.debug(f"Latest errors:\n{latest_errors}")
     if "Type error" in latest_errors or "Runtime error" in latest_errors:
         error = latest_errors.split("\n")[0]
         parts = re.split(r'ERROR\s+-', error, maxsplit=1)

@@ -18,7 +18,7 @@ SSH_USERNAME: str = config("SSH_USERNAME", default="robot")
 
 RTDE_CONFIG_FILE: str = config("RTDE_CONFIG_FILE", default="rtde_configuration.xml")
 
-recurring_level = logging.INFO
+recurring_level = logging.DEBUG
 """This level defines the level that will be logged in the console"""
 non_recurring_level = logging.DEBUG
 """This level defines the level that will be logged in the console"""

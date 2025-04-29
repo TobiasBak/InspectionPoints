@@ -112,7 +112,8 @@ function parseReportStateMessage(message: any): ReportStateMessage {
                 type: noneGuard(variable.type),
                 value: noneGuard(variable.value)
             };
-        })]
+        })],
+        id: noneGuard(message.id),
     };
 }
 
