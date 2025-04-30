@@ -1,20 +1,21 @@
 import { editor } from "../monacoExperiment";
-import { decorationIds } from "./inspectionPoints";
-import { createDebugMessage } from "../userMessages/userMessageFactory";
+import { decorationIds, model } from "./inspectionPoints";
+import { createDebugMessage, createInspectionPointFormat } from "../userMessages/userMessageFactory";
+import { InspectionPointFormat } from "../userMessages/userMessageDefinitions";
 import { BeginDebugEvent } from "./EventList";
 
 export function createDebugEvent(): BeginDebugEvent {
-    const inspectionPointsMap = new Map<number, any>();
+    const inspectionPointsMap = new Map<number, InspectionPointFormat>();
     let idCounter = 1;
 
     decorationIds.forEach((lineNumber, decorationId) => {
-        const range = editor.getModel()?.getDecorationRange(decorationId);
+        const range = model.getDecorationRange(decorationId);
         if (range) {
             const currentLineNumber = range.startLineNumber;
-            const lineContent = editor.getModel()?.getLineContent(currentLineNumber) || "";
+            const lineContent = model.getLineContent(currentLineNumber);
             inspectionPointsMap.set(
                 currentLineNumber,
-                { id: idCounter++, lineNumber: currentLineNumber, content: lineContent }
+                createInspectionPointFormat(idCounter++, currentLineNumber, lineContent)
             );
         }
     });

@@ -1,5 +1,3 @@
-import { decorationIds } from "./inspectionPoints";
-
 const customVariables = new Map<string, string[]>();
 const checkedValues = new Map<string, string[]>();
 

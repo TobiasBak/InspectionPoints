@@ -2,7 +2,7 @@ import * as monaco from 'monaco-editor';
 import { editor } from "../monacoExperiment";
 import { openPopup } from "./inspectionPopupManager";
 
-const model = editor.getModel();
+export const model = editor.getModel();
 if (!model) {
     throw new Error("No model is attached to the editor.");
 }
