@@ -12,15 +12,13 @@ from websockets.server import serve
 from RobotControl.RunningWithSSH import run_script_on_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
-from RobotControl.StateRecovery import handle_cleared_interpreter
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
-from RobotControl.SendRobotCommandWithRecovery import send_command_finished
 from undo.HistorySupport import handle_report_state, handle_command_finished, get_variable_registry
-from undo.ReadVariableState import report_state_received, read_variable_state
+from undo.ReadVariableState import report_state_received
 from RobotControl.Robot import Robot
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -222,8 +220,8 @@ async def recover_mangled_data(extra_data: bytes) -> None:
     # We have extra data and the rest was lost
     fucked_data = extra_data.decode()
     # Regular expression pattern to extract "type", "id", and "data.command"
-    if await search_for_command_finished(fucked_data):
-        return
+    # if await search_for_command_finished(fucked_data):
+    #     return
 
     if await search_for_report_state(fucked_data):
         return
@@ -231,21 +229,21 @@ async def recover_mangled_data(extra_data: bytes) -> None:
     recurring_logger.error("Pattern not found in the message.")
 
 
-async def search_for_command_finished(fucked_data: str) -> bool:
-    pattern = r'"type":\s*"([^"]+)".*?"id":\s*(\d+).*?"command":\s*"([^"]+)'
-    # Use re.search to find the pattern in the string
-    match = re.search(pattern, fucked_data)
-    # If match is found, extract the values
-    if match:
-        message_type = match.group(1)
-        id_value = int(match.group(2))
-        command = match.group(3)
-        match message_type:
-            case RobotSocketMessageTypes.Command_finished.name:
-                send_command_finished(id_value, command)
-                recurring_logger.debug(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
-                return True
-    return False
+# async def search_for_command_finished(fucked_data: str) -> bool:
+#     pattern = r'"type":\s*"([^"]+)".*?"id":\s*(\d+).*?"command":\s*"([^"]+)'
+#     # Use re.search to find the pattern in the string
+#     match = re.search(pattern, fucked_data)
+#     # If match is found, extract the values
+#     if match:
+#         message_type = match.group(1)
+#         id_value = int(match.group(2))
+#         command = match.group(3)
+#         match message_type:
+#             case RobotSocketMessageTypes.Command_finished.name:
+#                 send_command_finished(id_value, command)
+#                 recurring_logger.debug(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
+#                 return True
+#     return False
 
 
 async def search_for_report_state(fucked_data: str) -> bool:
@@ -289,9 +287,9 @@ def message_from_robot_received(message: bytes):
             handle_report_state(robot_message)
             report_state_received()
             send_to_all_web_clients(str(robot_message))
-        case InterpreterCleared():
-            handle_cleared_interpreter(robot_message)
-            report_state_received()
+        # case InterpreterCleared():
+        #     handle_cleared_interpreter(robot_message)
+        #     report_state_received()
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
 

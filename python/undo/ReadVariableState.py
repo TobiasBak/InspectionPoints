@@ -2,7 +2,6 @@ import asyncio
 from typing import Callable
 
 from RobotControl.RunningWithSSH import run_script_on_robot
-from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from RobotControl.RobotSocketMessages import ReportState
 from custom_logging import LogConfig
 from undo.HistorySupport import _variable_registry
