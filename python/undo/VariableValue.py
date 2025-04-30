@@ -10,9 +10,6 @@ class VariableValue:
         self.value = value
         self.variable_definition = variable_definition
 
-    def get_apply_command(self) -> str:
-        return self.variable_definition.command_for_changing.build(self.value)
-
     def __str__(self):
         return "{" + f"{self.variable_definition.name}: {self.value}" + "}"
 
