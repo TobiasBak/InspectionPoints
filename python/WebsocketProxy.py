@@ -8,7 +8,9 @@ from typing import Final
 
 from websockets.server import serve
 
-from RobotControl.RobotControl import get_robot_mode, start_robot
+
+from RobotControl.RunningWithSSH import run_script_on_robot
+from RobotControl.old_robot_controls import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
 from RobotControl.SSHControl import run_script_on_robot
@@ -48,7 +50,7 @@ def handle_command_message(message: CommandMessage) -> str:
 
     #     return str(response)
 
-    result = run_script_on_robot(command_string)
+    result = run_script_on_robot(message.data.id, command_string)
     non_recurring_logger.debug(f"Result of command: {result}")
     if result == "":
         return ""

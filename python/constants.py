@@ -14,6 +14,8 @@ SECONDARY_PORT = 30002
 RTDE_PORT = 30004
 INTERPRETER_PORT = 30020
 
+SSH_USERNAME: str = config("SSH_USERNAME", default="robot")
+
 RTDE_CONFIG_FILE: str = config("RTDE_CONFIG_FILE", default="rtde_configuration.xml")
 
 recurring_level = logging.INFO
