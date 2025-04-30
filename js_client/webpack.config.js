@@ -4,8 +4,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     mode: 'development', // For production, use 'production' (is set to development for dev server to work properly)
     entry: {
-        // input: './src/input.ts',
-        // input_highlight: './src/SyntaxHighlighting/inputFieldHighlight.ts',
         robot_socket: './src/robot_socket.ts',
         style: './src/style.css',
         colors: './src/colors.css',
@@ -13,8 +11,7 @@ module.exports = {
         robot_3d_plot: './src/robot3dplot.png',
         dark_mode: './src/Toolbox/auto_dark_mode.ts',
         inspectionPoints: './src/interaction/inspectionPoints.ts',
-        monacoEditor: './src/monacoExperiment.ts',
-        input: './src/input.ts',
+        monacoEditor: './src/monacoExperiment.ts'
     },
     devtool: 'inline-source-map',
     devServer: {
