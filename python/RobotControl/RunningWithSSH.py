@@ -24,7 +24,7 @@ def augment_script(script: str) -> str:
 
     return out
 
-def run_script_on_robot(id: int, script: str) -> str:
+def run_script_on_robot(script: str) -> str:
     """
     Run a script on the robot using SSH.
     
@@ -51,7 +51,7 @@ def run_script_on_robot(id: int, script: str) -> str:
 
     #Start thread to check for runtime errors
     def run_async_checker():
-        asyncio.run(run_script_finished_error_checker(id))
+        asyncio.run(run_script_finished_error_checker(0))
 
     error_checker_thread = threading.Thread(target=run_async_checker)
     error_checker_thread.start()
