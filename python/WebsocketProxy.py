@@ -9,8 +9,7 @@ from typing import Final
 from websockets.server import serve
 
 from RobotControl.RunningWithSSH import run_script_on_robot
-from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
-    InterpreterCleared
+from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
 from WebsocketNotifier import websocket_notifier
