@@ -171,8 +171,6 @@ p {
 }
 
 
-
-
 /* POPUP */
 .popup {
     position: fixed;
@@ -209,4 +207,98 @@ p {
     border-radius: 50%;
     display: inline-block;
     margin-left: 1em;
+}
+
+/* DECORATIONS POPUP */
+/* Using .inspectionpoint-popup-box to avoid possible conflicts with other popups */
+.inspectionpoint-popup-box {
+    background: lightgray;
+    border: 2px solid var(--border-color);
+    color: var(--text-on-background-color);
+    padding: 0.5em;
+    z-index: 100;
+    width: 300px;
+    border-radius: 0.4em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.inspectionpoint-popup-box .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: #333;
+    font-size: 18px;
+}
+.inspectionpoint-popup-box .popup-header .close-popup {
+    background: none;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+}
+.inspectionpoint-popup-box .popup-header .close-popup:hover {
+    color: var(--error-color);
+}
+.inspectionpoint-popup-box .popup-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    color: #333;
+    font-size: 14px;
+}
+.inspectionpoint-popup-box .popup-body input {
+    width: 100%;
+    font-weight: bold;
+    border-radius: 0.3em;
+    background-color: var(--slate-background-color);
+    color: var(--text-on-background-color);
+}
+.inspectionpoint-popup-box .popup-body>label {
+    font-weight: bold;
+    color: #333;
+}
+.inspectionpoint-popup-box .popup-body button {
+    align-self: flex-end;
+    padding: 8px 15px;
+    background-color: var(--group-B-active-color);
+    color: white;
+    border: none;
+    border-radius: 0.3em;
+    cursor: pointer;
+}
+.inspectionpoint-popup-box .popup-body button:hover {
+    background-color: var(--group-A-active-color);
+}
+.inspectionpoint-popup-box .popup-body ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+.inspectionpoint-popup-box .popup-body ul li {
+    background: var(--slate-background-color);
+    color: var(--text-on-background-color);
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+.inspectionpoint-popup-box .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.2em;
+    justify-items: start;
+    align-items: center;
+}
+.inspectionpoint-popup-box .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+}
+.inspectionpoint-popup-box .checkbox-group input[type="checkbox"] {
+    accent-color: var(--group-B-active-color);
+    margin: 0;
 }
