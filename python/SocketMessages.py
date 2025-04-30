@@ -16,7 +16,6 @@ class MessageType(Enum):
     Ack_response = auto()
     Feedback = auto()
     Robot_state = auto()
-    Undo_response = auto()
     Debug = auto()
 
 
