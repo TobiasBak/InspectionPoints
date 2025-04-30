@@ -8,7 +8,7 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 async def main():
-    non_recurring_logger.warn("Starting WebsocketProxy.py")
+    non_recurring_logger.warning("Starting WebsocketProxy.py")
     try:
         async with asyncio.TaskGroup() as tg:
             t1 = tg.create_task(open_robot_server())

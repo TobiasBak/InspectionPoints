@@ -3,9 +3,9 @@ import {ResponseMessage, ResponseMessageType} from "./responseMessages/responseM
 import {handleAckResponseMessage} from "./responseMessages/AckResponseHandler";
 import {handleFeedbackMessage} from "./responseMessages/FeedbackMessageHandler";
 import {handleRobotStateMessage} from "./responseMessages/RobotStateMessageHandler";
-import {EventList} from "./interaction/EventList";
-import {createCommandMessage, createUndoMessage} from "./userMessages/userMessageFactory";
-import {UserMessage} from "./userMessages/userMessageDefinitions";
+import {BeginDebugEvent, CommandEnteredEvent, EventList} from "./interaction/EventList";
+import {createCommandMessage, createDebugMessage, createInspectionPointFormat} from "./userMessages/userMessageFactory";
+import {InspectionPointFormat, UserMessage} from "./userMessages/userMessageDefinitions";
 import {handleCommandFinishedMessage} from "./responseMessages/MessageFinishedHandler";
 import {handleReportStateMessage} from "./responseMessages/ReportStateMessageHandler";
 
@@ -37,8 +37,6 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
         case ResponseMessageType.CommandFinished:
             handleCommandFinishedMessage(message);
             break;
-        case ResponseMessageType.UndoResponse:
-            break;
         case ResponseMessageType.ReportState:
             handleReportStateMessage(message);
             break;
@@ -64,13 +62,16 @@ async function testCommands() {
     const proxyServer = get_socket("localhost", 8767);
 
     proxyServer.onopen = () => {
-        document.addEventListener(EventList.CommandEntered, function (e: CustomEvent) {
+        document.addEventListener(EventList.CommandEntered, function (e: CommandEnteredEvent) {
             const commandMessage = createCommandMessage(e.detail.id, e.detail.text);
             send(proxyServer, commandMessage)
         });
-        document.addEventListener(EventList.UndoEvent, function (e: CustomEvent) {
-            const undoCommand = createUndoMessage(e.detail.id);
-            send(proxyServer, undoCommand);
+        document.addEventListener(EventList.BeginDebug, function (e: BeginDebugEvent) {
+            const inspectionPoints: InspectionPointFormat[] = []
+            e.detail.inspectionPoints.forEach(point =>
+                inspectionPoints.push(createInspectionPointFormat(point.id, point.lineNumber, point.command)));
+            const debugCommand = createDebugMessage(e.detail.script, inspectionPoints);
+            send(proxyServer, debugCommand);
         });
     };
 }
