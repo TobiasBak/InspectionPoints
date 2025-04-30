@@ -44,6 +44,9 @@ class RobotController:
     def robot_mode(self) -> str:
         """
         Property to get the robot mode.
+
+            Returns:
+                str: The robot mode. (Starting<program_name> or RUNNING)
         """
         return self.__get_value_from_dashboard("robotmode")
 
@@ -65,6 +68,9 @@ class RobotController:
     def program_state(self) -> str:
         """
         Property to get the program state.
+
+            Returns:
+                str: STOPPED<program_name> or PLAYING<program_name>
         """
         return self.__get_value_from_dashboard("programState")
     
@@ -137,7 +143,6 @@ class RobotController:
     
     def start_program(self):
         return self.send_command(self.dashboard_socket, "play")
-
 
     def unlock_protective_stop(self):
         sleep(5)  # Wait for 5 seconds before attempting to unlock

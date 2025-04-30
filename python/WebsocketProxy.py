@@ -49,7 +49,7 @@ def handle_command_message(message: CommandMessage) -> str:
 
     #     return str(response)
 
-    result = run_script_on_robot(command_string)
+    result = run_script_on_robot(message.data.id, command_string)
     non_recurring_logger.debug(f"Result of command: {result}")
     if result == "":
         return ""
