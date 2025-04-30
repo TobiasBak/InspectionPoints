@@ -15,7 +15,7 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 robot = Robot.get_instance()
 
-def run_script_on_robot(script: str) -> str:
+def run_script_on_robot(id: int, script: str) -> str:
     """
     Run a script on the robot using SSH.
     
@@ -40,14 +40,14 @@ def run_script_on_robot(script: str) -> str:
 
     #Start thread to check for runtime errors
     def run_async_checker():
-        asyncio.run(run_script_finished_error_checker(script))
+        asyncio.run(run_script_finished_error_checker(id))
 
     error_checker_thread = threading.Thread(target=run_async_checker)
     error_checker_thread.start()
 
     return "" 
 
-async def run_script_finished_error_checker(script: str):
+async def run_script_finished_error_checker(id: int):
     """
     Check for errors in the script after it has finished running.
     Sends the error to all web clients if an error is found.
@@ -71,7 +71,7 @@ async def run_script_finished_error_checker(script: str):
         error_text = re.split(r'ERROR\s+-', error_line, maxsplit=1)[1]
 
         error = retrieve_line_number_text(error_text)
-        __send_error_message_to_web_clients(error)
+        __send_error_message_to_web_clients(id, error)
         return
     
     if "New safety mode: SAFETY_MODE_PROTECTIVE_STOP" in latest_errors:
@@ -79,7 +79,7 @@ async def run_script_finished_error_checker(script: str):
         PROTECTIVE STOP: Reconsider how the robot is moving.
         You will not be able to run a program for five seconds.
         """
-        __send_error_message_to_web_clients(error_text)
+        __send_error_message_to_web_clients(id, error_text)
 
         # Close safety popup
         robot.controller.close_safety_popup()
@@ -106,7 +106,7 @@ def retrieve_line_number_text(text: str) -> str:
         return text
     return text
 
-def __send_error_message_to_web_clients(message: str):
+def __send_error_message_to_web_clients(id: int, message: str):
     """
     Sends an error message to all web clients.
 
@@ -116,7 +116,7 @@ def __send_error_message_to_web_clients(message: str):
         Returns: 
             None
     """
-    response = AckResponse(0, "Error", message) # id 0, cause I dunno
+    response = AckResponse(id, "Error", message) # id 0, cause I dunno
     str_response = str(response)
     recurring_logger.debug(f"Sending error to web clients: {str_response}")
     websocket_notifier.notify_observers(str_response)
