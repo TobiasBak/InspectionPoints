@@ -90,11 +90,11 @@ class RobotController:
         Property to check if Polyscope is ready.
         """
         robot_mode = self.robot_mode
-        if robot_mode in ('', 'BOOTING'):
-            recurring_logger.info(f"Polyscope is still starting: {robot_mode}")
+        if robot_mode in ('', 'BOOTING', 'nothing'):
+            non_recurring_logger.info(f"Polyscope is still starting: {robot_mode}")
             return False
         elif robot_mode in ('NO_CONTROLLER', 'DISCONNECTED', 'UniversalRobotsDashboardServer'):
-            recurring_logger.info(f"Polyscope is in current state of starting: {robot_mode}")
+            non_recurring_logger.info(f"Polyscope is in current state of starting: {robot_mode}")
             return False
         else:
             return True
@@ -103,11 +103,11 @@ class RobotController:
         """
         Sends a command to the specified socket and returns the response.
         """
-        sanitized_command = self._sanitize_command(command)
+        sanitized_command = self.sanitize_command(command)
         socket.send(sanitized_command.encode())
         return self.read_from_socket(socket)
 
-    def _sanitize_command(self, command: str) -> str:
+    def sanitize_command(self, command: str) -> str:
         """
         Sanitizes a command by ensuring it ends with a newline character.
         """
