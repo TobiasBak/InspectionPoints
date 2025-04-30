@@ -9,7 +9,7 @@ from typing import Final
 from websockets.server import serve
 
 
-from RobotControl.RunningWithSSH import run_script_on_robot, robot
+from RobotControl.RunningWithSSH import run_script_on_robot
 from RobotControl.old_robot_controls import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
@@ -20,8 +20,7 @@ from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
 from RobotControl.SendRobotCommandWithRecovery import send_command_finished
-from undo.HistorySupport import handle_report_state, handle_command_finished, history_debug_print, \
-    get_command_state_history, _variable_registry, get_variable_registry
+from undo.HistorySupport import handle_report_state, handle_command_finished, get_variable_registry
 from undo.ReadVariableState import report_state_received, read_variable_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -40,15 +39,6 @@ _new_client = False
 def handle_command_message(message: CommandMessage) -> str:
     command_string = message.data.command
     non_recurring_logger.debug(f"Command string: {command_string}")
-
-    # if '#' in command_string and not re.search(r'"[^"]*#[^"]*"', command_string):
-    #     recurring_logger.debug(f"Command contains a comment: {command_string}")
-    #     response = AckResponse(message.data.id, command_string, "discard: Command contains a comment")
-
-    #     command_finished = CommandFinished(message.data.id, command_string)
-    #     send_to_all_web_clients(str(command_finished))
-
-    #     return str(response)
 
     result = run_script_on_robot(command_string)
     non_recurring_logger.debug(f"Result of command: {result}")
