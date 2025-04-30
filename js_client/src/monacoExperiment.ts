@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor';
-import { loadWASM } from 'onigasm';
-import { Registry } from 'monaco-textmate';
-import { wireTmGrammars } from 'monaco-editor-textmate';
+import {loadWASM} from 'onigasm';
+import {IGrammarDefinition, Registry} from 'monaco-textmate';
+import {wireTmGrammars} from 'monaco-editor-textmate';
 
 // Inspired by the following:
 //https://stackblitz.com/edit/1-monaco-editor-textmate-grammar-loading-example?file=src%2Fmain.ts
@@ -12,7 +12,6 @@ import { wireTmGrammars } from 'monaco-editor-textmate';
 // https://github.com/ahernguo/urscript-extension/blob/master/syntaxes/urscript.tmLanguage.json
 
 const code = `
-
 a = p[-0.421, -0.436, 0.1, 2.61, -1.806, -0.019]
 movej(a, a=0.3, v=0.3)
 
@@ -35,27 +34,19 @@ export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
         // 'onigasm/lib/onigasm.wasm' // use while working on local or custom loaders (webpack, vite, etc.)
     );
 
-
     const wasmContent = await onigasmResponse.arrayBuffer();
-
     if (wasmContent) {
         await loadWASM(wasmContent);
     }
 
     const registry = new Registry({
-        getGrammarDefinition: async (scopeName: string): Promise<any> => {
-            console.log('scopeName', scopeName);
-
-            const res: any = {
+        getGrammarDefinition: async (scopeName: string): Promise<IGrammarDefinition> => {
+            return {
                 format: 'json',
                 content: await (
                     await fetch('https://raw.githubusercontent.com/ahernguo/urscript-extension/refs/heads/master/syntaxes/urscript.tmLanguage.json')
                 ).text(),
             };
-
-            console.log('grammarContent', res);
-
-            return res;
         },
     });
 
@@ -65,14 +56,8 @@ export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
 
     grammars.set('urscript', 'source.urscript');
 
-    // console.log(grammars);
 
-    // #endregion
-
-
-    // console.log(await (await fetch("theme/monaco-dark-modern.json")).text())
     const monacoTheme = JSON.parse(await (await fetch("theme/monaco-dark-modern.json")).text())
-    // #region Init Editor
     monaco.editor.defineTheme('vs-code-theme-converted', monacoTheme);
 
     const out = monaco.editor.create(editorElement!, {
@@ -84,10 +69,6 @@ export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
             enabled: false,
         },
     });
-
-    // #endregion
-
-    // #region Wire Grammars
 
     await wireTmGrammars(monaco, registry, grammars, out);
 

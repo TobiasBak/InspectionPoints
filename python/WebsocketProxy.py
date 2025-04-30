@@ -76,7 +76,7 @@ def handle_inspection_point_message(message: InspectionPointMessage) -> str:
         read_command = generate_read_point(i.id)
         if message.scriptText[i.lineNumber] != i.command:
             raise Exception(f"The insert is going wrong. linenumber-1: {message.scriptText[i.lineNumber-1]}, linenumber+1: {message.scriptText[i.lineNumber+1]}. Should be: {i.command}. Length of inspectionpints: {len(message.scriptText)}")
-        message.scriptText.insert(i.lineNumber-1, read_command)
+        message.scriptText.insert(i.lineNumber, read_command)
 
     final_script = "\n".join(message.scriptText)
 
