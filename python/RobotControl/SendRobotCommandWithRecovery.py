@@ -1,8 +1,6 @@
 import time
 from enum import Enum
 
-from RobotControl.old_robot_controls import send_command_interpreter_socket, get_safety_status, \
-    get_robot_mode, get_running
 from RobotControl.RobotSocketMessages import CommandFinished
 from RobotControl.StateRecovery import States, recover_state, generate_command_finished
 from URIFY import URIFY_return_string
@@ -42,46 +40,46 @@ def send_command_with_recovery(command: str, command_id, is_command_finished: bo
         time.sleep(0.1)
         command_to_send = generate_command_finished(command_id, command)
 
-    result = send_command_interpreter_socket(command_to_send)
-    recurring_logger.debug(f"Result from robot: {result}")
+    # result = send_command_interpreter_socket(command_to_send)
+    # recurring_logger.debug(f"Result from robot: {result}")
 
-    out = result
+    out = "result"
     if out == "nothing":
         raise ValueError("Response from robot is nothing. This is not expected.")
 
-    response_array = result.split(":")
-    if len(response_array) < 2:
-        recurring_logger.debug(f"Response array: {response_array}")
-        raise ValueError("Response from robot is not in the expected format.")
+    # response_array = result.split(":")
+    # if len(response_array) < 2:
+    #     recurring_logger.debug(f"Response array: {response_array}")
+    #     raise ValueError("Response from robot is not in the expected format.")
 
-    response_code = response_array[0]
+    # response_code = response_array[0]
 
-    if response_code == ResponseCodes.ACK.value and not is_command_finished and not is_undo_command:
-        return out
+    # if response_code == ResponseCodes.ACK.value and not is_command_finished and not is_undo_command:
+    #     return out
 
-    _list_of_variables = []
-    if response_code == ResponseCodes.ACK.value and is_command_finished or response_code == ResponseCodes.ACK.value and is_undo_command:
-        # If we get an ack, we need to get all the multiple variable definitions and single them out
-        _list_of_variables = find_variables_in_command(command)
-        for variable_definition in _list_of_variables:
-            add_new_variable(variable_definition)
-        return out
+    # _list_of_variables = []
+    # if response_code == ResponseCodes.ACK.value and is_command_finished or response_code == ResponseCodes.ACK.value and is_undo_command:
+    #     # If we get an ack, we need to get all the multiple variable definitions and single them out
+    #     _list_of_variables = find_variables_in_command(command)
+    #     for variable_definition in _list_of_variables:
+    #         add_new_variable(variable_definition)
+    #     return out
 
-    response_message = response_array[1]
-    response_message = response_message[1:] if response_message[0] == " " else response_message
+    # response_message = response_array[1]
+    # response_message = response_message[1:] if response_message[0] == " " else response_message
 
-    if response_message == ResponseMessages.Compile_error.value or response_message == ResponseMessages.Syntax_error.value:
-        return out
+    # if response_message == ResponseMessages.Compile_error.value or response_message == ResponseMessages.Syntax_error.value:
+    #     return out
 
-    # We are in an invalid state, find out which one and recover
-    time.sleep(0.1)  # So the robot has time to react to the command
-    robot_state: States = get_state_of_robot(response_message)
-    if robot_state is not None:
-        recurring_logger.info(f"\t\tRobot state before fixing: {robot_state}")
-        recover_state(robot_state, command, command_id)
+    # # We are in an invalid state, find out which one and recover
+    # time.sleep(0.1)  # So the robot has time to react to the command
+    # robot_state: States = get_state_of_robot(response_message)
+    # if robot_state is not None:
+    #     recurring_logger.info(f"\t\tRobot state before fixing: {robot_state}")
+    #     recover_state(robot_state, command, command_id)
 
-    if command_id is None:
-        out = ""  # Since we do not want to return the response to the frontend
+    # if command_id is None:
+    #     out = ""  # Since we do not want to return the response to the frontend
 
     return out
 
@@ -94,13 +92,13 @@ def send_command_finished(command_id: int, command_message: str):
 
 
 def get_state_of_robot(response_message: str) -> States | None:
-    safety_status = get_safety_status()
-    robot_mode = get_robot_mode()
-    running = get_running()
-    if response_message == ResponseMessages.Too_many_commands.value:
-        return States.Too_many_commands
-    if safety_status == "PROTECTIVE_STOP":
-        return States.Protective_stop
-    if safety_status == "NORMAL" and robot_mode == "RUNNING" and running == "false":
-        return States.Invalid_state
+    # safety_status = get_safety_status()
+    # robot_mode = get_robot_mode()
+    # running = get_running()
+    # if response_message == ResponseMessages.Too_many_commands.value:
+    #     return States.Too_many_commands
+    # if safety_status == "PROTECTIVE_STOP":
+    #     return States.Protective_stop
+    # if safety_status == "NORMAL" and robot_mode == "RUNNING" and running == "false":
+    #     return States.Invalid_state
     return None

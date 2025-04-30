@@ -10,7 +10,6 @@ from websockets.server import serve
 
 
 from RobotControl.RunningWithSSH import run_script_on_robot
-from RobotControl.old_robot_controls import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
 from RobotControl.StateRecovery import handle_cleared_interpreter
@@ -22,6 +21,7 @@ from custom_logging import LogConfig
 from RobotControl.SendRobotCommandWithRecovery import send_command_finished
 from undo.HistorySupport import handle_report_state, handle_command_finished, get_variable_registry
 from undo.ReadVariableState import report_state_received, read_variable_state
+from RobotControl.Robot import Robot
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -297,10 +297,11 @@ def message_from_robot_received(message: bytes):
 
 
 async def start_webserver():
-    ensure_polyscope_is_ready()
-    non_recurring_logger.info(f"Polyscope is ready. The robot mode is: {get_robot_mode()}")
+    robot = Robot.get_instance()
 
-    start_robot()
+    while not robot.controller.is_polyscope_ready:
+        recurring_logger.debug("Waiting for polyscope to be ready")
+        sleep(0.1)
 
     try:
         non_recurring_logger.debug("Starting websocket server")
@@ -310,18 +311,3 @@ async def start_webserver():
         recurring_logger.error(f"Error starting websocket server: {e}")
 
 
-def ensure_polyscope_is_ready():
-    initial_startup_messages = ('', 'BOOTING')
-    starting_phases = ('NO_CONTROLLER', 'DISCONNECTED', 'UniversalRobotsDashboardServer')
-    sleep_time = 0.1
-
-    robot_mode = get_robot_mode()
-
-    while get_robot_mode() in initial_startup_messages:
-        recurring_logger.info(f"Polyscope is still starting: {robot_mode}")
-        sleep(sleep_time)
-
-    # UniversalRobotsDashboardServer is a not documented state, but it is a state that the robot can be in
-    while get_robot_mode() in starting_phases:
-        recurring_logger.info(f"Polyscope is in current state of starting: {robot_mode}")
-        sleep(sleep_time)

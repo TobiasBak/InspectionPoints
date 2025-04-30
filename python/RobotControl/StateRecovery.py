@@ -1,8 +1,6 @@
 from enum import Enum, auto
 
 from RobotControl.ClearingInterpreter import clear_is_pending, call_and_clear_callback, queued_clear_interpreter
-from RobotControl.old_robot_controls import send_command_interpreter_socket, unlock_protective_stop, \
-    _start_interpreter_mode_and_connect_to_backend_socket
 from RobotControl.RobotSocketMessages import InterpreterCleared, CommandFinished
 from SocketMessages import AckResponse
 from URIFY import URIFY_return_string
@@ -35,7 +33,7 @@ def recover_state(state: States, command: str, command_id: int | None):
 
 def recover_from_invalid_state(command: str, command_id: int | None):
     recurring_logger.warning(f"\t\t\tInterpreter mode is stopped, restarting interpreter ")
-    _start_interpreter_mode_and_connect_to_backend_socket()
+    # _start_interpreter_mode_and_connect_to_backend_socket()
     __recover_latest_code_state()
     if command_id is not None:
         ack_response = AckResponse(command_id, "",
@@ -46,7 +44,7 @@ def recover_from_invalid_state(command: str, command_id: int | None):
         websocket_notifier.notify_observers(str(ack_response))
 
     # Send an extra command finished to release lock
-    send_command_interpreter_socket(generate_command_finished(command_id, command))
+    # send_command_interpreter_socket(generate_command_finished(command_id, command))
     non_recurring_logger.debug(f"Command finished sent to release lock.")
 
 
@@ -64,10 +62,11 @@ def recover_from_too_many_commands(command: str, command_id: int | None):
 
     def callback() -> None:
         __recover_latest_code_state()
-        result = send_command_interpreter_socket(command)  # Resend command since it was lost.
+        # result = send_command_interpreter_socket(command)  # Resend command since it was lost.
         if command_id is not None:
-            ack_response = AckResponse(command_id, command, result)
-            websocket_notifier.notify_observers(str(ack_response))
+            # ack_response = AckResponse(command_id, command, result)
+            # websocket_notifier.notify_observers(str(ack_response))
+            print(f"hi")
 
     queued_clear_interpreter(callback)
 
@@ -84,10 +83,10 @@ def recover_from_protective_stop(command: str, command_id: int | None):
                                    f"discard: Command caused protective stop. Please investigate the cause before continuuing. Unlocking in 5 seconds. \n")
         websocket_notifier.notify_observers(str(ack_response))
 
-    unlock_protective_stop()
-    _start_interpreter_mode_and_connect_to_backend_socket()
+    # unlock_protective_stop()
+    # _start_interpreter_mode_and_connect_to_backend_socket()
     __recover_latest_code_state()
-    send_command_interpreter_socket(command)
+    # send_command_interpreter_socket(command)
 
 
 def __recover_latest_code_state() -> None:

@@ -31,9 +31,11 @@ class RobotController:
         self.dashboard_socket: Socket = get_socket(ROBOT_IP, DASHBOARD_PORT)
         self.secondary_socket: Socket = get_socket(ROBOT_IP, SECONDARY_PORT)
         sleep(0.5)  # Wait for sockets to be ready
-        
-        # Wait for the robot to be reachable
-        # TODO 
+
+        # Wait for polyscope to be ready
+        while not self.is_polyscope_ready:
+            recurring_logger.info("Waiting for Polyscope to be ready...")
+            sleep(0.1)
 
         # Initialize the robot
         self.power_on()
@@ -81,6 +83,21 @@ class RobotController:
         except socket.error:
             host = gethostbyname(host)
         return f"socket_open(\"{host}\", {port}, {SOCKET_NAME})\n"  
+    
+    @property
+    def is_polyscope_ready(self) -> bool:
+        """
+        Property to check if Polyscope is ready.
+        """
+        robot_mode = self.robot_mode
+        if robot_mode in ('', 'BOOTING'):
+            recurring_logger.info(f"Polyscope is still starting: {robot_mode}")
+            return False
+        elif robot_mode in ('NO_CONTROLLER', 'DISCONNECTED', 'UniversalRobotsDashboardServer'):
+            recurring_logger.info(f"Polyscope is in current state of starting: {robot_mode}")
+            return False
+        else:
+            return True
 
     def send_command(self, socket: Socket, command: str) -> str:
         """

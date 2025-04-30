@@ -1,6 +1,5 @@
 from typing import Callable
 
-from RobotControl.old_robot_controls import clear_interpreter_mode
 from custom_logging import LogConfig
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -52,4 +51,4 @@ def do_nothing():
 
 def queued_clear_interpreter(callback: CallbackSignature = do_nothing):
     new_id = open_new_pending_command(callback)
-    clear_interpreter_mode(new_id)
+    # clear_interpreter_mode(new_id)

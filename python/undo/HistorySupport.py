@@ -2,9 +2,7 @@ import re
 
 from rtde.serialize import DataObject
 
-from RobotControl.old_robot_controls import clear_interpreter_mode
 from RobotControl.RobotSocketMessages import ReportState, CommandFinished
-
 from SocketMessages import RobotState, CommandMessage
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
@@ -138,7 +136,7 @@ def handle_command_finished(command_finished: CommandFinished):
 
     if history.get_active_command_state() is None:
         clean_variable_code_registry()
-        clear_interpreter_mode()
+        # clear_interpreter_mode()
 
 
 def new_command(command: CommandMessage):
@@ -156,7 +154,7 @@ def new_command(command: CommandMessage):
         history.command_state_history = {}
         history.active_command_state = None
         clean_variable_code_registry()
-        clear_interpreter_mode()
+        # clear_interpreter_mode()
 
     history.new_command(command)
 
