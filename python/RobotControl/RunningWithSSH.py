@@ -58,14 +58,14 @@ async def run_script_finished_error_checker(script: str):
         Returns: 
             None
     """
-    non_recurring_logger.debug(f"Robot mode: {robot.controller.robot_mode}")
+    recurring_logger.debug(f"Robot mode: {robot.controller.robot_mode}")
     __wait_for_condition(lambda: "Starting" not in robot.controller.robot_mode)
     
-    non_recurring_logger.debug(f"Program state: {robot.controller.program_state}")
+    recurring_logger.debug(f"Program state: {robot.controller.program_state}")
     __wait_for_condition(lambda: "PLAYING" not in robot.controller.program_state)
     
     latest_errors = robot.ssh.read_lines_from_log(3)
-    non_recurring_logger.debug(f"Latest errors:\n{latest_errors}")
+    recurring_logger.debug(f"Latest errors:\n{latest_errors}")
     if "Type error" in latest_errors or "Runtime error" in latest_errors:
         error_line = latest_errors.split("\n")[0]
         error_text = re.split(r'ERROR\s+-', error_line, maxsplit=1)[1]
@@ -100,9 +100,9 @@ def retrieve_line_number_text(text: str) -> str:
     line_difference = 29
     match = re.search(r'\((\d+:\d+)\)', text)
     if match:
-        line_number = match.group(1)  # Extracts '36:5'
+        line_number = match.group(1) 
         number = int(line_number.split(":")[0])
-        text = text.replace(match.group(0), f"(line {number - line_difference})")  # Remove line number from the text
+        text = text.replace(match.group(0), f"(line {number - line_difference})")
         return text
     return text
 
@@ -118,7 +118,7 @@ def __send_error_message_to_web_clients(message: str):
     """
     response = AckResponse(0, "Error", message) # id 0, cause I dunno
     str_response = str(response)
-    non_recurring_logger.debug(f"Sending error to web clients: {str_response}")
+    recurring_logger.debug(f"Sending error to web clients: {str_response}")
     websocket_notifier.notify_observers(str_response)
 
 def __wait_for_condition(condition: Callable[[], bool]):
@@ -128,8 +128,8 @@ def __wait_for_condition(condition: Callable[[], bool]):
     
     while True:
         if condition() or runs >= max_wait_time / sleep_time:
-            non_recurring_logger.debug(f"Condition met: {condition}")
-            non_recurring_logger.debug(f"Run took {runs * sleep_time} seconds")
+            recurring_logger.debug(f"Condition met: {condition}")
+            recurring_logger.debug(f"Run took {runs * sleep_time} seconds")
             break
         sleep(sleep_time)
         runs += 1
