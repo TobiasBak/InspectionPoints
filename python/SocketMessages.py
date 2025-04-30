@@ -17,7 +17,6 @@ class MessageType(Enum):
     Ack_response = auto()
     Feedback = auto()
     Robot_state = auto()
-    Undo_response = auto()
     Debug = auto()
 
 
@@ -29,7 +28,7 @@ class Status(Enum):
     def parse(cls, message: str):
         if message.startswith("ack:"):
             return cls.Ok
-        elif ("error" or "exception" in message):
+        elif "error" in message or "exception" in message:
             return cls.Error
         else:
             raise ValueError(f"Unknown status message: '{message}'")
@@ -156,9 +155,11 @@ class InspectionPointMessage:
 
 
 class AckResponse:
-    def __init__(self, id: int, command: str, message: str):
+    def __init__(self, id: int, command: str, message: str, status: Status = None):
         self.type = MessageType.Ack_response
-        self.data: AckResponseData = AckResponseData(id, Status.parse(message), command, message)
+        if status is None:
+            status = Status.parse(message)
+        self.data: AckResponseData = AckResponseData(id, status, command, message)
 
     def __str__(self):
         return json.dumps({

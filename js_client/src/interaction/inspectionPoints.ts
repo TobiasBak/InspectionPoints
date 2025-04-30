@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor';
 import { editor } from "../monacoExperiment";
 import { createInspectionPointFormat, createDebugMessage } from '../userMessages/userMessageFactory';
-import { InspectionPointMessageData, InspectionPointFormat } from '../userMessages/userMessageDefinitions';
+import { InspectionPointFormat } from '../userMessages/userMessageDefinitions';
 import { BeginDebugEvent } from './EventList';
 
 const model = editor.getModel();
@@ -20,17 +20,18 @@ editor.onMouseDown((event) => {
         if (!lineNumber) return;
 
         // Check if decoration is on this line
-        let existingId: string | undefined;
-        decorationIds.forEach((line, id) => {
-            if (line === lineNumber) {
-                existingId = id;
+        let existingDecorationId: string | undefined;
+        decorationIds.forEach((_, decorationId) => {
+            const range = model.getDecorationRange(decorationId);
+            if (range && range.startLineNumber === lineNumber) {
+                existingDecorationId = decorationId;
             }
         });
 
-        if (existingId) {
+        if (existingDecorationId) {
             // Remove decoration
-            model.deltaDecorations([existingId], []);
-            decorationIds.delete(existingId);
+            model.deltaDecorations([existingDecorationId], []);
+            decorationIds.delete(existingDecorationId);
         } else {
             // Add decoration
             const [newId] = model.deltaDecorations([], [
@@ -49,9 +50,9 @@ editor.onMouseDown((event) => {
     }
 });
 
-// Function to collect decorated lines and create a debug message
-function collectDecoratedLines(): InspectionPointMessageData {
-    const inspectionPoints: InspectionPointFormat[] = [];
+// Function to collect decorated lines and create a BeginDebugEvent
+function createDebugEvent(): BeginDebugEvent {
+    const inspectionPointsMap = new Map<number, InspectionPointFormat>();
     let idCounter = 1;
 
     decorationIds.forEach((lineNumber, decorationId) => {
@@ -59,23 +60,26 @@ function collectDecoratedLines(): InspectionPointMessageData {
         if (range) {
             const currentLineNumber = range.startLineNumber;
             const lineContent = model.getLineContent(currentLineNumber);
-            inspectionPoints.push(
+            inspectionPointsMap.set(
+                currentLineNumber,
                 createInspectionPointFormat(idCounter++, currentLineNumber, lineContent)
             );
         }
     });
 
+    const inspectionPoints = Array.from(inspectionPointsMap.values()).sort(
+        (a, b) => a.lineNumber - b.lineNumber
+    );
+
     const debugMessage = createDebugMessage(model.getLinesContent(), inspectionPoints).data;
-    return debugMessage;
+    return new BeginDebugEvent(debugMessage);
 }
 
 const debugButton = document.getElementById("debugEditorButton");
 //Ensure the button exists
 if (debugButton) {
     debugButton.addEventListener("click", () => {
-        const debugData = collectDecoratedLines();
-
-        const debugEvent = new BeginDebugEvent(debugData);
+        const debugEvent = createDebugEvent();
         document.dispatchEvent(debugEvent);
 
         console.log("Debug event dispatched:", debugEvent);

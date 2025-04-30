@@ -4,7 +4,7 @@ import {
     ResponseMessage,
     ResponseMessageType,
     RobotStateMessage,
-    Status, UndoResponseMessage, UndoStatus, VariableObject
+    Status, VariableObject
 } from "./responseMessageDefinitions";
 
 export function parseMessage(message: string): ResponseMessage {
@@ -22,8 +22,6 @@ export function parseMessage(message: string): ResponseMessage {
             break;
         case "Command_finished":
             return parseCommandFinishedMessage(parsed);
-        case "Undo_response":
-            return parseUndoResponseMessage(parsed);
         default:
             throw new Error(`Invalid message type: ${parsed.type}`);
     }
@@ -34,13 +32,6 @@ function parseStatus(status: string): Status {
         throw new Error(`Invalid status: ${status}`);
     }
     return status === "Ok" ? Status.Ok : Status.Error;
-}
-
-function parseUndoStatus(status: string): UndoStatus {
-    if (!(status in UndoStatus)) {
-        throw new Error(`Invalid undo status: ${status}`);
-    }
-    return status as UndoStatus;
 }
 
 function parseAckResponseMessage(message: any): AckResponseMessage {
@@ -127,19 +118,6 @@ function parseCommandFinishedMessage(message: any): CommandFinishedMessage {
         data: {
             id: noneGuard(message.data.id),
             command: noneGuard(message.data.command)
-        }
-    };
-}
-
-function parseUndoResponseMessage(message: any): UndoResponseMessage {
-    if (message.type !== "Undo_response") {
-        throw new Error(`Invalid message type: ${message.type}`);
-    }
-    return {
-        type: ResponseMessageType.UndoResponse,
-        data: {
-            id: noneGuard(message.data.id),
-            status: parseUndoStatus(message.data.status)
         }
     };
 }
