@@ -65,12 +65,12 @@ export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
 
     grammars.set('urscript', 'source.urscript');
 
-    console.log(grammars);
+    // console.log(grammars);
 
     // #endregion
 
 
-    console.log(await (await fetch("theme/monaco-dark-modern.json")).text())
+    // console.log(await (await fetch("theme/monaco-dark-modern.json")).text())
     const monacoTheme = JSON.parse(await (await fetch("theme/monaco-dark-modern.json")).text())
     // #region Init Editor
     monaco.editor.defineTheme('vs-code-theme-converted', monacoTheme);
