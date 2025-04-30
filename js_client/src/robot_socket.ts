@@ -9,6 +9,12 @@ import {InspectionPointFormat, UserMessage} from "./userMessages/userMessageDefi
 import {handleCommandFinishedMessage} from "./responseMessages/MessageFinishedHandler";
 import {handleReportStateMessage} from "./responseMessages/ReportStateMessageHandler";
 
+/**
+ * This is the time in milliseconds that the client will wait between attempting to reconnect to the server after losing connection.
+ */
+const timeoutSleepTime = 1000;
+
+
 function get_socket(ip: string, port: number) {
     const out = new WebSocket(
         `ws://${ip}:${port}`
@@ -63,19 +69,33 @@ function send(socket: WebSocket, message: UserMessage) {
 async function testCommands() {
     const proxyServer = get_socket("localhost", 8767);
 
-    proxyServer.onopen = () => {
-        document.addEventListener(EventList.CommandEntered, function (e: CommandEnteredEvent) {
-            const commandMessage = createCommandMessage(e.detail.id, e.detail.text);
-            send(proxyServer, commandMessage)
-        });
-        document.addEventListener(EventList.BeginDebug, function (e: BeginDebugEvent) {
-            const inspectionPoints: InspectionPointFormat[] = []
-            e.detail.inspectionPoints.forEach(point =>
-                inspectionPoints.push(createInspectionPointFormat(point.id, point.lineNumber, point.command)));
-            const debugCommand = createDebugMessage(e.detail.script, inspectionPoints);
-            send(proxyServer, debugCommand);
-        });
+    const sendCommandToServer = function (e: CommandEnteredEvent) {
+        const commandMessage = createCommandMessage(e.detail.id, e.detail.text);
+        send(proxyServer, commandMessage)
     };
+
+    const sendDebugCommandToServer = function (e: BeginDebugEvent) {
+        const inspectionPoints: InspectionPointFormat[] = []
+        e.detail.inspectionPoints.forEach(point =>
+            inspectionPoints.push(createInspectionPointFormat(point.id, point.lineNumber, point.command)));
+        const debugCommand = createDebugMessage(e.detail.script, inspectionPoints);
+        send(proxyServer, debugCommand);
+    };
+
+
+    proxyServer.onopen = () => {
+        document.addEventListener(EventList.CommandEntered, sendCommandToServer);
+        document.addEventListener(EventList.BeginDebug, sendDebugCommandToServer);
+    };
+
+    proxyServer.onclose = () => {
+        console.log(`Connection closed. Starting a new connection in ${timeoutSleepTime}ms...`);
+        document.removeEventListener(EventList.CommandEntered, sendCommandToServer);
+        document.removeEventListener(EventList.BeginDebug, sendDebugCommandToServer);
+        setTimeout(() => {
+            testCommands().then();
+        }, timeoutSleepTime);
+    }
 }
 
 testCommands().then();

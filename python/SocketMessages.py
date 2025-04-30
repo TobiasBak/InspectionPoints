@@ -81,12 +81,15 @@ class InspectionPointFormatFromFrontend:
     def get_id(self):
         return self.id
 
-    def __str__(self):
-        return json.dumps({
+    def dump(self):
+        return {
             "id": self.id,
             "lineNumber": self.lineNumber,
             "command": self.command
-        })
+        }
+
+    def __str__(self):
+        return json.dumps(self.dump())
 
     def __repr__(self):
         return self.__str__()
@@ -144,7 +147,7 @@ class InspectionPointMessage:
         return json.dumps({
             "type": self.type.name,
             "script": self.scriptText,
-            "inspectionPoints": self.inspectionPoints
+            "inspectionPoints": [point.dump() for point in self.inspectionPoints]
         })
 
     def __repr__(self):
