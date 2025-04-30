@@ -2,7 +2,7 @@ import re
 from time import sleep
 
 from RobotControl.ClearingInterpreter import queued_clear_interpreter
-from RobotControl.RobotControl import sanitize_command, clear_interpreter_mode
+from RobotControl.old_robot_controls import sanitize_command, clear_interpreter_mode
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from SocketMessages import UndoMessage, UndoResponseMessage, UndoStatus
 from custom_logging import LogConfig

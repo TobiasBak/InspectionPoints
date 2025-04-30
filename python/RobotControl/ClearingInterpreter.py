@@ -1,6 +1,6 @@
 from typing import Callable
 
-from RobotControl.RobotControl import clear_interpreter_mode
+from RobotControl.old_robot_controls import clear_interpreter_mode
 from custom_logging import LogConfig
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)

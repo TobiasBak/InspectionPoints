@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 from RobotControl.ClearingInterpreter import clear_is_pending, call_and_clear_callback, queued_clear_interpreter
-from RobotControl.RobotControl import send_command_interpreter_socket, unlock_protective_stop, \
+from RobotControl.old_robot_controls import send_command_interpreter_socket, unlock_protective_stop, \
     _start_interpreter_mode_and_connect_to_backend_socket
 from RobotControl.RobotSocketMessages import InterpreterCleared, CommandFinished
 from SocketMessages import AckResponse
