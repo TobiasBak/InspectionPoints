@@ -15,6 +15,7 @@ RTDE_PORT = 30004
 INTERPRETER_PORT = 30020
 
 SSH_USERNAME: str = config("SSH_USERNAME", default="robot")
+SSH_PASSWORD: str = "easybot"
 
 RTDE_CONFIG_FILE: str = config("RTDE_CONFIG_FILE", default="rtde_configuration.xml")
 

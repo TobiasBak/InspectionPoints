@@ -1,7 +1,7 @@
 from socket import socket as Socket
 from time import sleep
 
-from RobotControl.RobotController import RobotController
+from RobotControl.RobotClasses.RobotController import RobotController
 from ToolBox import escape_string, get_socket
 from constants import ROBOT_IP, INTERPRETER_PORT
 from custom_logging import LogConfig

@@ -1,9 +1,9 @@
 import os
 import paramiko
 
-from constants import ROBOT_IP, SSH_USERNAME
+from constants import ROBOT_IP, SSH_USERNAME, SSH_PASSWORD
 from custom_logging import LogConfig
-from RobotControl.RobotController import RobotController
+from RobotControl.RobotClasses.RobotController import RobotController
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -28,7 +28,7 @@ class SSH:
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         non_recurring_logger.debug("Connecting to SSH")
         non_recurring_logger.debug(f"Connecting to {ROBOT_IP} with username {SSH_USERNAME}")
-        self.ssh_client.connect(ROBOT_IP, username=SSH_USERNAME, password='easybot')
+        self.ssh_client.connect(ROBOT_IP, username=SSH_USERNAME, password=SSH_PASSWORD)
 
     def close(self):
         """
