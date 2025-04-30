@@ -6,7 +6,7 @@ from typing import Callable
 
 from custom_logging import LogConfig
 from RobotControl.Robot import Robot
-from SocketMessages import AckResponse
+from SocketMessages import AckResponse, Status
 from WebsocketNotifier import  websocket_notifier
 
 
@@ -118,7 +118,7 @@ def __send_error_message_to_web_clients(id: int, message: str):
         Returns: 
             None
     """
-    response = AckResponse(id, "Error", message)
+    response = AckResponse(id, "Error", message, Status.Error)
     str_response = str(response)
     recurring_logger.debug(f"Sending error to web clients: {str_response}")
     websocket_notifier.notify_observers(str_response)
