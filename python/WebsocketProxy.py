@@ -13,7 +13,6 @@ from RobotControl.RunningWithSSH import run_script_on_robot
 from RobotControl.old_robot_controls import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
-from RobotControl.SSHControl import run_script_on_robot
 from RobotControl.StateRecovery import handle_cleared_interpreter
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
@@ -21,7 +20,7 @@ from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
 from RobotControl.SendRobotCommandWithRecovery import send_command_finished
-from undo.HistorySupport import handle_report_state, handle_command_finished
+from undo.HistorySupport import handle_report_state, handle_command_finished, get_variable_registry
 from undo.ReadVariableState import report_state_received, read_variable_state
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -41,16 +40,7 @@ def handle_command_message(message: CommandMessage) -> str:
     command_string = message.data.command
     non_recurring_logger.debug(f"Command string: {command_string}")
 
-    # if '#' in command_string and not re.search(r'"[^"]*#[^"]*"', command_string):
-    #     recurring_logger.debug(f"Command contains a comment: {command_string}")
-    #     response = AckResponse(message.data.id, command_string, "discard: Command contains a comment")
-
-    #     command_finished = CommandFinished(message.data.id, command_string)
-    #     send_to_all_web_clients(str(command_finished))
-
-    #     return str(response)
-
-    result = run_script_on_robot(message.data.id, command_string)
+    result = run_script_on_robot(command_string)
     non_recurring_logger.debug(f"Result of command: {result}")
     if result == "":
         return ""
@@ -60,10 +50,22 @@ def handle_command_message(message: CommandMessage) -> str:
     return str_response
 
 
-def handle_inspection_point_message(message: InspectionPointMessage) -> str:
-    read_variable_state()
+def generate_read_point(id: int)->str:
+    read_commands = get_variable_registry().generate_read_commands()
+    report_state = ReportState(id, read_commands)
+    return report_state.dump_string_post_urify()
 
-    return "hello from debug"
+def handle_inspection_point_message(message: InspectionPointMessage) -> str:
+    for i in reversed(message.inspectionPoints):
+        read_command = generate_read_point(i.id)
+        if message.scriptText[i.lineNumber] != i.command:
+            raise Exception(f"The insert is going wrong. linenumber-1: {message.scriptText[i.lineNumber-1]}, linenumber+1: {message.scriptText[i.lineNumber+1]}. Should be: {i.command}. Length of inspectionpints: {len(message.scriptText)}")
+        message.scriptText.insert(i.lineNumber, read_command)
+
+    final_script = "\n".join(message.scriptText)
+    response = run_script_on_robot(final_script)
+
+    return response
 
 def handle_new_client():
     global _new_client

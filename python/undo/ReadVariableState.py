@@ -1,7 +1,7 @@
 import asyncio
 from typing import Callable
 
-from RobotControl.SSHControl import run_script_on_robot
+from RobotControl.RunningWithSSH import run_script_on_robot
 from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from RobotControl.RobotSocketMessages import ReportState
 from custom_logging import LogConfig
@@ -28,7 +28,7 @@ def start_read_report_state():
     _read_report_state = True
 
 
-def get_closured_functions() -> tuple[Callable[[], None], Callable[[], None]]:
+def get_closured_functions() -> tuple[Callable[[int], None], Callable[[], None]]:
     shared_state = {
         "read_in_progress": False
     }
@@ -42,7 +42,7 @@ def get_closured_functions() -> tuple[Callable[[], None], Callable[[], None]]:
     def report_state_received():
         set_read_in_progress(False)
 
-    def read_variable_state():
+    def read_variable_state(id: int = 1):
         if not _read_report_state:
             recurring_logger.debug("Read report state is false, skipping read_variable_state")
             return
@@ -52,8 +52,10 @@ def get_closured_functions() -> tuple[Callable[[], None], Callable[[], None]]:
             return
         set_read_in_progress(True)
         read_commands = _variable_registry.generate_read_commands()
-        report_state = ReportState(read_commands)
-        response = run_script_on_robot(report_state.dump_string_post_urify())
+        report_state = ReportState(id, read_commands)
+        read_script_for_robot = report_state.dump_string_post_urify()
+        recurring_logger.debug(f"Read script for robot: {read_script_for_robot}")
+        response = run_script_on_robot(read_script_for_robot)
         # response = send_command_with_recovery(report_state.dump_string_post_urify(), None)
         recurring_logger.debug(f"Read variable state response: {response}")
 
@@ -65,5 +67,5 @@ read_variable_state, report_state_received = get_closured_functions()
 
 async def start_read_loop():
     while True:
-        read_variable_state()
+        read_variable_state(1)
         await asyncio.sleep(READ_PERIOD)

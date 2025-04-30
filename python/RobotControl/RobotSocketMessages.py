@@ -77,7 +77,8 @@ class CommandFinished:
 
 
 class ReportState:
-    def __init__(self, variables: list[VariableObject]):
+    def __init__(self, id: int, variables: list[VariableObject]):
+        self.id = id
         self.type = RobotSocketMessageTypes.Report_state
         self.variables: list[VariableObject] = variables
 
@@ -88,7 +89,8 @@ class ReportState:
         return {
             "type": self.type.name,
             "data": [variable.dump() if raw_values else variable.dump_ur_string_for_report_state()
-                     for variable in self.variables]
+                     for variable in self.variables],
+            "id": self.id,
         }
 
     def dump_string_pre_urify(self):
@@ -134,10 +136,11 @@ def parse_robot_message(message: str) -> CommandFinished | ReportState | Interpr
     match parsed:
         case {
             'type': RobotSocketMessageTypes.Report_state.name,
-            'data': variable_list
+            'data': variable_list,
+            'id': parsed_id
         }:
             parsed_variable_list = parse_list_to_variable_objects(variable_list)
-            return ReportState(parsed_variable_list)
+            return ReportState(parsed_id, parsed_variable_list)
         case {
             'type': RobotSocketMessageTypes.Command_finished.name,
             'data': {

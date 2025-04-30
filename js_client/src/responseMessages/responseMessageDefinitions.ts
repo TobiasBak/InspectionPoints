@@ -81,5 +81,6 @@ export type CommandFinishedMessage = {
 
 export type ReportStateMessage = {
     type: ResponseMessageType.ReportState,
-    data: VariableObject[]
+    data: VariableObject[],
+    id: number
 }

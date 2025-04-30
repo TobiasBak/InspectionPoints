@@ -57,4 +57,7 @@ module.exports = {
     optimization: {
         runtimeChunk: 'single',
     },
+    cache: {
+        type: "filesystem"
+    }
 };

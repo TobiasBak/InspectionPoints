@@ -1,12 +1,12 @@
-import socket 
+import socket
 from socket import gethostbyname, gethostname
 from socket import socket as Socket
 from time import sleep
 
-from URIFY import SOCKET_NAME
-from constants import ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, SSH_USERNAME, ROBOT_FEEDBACK_PORT
-from custom_logging import LogConfig
 from ToolBox import get_socket
+from URIFY import SOCKET_NAME
+from constants import ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, ROBOT_FEEDBACK_PORT
+from custom_logging import LogConfig
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
