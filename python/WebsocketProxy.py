@@ -75,7 +75,7 @@ def has_new_client() -> bool:
     return False
 
 
-def get_handler() -> callable:
+def __get_handler() -> callable:
     async def echo(websocket):
         try:
             _connected_web_clients.add(websocket)
@@ -274,7 +274,7 @@ async def start_webserver():
 
     try:
         non_recurring_logger.debug("Starting websocket server")
-        async with serve(get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
+        async with serve(__get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
             await asyncio.Future()  # run forever
     except Exception as e:
         recurring_logger.error(f"Error starting websocket server: {e}")
