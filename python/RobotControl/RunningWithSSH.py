@@ -70,8 +70,10 @@ async def run_script_finished_error_checker(id: int):
         error_line = latest_errors.split("\n")[0]
         error_text = re.split(r'ERROR\s+-', error_line, maxsplit=1)[1]
 
-        error = retrieve_line_number_text(error_text)
-        __send_error_message_to_web_clients(id, error)
+        # Way to add line number to thed error message, but will not work with inspection points
+        # error = retrieve_line_number_text(error_text)
+
+        __send_error_message_to_web_clients(id, error_text)
         return
     
     if "New safety mode: SAFETY_MODE_PROTECTIVE_STOP" in latest_errors:
@@ -86,7 +88,7 @@ async def run_script_finished_error_checker(id: int):
         robot.controller.unlock_protective_stop()
         return
 
-def retrieve_line_number_text(text: str) -> str:
+def add_line_number_text(text: str) -> str:
     """
     Modifies the text to include line number. 
     Uses 29 as the constant for the line difference.
@@ -116,7 +118,7 @@ def __send_error_message_to_web_clients(id: int, message: str):
         Returns: 
             None
     """
-    response = AckResponse(id, "Error", message) # id 0, cause I dunno
+    response = AckResponse(id, "Error", message)
     str_response = str(response)
     recurring_logger.debug(f"Sending error to web clients: {str_response}")
     websocket_notifier.notify_observers(str_response)
