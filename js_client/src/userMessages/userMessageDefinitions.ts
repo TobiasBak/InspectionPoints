@@ -18,15 +18,22 @@ export type CommandMessage = {
     data: CommandMessageData
 }
 
+export type InspectionVariable = {
+    name: string,
+    readCommand: string,
+}
+
 export type InspectionPointFormat = {
     id: number,
     lineNumber: number,
     command: string,
+    additionalVariablesToRead: InspectionVariable[]
 }
 
 export type InspectionPointMessageData = {
     script: string[],
     inspectionPoints: InspectionPointFormat[],
+    globalVariables: InspectionVariable[]
 }
 
 export type InspectionPointMessage = {
