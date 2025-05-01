@@ -83,13 +83,8 @@ function createDebugEvent(): BeginDebugEvent {
     return new BeginDebugEvent(debugMessage);
 }
 
-const debugButton = document.getElementById("debugEditorButton");
-//Ensure the button exists
-if (debugButton) {
-    debugButton.addEventListener("click", () => {
-        const debugEvent = createDebugEvent();
-        document.dispatchEvent(debugEvent);
-
-        console.log("Debug event dispatched:", debugEvent);
-    });
-}
+document.getElementById("debugEditorButton")?.addEventListener("click", () => {
+    const debugEvent = createDebugEvent();
+    document.dispatchEvent(debugEvent);
+    console.log("Debug event dispatched:", debugEvent);
+});
