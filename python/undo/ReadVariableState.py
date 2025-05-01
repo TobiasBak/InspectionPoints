@@ -1,11 +1,10 @@
 import asyncio
 from typing import Callable
 
-from RobotControl.RunningWithSSH import run_script_on_robot
-from RobotControl.SendRobotCommandWithRecovery import send_command_with_recovery
 from RobotControl.RobotSocketMessages import ReportState
+from RobotControl.RunningWithSSH import run_script_on_robot
 from custom_logging import LogConfig
-from undo.HistorySupport import _variable_registry
+from undo.HistorySupport import get_variable_registry
 
 READ_FREQUENCY_HZ = 1
 READ_PERIOD = 1 / READ_FREQUENCY_HZ
@@ -51,7 +50,7 @@ def get_closured_functions() -> tuple[Callable[[int], None], Callable[[], None]]
             recurring_logger.debug("Read in progress, skipping read_variable_state")
             return
         set_read_in_progress(True)
-        read_commands = _variable_registry.generate_read_commands()
+        read_commands = get_variable_registry().generate_read_commands()
         report_state = ReportState(id, read_commands)
         read_script_for_robot = report_state.dump_string_post_urify()
         recurring_logger.debug(f"Read script for robot: {read_script_for_robot}")

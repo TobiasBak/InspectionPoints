@@ -6,6 +6,7 @@ from enum import Enum, auto
 from rtde.serialize import DataObject
 
 from custom_logging import LogConfig
+from undo.VariableDefinition import CodeVariableDefinition
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -75,6 +76,7 @@ class InspectionVariable:
     def __init__(self, name: str, readCommand: str):
         self.name = name
         self.readCommand = readCommand
+        self.codeVariable: CodeVariableDefinition = CodeVariableDefinition(name, readCommand)
 
     def dump(self):
         return {
@@ -546,9 +548,10 @@ def parse_message(message: str) -> CommandMessage | InspectionPointMessage:
             'type': MessageType.Debug.name,
             'data': {
                 'script': scriptText,
-                'inspectionPoints': inspectionPoints
+                'inspectionPoints': inspectionPoints,
+                'globalVariables': globalVariables
             }
         }:
-            return InspectionPointMessage(scriptText, inspectionPoints)
+            return InspectionPointMessage(scriptText, inspectionPoints, globalVariables)
         case _:
             raise ValueError(f"Unknown message structure: {parsed}")

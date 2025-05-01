@@ -1,6 +1,5 @@
 import asyncio
 import json
-import re
 from asyncio import StreamReader, StreamWriter, Task
 from socket import gethostbyname, gethostname
 from time import sleep
@@ -8,20 +7,19 @@ from typing import Final
 
 from websockets.server import serve
 
-
-from RobotControl.RunningWithSSH import run_script_on_robot
-from RobotControl.old_robot_controls import get_robot_mode, start_robot
 from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
     InterpreterCleared
+from RobotControl.RunningWithSSH import run_script_on_robot
+from RobotControl.SendRobotCommandWithRecovery import send_command_finished
 from RobotControl.StateRecovery import handle_cleared_interpreter
-from SocketMessages import AckResponse
+from RobotControl.old_robot_controls import get_robot_mode, start_robot
+from SocketMessages import AckResponse, InspectionPointFormatFromFrontend, InspectionVariable
 from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
-from RobotControl.SendRobotCommandWithRecovery import send_command_finished
-from undo.HistorySupport import handle_report_state, handle_command_finished, get_variable_registry
-from undo.ReadVariableState import report_state_received, read_variable_state
+from undo.HistorySupport import handle_report_state, handle_command_finished, create_variable_registry
+from undo.ReadVariableState import report_state_received
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -50,14 +48,17 @@ def handle_command_message(message: CommandMessage) -> str:
     return str_response
 
 
-def generate_read_point(id: int)->str:
-    read_commands = get_variable_registry().generate_read_commands()
-    report_state = ReportState(id, read_commands)
+def generate_read_point(inspectionPoint: InspectionPointFormatFromFrontend, globalVariables: list[InspectionVariable])->str:
+    registry = create_variable_registry([v.codeVariable for v in globalVariables])
+    for v in inspectionPoint.additionalVariables:
+        registry.register_code_variable(v.codeVariable, ensure_single_definition=True)
+    read_commands = registry.generate_read_commands()
+    report_state = ReportState(inspectionPoint.id, read_commands)
     return report_state.dump_string_post_urify()
 
 def handle_inspection_point_message(message: InspectionPointMessage) -> str:
     for i in reversed(message.inspectionPoints):
-        read_command = generate_read_point(i.id)
+        read_command = generate_read_point(i, message.globalVariables)
         if message.scriptText[i.lineNumber] != i.command:
             raise Exception(f"The insert is going wrong. linenumber-1: {message.scriptText[i.lineNumber-1]}, linenumber+1: {message.scriptText[i.lineNumber+1]}. Should be: {i.command}. Length of inspectionpints: {len(message.scriptText)}")
         message.scriptText.insert(i.lineNumber, read_command)

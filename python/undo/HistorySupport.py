@@ -17,12 +17,17 @@ from undo.VariableRegistry import VariableRegistry, register_all_rtde_variables
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
-_variable_registry = VariableRegistry()
+
+registries: dict[int|str, VariableRegistry] = {
+    "default": VariableRegistry()
+}
 
 
-def get_variable_registry():
-    return _variable_registry
+def get_variable_registry() -> VariableRegistry:
+    return registries["default"]
 
+def create_variable_registry(globalVariables: list[CodeVariableDefinition] = None) -> VariableRegistry:
+    return VariableRegistry(globalVariables)
 
 def create_state_from_rtde_state(state: DataObject) -> State:
     state_values: list[VariableValue] = []
@@ -55,7 +60,7 @@ def create_state_from_rtde_state(state: DataObject) -> State:
 
 
 def register_all_variables():
-    register_all_rtde_variables(_variable_registry)
+    register_all_rtde_variables(get_variable_registry())
 
 
 register_all_variables()
@@ -77,7 +82,7 @@ def find_variables_in_command(command: str) -> list[tuple[str, str]]:
 
 def register_code_variable(variable: str):
     code_variable = CodeVariableDefinition(variable, variable)
-    _variable_registry.register_code_variable(code_variable)
+    get_variable_registry().register_code_variable(code_variable)
 
 
 def add_new_variable(variable: tuple[str, str]):
@@ -86,13 +91,13 @@ def add_new_variable(variable: tuple[str, str]):
 
 
 def delete_variables_from_variable_registry(variables: list[tuple[str, str]]):
-    copy_of_variable_list = _variable_registry.get_code_variables().copy()
+    copy_of_variable_list = get_variable_registry().get_code_variables().copy()
     copy_of_variable_list = copy_of_variable_list[-len(variables):]
 
     for variable in variables:
         for code_variable in copy_of_variable_list:
             if code_variable.name == variable[0]:
-                _variable_registry.remove_code_variable(code_variable)
+                get_variable_registry().remove_code_variable(code_variable)
 
 
 def create_state_from_report_state(report_state: ReportState) -> State:
@@ -128,7 +133,7 @@ def history_debug_print():
 
 
 def clean_variable_code_registry():
-    _variable_registry.clean_variable_code_registry()
+    get_variable_registry().clean_variable_code_registry()
 
 
 def handle_command_finished(command_finished: CommandFinished):
