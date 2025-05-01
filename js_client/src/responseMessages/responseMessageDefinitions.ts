@@ -46,10 +46,12 @@ export type RobotStateMessageData = {
 
 export type VariableType = 'String' | 'Integer' | 'Float' | 'Boolean' | 'List' | 'Pose'
 
+export type URDataType = string | number | boolean | any[] | [number, number, number, number, number, number]
+
 export type VariableObject = {
     name: string,
     type: VariableType,
-    value: string | number | boolean | any[] | [number, number, number, number, number, number]
+    value: URDataType
 }
 
 export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation | [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean] | boolean
@@ -79,6 +81,9 @@ export type CommandFinishedMessage = {
     data: CommandFinishedMessageData
 }
 
+/**
+ * The id corresponds to the inspectionPoint id, where this was emitted from.
+ */
 export type ReportStateMessage = {
     type: ResponseMessageType.ReportState,
     data: VariableObject[],

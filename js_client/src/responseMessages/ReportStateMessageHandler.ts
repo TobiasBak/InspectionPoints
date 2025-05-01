@@ -1,9 +1,26 @@
 import {
+    ReportStateMessage,
     ResponseMessage,
     ResponseMessageType,
-    stateMessageTypes, VariableObject
+    URDataType,
+    VariableObject,
+    VariableType
 } from "./responseMessageDefinitions";
 
+
+const storage: ReportStateMessage[] = [];
+
+/**
+ * Get the stored messages.
+ * @param forIds {Set<number>} - The ids of the messages to return. If undefined, return all messages.
+ */
+export function getStoredMessages(forIds: Set<number> = undefined): ReportStateMessage[] {
+    if (forIds === undefined) {
+        return storage;
+    }
+
+    return storage.filter((message: ReportStateMessage) => forIds.has(message.id));
+}
 
 export function handleReportStateMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.ReportState) {
@@ -12,16 +29,71 @@ export function handleReportStateMessage(message: ResponseMessage): void {
 
     console.log(`Received message:`, message);
 
-    iterateMessageData(message.data, message.id);
+    message.data.forEach((variable: VariableObject) => {
+      if (typeof variable.value === 'string'){
+        variable.value = parseStringContent(variable.value);
+        variable.type = checkNewType(variable.value);
+      }
+    })
+
+    storage.push(message);
+
+    displayMessageData(message);
 }
 
-function iterateMessageData(data: VariableObject[], log_id: number): void {
+
+function parseStringContent(message: string): URDataType {
+    return ensureType(rawParseStringContent(message));
+}
+
+function checkNewType(data: URDataType): VariableType {
+    if (typeof data === 'string') {
+        return "String";
+    }
+    if (typeof data === 'number') {
+        return "Float";
+    }
+    if (typeof data === 'boolean') {
+        return "Boolean";
+    }
+    if (Array.isArray(data)) {
+        return "List";
+    }
+
+    throw new Error(`Unsupported type: ${typeof data} - ${data}`);
+}
+
+function rawParseStringContent(message: string) {
+    try {
+        return JSON.parse(message);
+    }catch (error){
+        if (!(error instanceof SyntaxError)) {
+            throw error;
+        }
+        return message;
+    }
+}
+
+function ensureType(input: any): URDataType{
+    if (typeof input === 'string' ||typeof input === 'number' || typeof input === 'boolean') {
+        return input;
+    }
+    if (Array.isArray(input)) {
+        return input.map(item => ensureType(item));
+    }
+    throw new Error(`Unsupported type: ${typeof input} - ${input}`);
+}
+
+
+function displayMessageData(message: ReportStateMessage): void {
+    const data: VariableObject[] = message.data
+
     const id: 'codeVariableDisplay' = "codeVariableDisplay"
     const oldStateVariableView: HTMLElement = document.getElementById(id);
     const codeVariableView: HTMLElement = document.createElement('div');
     codeVariableView.id = id;
 
-    console.log("Provided_id from last logged report state", log_id)
+    console.log("Provided_id from last logged report state", message.id)
 
     data.forEach((variable): void => {
         generateHtmlFromMessageData(variable.name, codeVariableView, variable.value)
@@ -34,7 +106,7 @@ function iterateMessageData(data: VariableObject[], log_id: number): void {
     }
 }
 
-function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: HTMLElement, messageDataValue:any): void {
+function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: HTMLElement, messageDataValue:URDataType): void {
 
     const stateVariableSection: HTMLElement = document.createElement('section');
     stateVariableSection.classList.add('stateVariableSection', 'flex');
@@ -58,11 +130,11 @@ function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: 
     stateVariableView.appendChild(stateVariableSection);
 }
 
-function prettyPrint(information: stateMessageTypes): string {
+function prettyPrint(information: URDataType): string {
     if (typeof information === 'string') {
         return information;
     }
-    if (typeof information === 'number') {
+    if (typeof information === 'number' || typeof information === 'boolean') {
         return information.toString();
     }
     if (Array.isArray(information)) {
