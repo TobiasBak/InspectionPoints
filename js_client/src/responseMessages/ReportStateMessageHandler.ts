@@ -84,6 +84,10 @@ function ensureType(input: any): URDataType{
     throw new Error(`Unsupported type: ${typeof input} - ${input}`);
 }
 
+/**
+ * Map the variable name to the section element that stores it.
+ */
+const sectionStorage = new Map<string, HTMLElement>();
 
 function displayMessageData(message: ReportStateMessage): void {
     const data: VariableObject[] = message.data
@@ -96,7 +100,9 @@ function displayMessageData(message: ReportStateMessage): void {
     console.log("Provided_id from last logged report state", message.id)
 
     data.forEach((variable): void => {
-        generateHtmlFromMessageData(variable.name, codeVariableView, variable.value)
+        const newSection = generateHtmlFromMessageData(variable.name, variable.value)
+        sectionStorage.set(variable.name, newSection);
+        codeVariableView.appendChild(newSection);
     });
 
     if (oldStateVariableView) {
@@ -106,8 +112,7 @@ function displayMessageData(message: ReportStateMessage): void {
     }
 }
 
-function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: HTMLElement, messageDataValue:URDataType): void {
-
+function generateHtmlFromMessageData(messageDataKey: string, messageDataValue:URDataType): HTMLElement {
     const stateVariableSection: HTMLElement = document.createElement('section');
     stateVariableSection.classList.add('stateVariableSection', 'flex');
 
@@ -121,20 +126,27 @@ function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: 
     column45Text.textContent = messageDataKey;
 
     const column55Text: HTMLParagraphElement = document.createElement('p');
-    column55Text.textContent = prettyPrint(messageDataValue);
+    if (Array.isArray(messageDataValue)) {
+        for (let i = 0; i < messageDataValue.length; i++) {
+            column55Text.appendChild(document.createTextNode("[" + (i) + "]: " + prettyPrint(messageDataValue[i])));
+            column55Text.appendChild(document.createElement('br'));
+        }
+    }else{
+        column55Text.textContent = prettyPrint(messageDataValue);
+    }
 
     sectionColumn45.appendChild(column45Text);
     sectionColumn55.appendChild(column55Text);
     stateVariableSection.appendChild(sectionColumn45);
     stateVariableSection.appendChild(sectionColumn55);
-    stateVariableView.appendChild(stateVariableSection);
+    return stateVariableSection
 }
 
 function prettyPrint(information: URDataType): string {
     if (typeof information === 'string') {
         return information;
     }
-    if (typeof information === 'number' || typeof information === 'boolean') {
+    if (typeof information === 'number') {
         return information.toString();
     }
     if (Array.isArray(information)) {
@@ -142,5 +154,8 @@ function prettyPrint(information: URDataType): string {
     }
     if (typeof information === 'object') {
         return JSON.stringify(information);
+    }
+    if (typeof information === 'boolean') {
+        return information ? 'True' : 'False';
     }
 }
