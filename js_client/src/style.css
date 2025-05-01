@@ -64,7 +64,8 @@ p {
 
 .commandArea {
     flex: 1;
-    height: 95vh;
+    height: 90vh;
+    padding: 0;
 }
 
 .commandArea > * {
@@ -108,7 +109,7 @@ p {
 }
 
 .variableView {
-    height: 95vh;
+    height: 90vh;
     width: 100%;
     box-sizing: border-box;
     padding: .8em;
@@ -169,6 +170,15 @@ p {
     padding: 0 .5em;
     width: 100%;
 }
+
+/*https://stackoverflow.com/a/71876526*/
+.monaco-editor { position: absolute !important; }
+
+.editorArea {
+    height: 100%;
+    padding: 0;
+}
+
 
 #btnRow{
     max-width: none;
