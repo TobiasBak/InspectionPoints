@@ -27,6 +27,7 @@ class Robot:
         self.interpreter_mode: InterpreterMode = InterpreterMode.get_instance()
 
         # Write program.urp to the robot
-        self.ssh.write_file("RobotControl/program.urp", "../ursim/programs/program.urp")
+        self.ssh.write_file("../urprograms/script_code_urp.urp", "/programs/custom_program.urp")
+        # self.ssh.write_file("RobotControl/program.urp", "../ursim/programs/program.urp")
 
     

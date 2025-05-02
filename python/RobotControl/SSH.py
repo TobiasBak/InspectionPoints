@@ -40,7 +40,8 @@ class SSH:
         """
         Writes a script to the robot's file system using SSH.
         """
-        filepath = os.path.join("../ursim/programs", filename)
+        filepath = os.path.join("/programs", filename)
+        # filepath = os.path.join("../ursim/programs", filename)
 
         try:
             sftp = self.ssh_client.open_sftp()
@@ -93,7 +94,8 @@ class SSH:
         """
         Reads the last `lines` number of lines from the robot's log file.
         """
-        error_log_path = "../ursim/URControl.log"
+        # error_log_path = "../ursim/URControl.log"
+        error_log_path = "/root/polyscope.log"
 
         try:
             sftp = self.ssh_client.open_sftp()
