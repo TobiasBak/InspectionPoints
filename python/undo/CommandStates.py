@@ -42,31 +42,11 @@ class CommandStates:
         self.previous_states[state.state_type] = (len(self.states) - 1, state)
         recurring_logger.debug(f"Previous states: {self.previous_states}")
 
-    def get_undo_commands(self) -> list[str]:
-        output = [state.get_apply_commands() for state in reversed(self.states)]
-        return output
-
-    def get_first_rtde_state(self) -> str:
-        for state in self.states:
-            if state.state_type == StateType.rtde_state:
-                return state.get_apply_commands()
-        return ""
-
-    def get_latest_rtde_state(self):
-        for state in reversed(self.states):
-            if state.state_type == StateType.rtde_state:
-                return state
-
     def get_user_command(self) -> CommandMessage:
         return self.user_command
 
     def close(self):
         self.is_closed = True
-
-    def get_latest_code_state(self):
-        for state in reversed(self.states):
-            if state.state_type == StateType.code_state:
-                return state
 
     def __str__(self):
         if self.states is None:

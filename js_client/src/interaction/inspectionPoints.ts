@@ -79,8 +79,8 @@ function createDebugEvent(): BeginDebugEvent {
         name: "joints",
         readCommand: "get_actual_joint_positions()"
     }]
-    const debugMessage = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
-    return new BeginDebugEvent(debugMessage);
+    const messageData = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
+    return new BeginDebugEvent(messageData);
 }
 
 document.getElementById("debugEditorButton")?.addEventListener("click", () => {

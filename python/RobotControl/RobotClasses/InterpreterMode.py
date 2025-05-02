@@ -1,7 +1,7 @@
 from socket import socket as Socket
 from time import sleep
 
-from RobotControl.RobotController import RobotController
+from RobotControl.RobotClasses.RobotController import RobotController
 from ToolBox import escape_string, get_socket
 from constants import ROBOT_IP, INTERPRETER_PORT
 from custom_logging import LogConfig
@@ -48,7 +48,7 @@ class InterpreterMode:
         """
         return self.send_small_command_on_interpreter("clear_interpreter()")
 
-    _extremely_randomized_command = f' FKSUYFCGSHILU213Y4387RGFBEI87 = "KFJSHEUIFYGEWIURG3" '
+    _extremely_randomized_string = f' FKSUYFCGSHILU213Y4387RGFBEI87 = "KFJSHEUIFYGEWIURG3" '
     
     def send_command(self, command: str) -> str:
         """Returns the ack_response from the robot. The ack_response is a string."""
@@ -57,23 +57,23 @@ class InterpreterMode:
             return self.send_small_command_on_interpreter(command)
 
         recurring_logger.debug(f"Modifying command: {escape_string(command)}")
-        command += self._extremely_randomized_command  # To ensure that the command is read till the end.
+        command += self._extremely_randomized_string  # To ensure that the command is read till the end.
 
-        command = self.controller._sanitize_command(command)
+        command = self.controller.sanitize_command(command)
         recurring_logger.debug(f"Sending command to robot: {escape_string(command)}")
 
         self.interpreter_socket.send(command.encode())
         result = self.controller.read_from_socket(self.interpreter_socket)
 
-        while self._extremely_randomized_command not in result:
+        while self._extremely_randomized_string not in result:
             result += self.controller.read_from_socket(self.interpreter_socket)
 
-        result = result.replace(self._extremely_randomized_command, "")
+        result = result.replace(self._extremely_randomized_string, "")
 
         recurring_logger.debug(f"Result from robot: {escape_string(result)}")
         return escape_string(result)
     
     def send_small_command_on_interpreter(self, command: str) -> str:
-        sanitized_command = self.controller._sanitize_command(command)
+        sanitized_command = self.controller.sanitize_command(command)
         self.interpreter_socket.send(sanitized_command.encode())
         return self.controller.read_from_socket_till_end(self.interpreter_socket)
