@@ -18,13 +18,6 @@ class State:
         self.state_type = state_type
         self.variable_values = variable_values
 
-    def get_apply_commands(self) -> str:
-        output = ""
-        for variable_value in self.variable_values:
-            output += variable_value.get_apply_command()
-        output += "\n"
-        return output
-
     def has_un_collapsible_difference(self, other: Self) -> bool:
         if self.variable_values is None:
             recurring_logger.warning("self.state is None")

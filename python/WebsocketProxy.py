@@ -7,19 +7,17 @@ from typing import Final
 
 from websockets.server import serve
 
-from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes, \
-    InterpreterCleared
+from RobotControl.Robot import Robot
+from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes
 from RobotControl.RunningWithSSH import run_script_on_robot
-from RobotControl.SendRobotCommandWithRecovery import send_command_finished
-from RobotControl.StateRecovery import handle_cleared_interpreter
-from RobotControl.old_robot_controls import get_robot_mode, start_robot
-from SocketMessages import AckResponse, InspectionPointFormatFromFrontend, InspectionVariable
+from SocketMessages import AckResponse
+from SocketMessages import InspectionPointFormatFromFrontend, InspectionVariable
 from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
-from undo.HistorySupport import handle_report_state, handle_command_finished, create_variable_registry
-from undo.ReadVariableState import report_state_received
+from undo.HistorySupport import create_variable_registry
+from undo.HistorySupport import handle_report_state, handle_command_finished
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -30,9 +28,7 @@ _END_BYTE: Final = b'\x03'
 _EMPTY_BYTE: Final = b''
 
 _connected_web_clients = set()
-
 _new_client = False
-
 
 def handle_command_message(message: CommandMessage) -> str:
     command_string = message.data.command
@@ -82,7 +78,7 @@ def has_new_client() -> bool:
     return False
 
 
-def get_handler() -> callable:
+def __get_handler() -> callable:
     async def echo(websocket):
         try:
             _connected_web_clients.add(websocket)
@@ -134,7 +130,6 @@ async def open_robot_server():
     non_recurring_logger.info(f"ip_address of this container: {gethostbyname(gethostname())}")
     async with srv:
         non_recurring_logger.info('server listening for robot connections')
-        # await asyncio.create_task(start_read_loop()) COMMENTED BECAUSE IT BREAKS WHEN INTERPRETER IS NOT RUNNING
         await srv.serve_forever()
 
 
@@ -219,48 +214,28 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
 
 async def recover_mangled_data(extra_data: bytes) -> None:
-    recurring_logger.debug(f"Fucked data: {extra_data}")
+    recurring_logger.debug(f"Mangled data: {extra_data}")
     # We have extra data and the rest was lost
-    fucked_data = extra_data.decode()
-    # Regular expression pattern to extract "type", "id", and "data.command"
-    if await search_for_command_finished(fucked_data):
-        return
+    mangled_data = extra_data.decode()
 
-    if await search_for_report_state(fucked_data):
+    if await search_for_report_state(mangled_data):
         return
 
     recurring_logger.error("Pattern not found in the message.")
 
 
-async def search_for_command_finished(fucked_data: str) -> bool:
-    pattern = r'"type":\s*"([^"]+)".*?"id":\s*(\d+).*?"command":\s*"([^"]+)'
-    # Use re.search to find the pattern in the string
-    match = re.search(pattern, fucked_data)
-    # If match is found, extract the values
-    if match:
-        message_type = match.group(1)
-        id_value = int(match.group(2))
-        command = match.group(3)
-        match message_type:
-            case RobotSocketMessageTypes.Command_finished.name:
-                send_command_finished(id_value, command)
-                recurring_logger.debug(f"Sending new Command finished with: id: '{id_value}' Command: '{command}'")
-                return True
-    return False
-
-
-async def search_for_report_state(fucked_data: str) -> bool:
+async def search_for_report_state(mangled_data: str) -> bool:
     pattern = r'"type":\s*"([^"]+)"'
     # Use re.search to find the pattern in the string
-    match = re.search(pattern, fucked_data)
+    match = re.search(pattern, mangled_data)
     # If match is found, extract the values
     if match:
         message_type = match.group(1)
         data_value = int(match.group(2))
         match message_type:
             case RobotSocketMessageTypes.Report_state.name:
-                recurring_logger.warning("Found a match for report state in fucked data")
-                report_state_received()
+                recurring_logger.warning("Found a match for report state in mangled data")
+                # WE SHOULD PROLLY DO SOMETHING IF WE FIND A MATCH, BEFORE WE STARTED A NEW READ REPORT STATE
                 return True
     return False
 
@@ -288,41 +263,23 @@ def message_from_robot_received(message: bytes):
             send_to_all_web_clients(str(robot_message))
         case ReportState():
             handle_report_state(robot_message)
-            report_state_received()
             send_to_all_web_clients(str(robot_message))
-        case InterpreterCleared():
-            handle_cleared_interpreter(robot_message)
-            report_state_received()
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")
 
 
 async def start_webserver():
-    ensure_polyscope_is_ready()
-    non_recurring_logger.info(f"Polyscope is ready. The robot mode is: {get_robot_mode()}")
+    robot = Robot.get_instance()
 
-    start_robot()
+    while not robot.controller.is_polyscope_ready:
+        recurring_logger.debug("Waiting for polyscope to be ready")
+        sleep(0.1)
 
     try:
         non_recurring_logger.debug("Starting websocket server")
-        async with serve(get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
+        async with serve(__get_handler(), "0.0.0.0", FRONTEND_WEBSOCKET_PORT):
             await asyncio.Future()  # run forever
     except Exception as e:
         recurring_logger.error(f"Error starting websocket server: {e}")
 
 
-def ensure_polyscope_is_ready():
-    initial_startup_messages = ('', 'BOOTING')
-    starting_phases = ('NO_CONTROLLER', 'DISCONNECTED', 'UniversalRobotsDashboardServer')
-    sleep_time = 0.1
-
-    robot_mode = get_robot_mode()
-
-    while get_robot_mode() in initial_startup_messages:
-        recurring_logger.info(f"Polyscope is still starting: {robot_mode}")
-        sleep(sleep_time)
-
-    # UniversalRobotsDashboardServer is a not documented state, but it is a state that the robot can be in
-    while get_robot_mode() in starting_phases:
-        recurring_logger.info(f"Polyscope is in current state of starting: {robot_mode}")
-        sleep(sleep_time)

@@ -1,7 +1,7 @@
 from custom_logging import LogConfig
-from RobotControl.RobotController import RobotController
-from RobotControl.SSH import SSH
-from RobotControl.InterpreterMode import InterpreterMode
+from RobotControl.RobotClasses.RobotController import RobotController
+from RobotControl.RobotClasses.SSH import SSH
+from RobotControl.RobotClasses.InterpreterMode import InterpreterMode
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
