@@ -179,6 +179,18 @@ p {
     padding: 0;
 }
 
+.vs-like-button{
+    background: #313131;
+    color: #cccccc;
+    border: #ffffff12;
+    border-radius: .1em;
+    margin: 0 .1em;
+}
+
+.vs-like-button:hover{
+    background: #3c3c3c;
+}
+
 
 #btnRow{
     max-width: none;
