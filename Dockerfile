@@ -21,4 +21,6 @@ RUN printf '#!/bin/bash\nmkdir -p /run/sshd && chmod 0755 /run/sshd\n/usr/sbin/s
 
 RUN echo "root:easybot" | chpasswd
 
+RUN ln -s /ursim/programs /programs
+
 ENTRYPOINT ["/new_entrypoint.sh"]
