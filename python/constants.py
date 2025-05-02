@@ -16,6 +16,7 @@ INTERPRETER_PORT = 30020
 SSH_USERNAME: str = config("SSH_USERNAME", default="robot")
 SSH_PASSWORD: str = config("SSH_PASSWORD", default=None)
 
+IS_PHYSICAL_ROBOT: bool = config("IS_PHYSICAL_ROBOT", default=False, cast=bool)
 
 recurring_level = logging.INFO
 """This level defines the level that will be logged in the console"""

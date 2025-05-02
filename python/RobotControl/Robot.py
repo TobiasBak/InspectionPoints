@@ -2,6 +2,7 @@ from custom_logging import LogConfig
 from RobotControl.RobotClasses.RobotController import RobotController
 from RobotControl.RobotClasses.SSH import SSH
 from RobotControl.RobotClasses.InterpreterMode import InterpreterMode
+from constants import IS_PHYSICAL_ROBOT
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -27,6 +28,7 @@ class Robot:
         self.interpreter_mode: InterpreterMode = InterpreterMode.get_instance()
 
         # Write program.urp to the robot
-        self.ssh.write_file("RobotControl/program.urp", "../ursim/programs/program.urp")
+        if not IS_PHYSICAL_ROBOT:
+            self.ssh.write_file("RobotControl/program.urp", "../ursim/programs/program.urp")
 
     

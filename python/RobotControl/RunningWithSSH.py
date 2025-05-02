@@ -4,8 +4,8 @@ import asyncio
 import threading
 from typing import Callable
 
-from URIFY import SOCKET_NAME
-from constants import ROBOT_FEEDBACK_HOST, ROBOT_FEEDBACK_PORT
+from URIFY import SOCKET_NAME 
+from constants import ROBOT_FEEDBACK_HOST, ROBOT_FEEDBACK_PORT, IS_PHYSICAL_ROBOT
 from custom_logging import LogConfig
 from RobotControl.Robot import Robot
 from SocketMessages import AckResponse, Status
@@ -36,7 +36,11 @@ def run_script_on_robot(script: str) -> str:
     """
     augmented_script = augment_script(script)
     robot.ssh.write_script(augmented_script)
-    robot.controller.load_program()
+    sleep(0.1)
+    
+    if not IS_PHYSICAL_ROBOT: 
+        robot.controller.load_program()
+    
     robot.controller.start_program()
     sleep(0.1)
 
