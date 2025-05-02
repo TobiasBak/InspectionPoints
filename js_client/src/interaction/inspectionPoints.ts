@@ -1,8 +1,8 @@
 import * as monaco from 'monaco-editor';
-import { editor } from "../monacoExperiment";
-import { createInspectionPointFormat, createDebugMessageData } from '../userMessages/userMessageFactory';
+import {editor} from "../monacoExperiment";
+import {createInspectionPointFormat, createDebugMessageData} from '../userMessages/userMessageFactory';
 import {InspectionPointFormat, InspectionVariable} from '../userMessages/userMessageDefinitions';
-import { BeginDebugEvent } from './EventList';
+import {BeginDebugEvent} from './EventList';
 
 const model = editor.getModel();
 if (!model) {
@@ -61,6 +61,7 @@ function createDebugEvent(): BeginDebugEvent {
             const currentLineNumber = range.startLineNumber;
             const lineContent = model.getLineContent(currentLineNumber);
 
+
             const additionalVariables: InspectionVariable[] = [];
 
             inspectionPointsMap.set(
@@ -74,18 +75,16 @@ function createDebugEvent(): BeginDebugEvent {
         (a, b) => a.lineNumber - b.lineNumber
     );
 
-    const globalVariables: InspectionVariable[] = []
+    const globalVariables: InspectionVariable[] = [{
+        name: "joints",
+        readCommand: "get_actual_joint_positions()"
+    }]
     const messageData = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
     return new BeginDebugEvent(messageData);
 }
 
-const debugButton = document.getElementById("debugEditorButton");
-//Ensure the button exists
-if (debugButton) {
-    debugButton.addEventListener("click", () => {
-        const debugEvent = createDebugEvent();
-        document.dispatchEvent(debugEvent);
-
-        console.log("Debug event dispatched:", debugEvent);
-    });
-}
+document.getElementById("debugEditorButton")?.addEventListener("click", () => {
+    const debugEvent = createDebugEvent();
+    document.dispatchEvent(debugEvent);
+    console.log("Debug event dispatched:", debugEvent);
+});
