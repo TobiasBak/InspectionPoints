@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor';
 import { editor } from "../monacoExperiment";
-import { createInspectionPointFormat, createDebugMessage } from '../userMessages/userMessageFactory';
-import { InspectionPointFormat } from '../userMessages/userMessageDefinitions';
+import { createInspectionPointFormat, createDebugMessageData } from '../userMessages/userMessageFactory';
+import {InspectionPointFormat, InspectionVariable} from '../userMessages/userMessageDefinitions';
 import { BeginDebugEvent } from './EventList';
 
 const model = editor.getModel();
@@ -60,9 +60,12 @@ function createDebugEvent(): BeginDebugEvent {
         if (range) {
             const currentLineNumber = range.startLineNumber;
             const lineContent = model.getLineContent(currentLineNumber);
+
+            const additionalVariables: InspectionVariable[] = [];
+
             inspectionPointsMap.set(
                 currentLineNumber,
-                createInspectionPointFormat(idCounter++, currentLineNumber, lineContent)
+                createInspectionPointFormat(idCounter++, currentLineNumber, lineContent, additionalVariables)
             );
         }
     });
@@ -71,8 +74,9 @@ function createDebugEvent(): BeginDebugEvent {
         (a, b) => a.lineNumber - b.lineNumber
     );
 
-    const debugMessage = createDebugMessage(model.getLinesContent(), inspectionPoints).data;
-    return new BeginDebugEvent(debugMessage);
+    const globalVariables: InspectionVariable[] = []
+    const messageData = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
+    return new BeginDebugEvent(messageData);
 }
 
 const debugButton = document.getElementById("debugEditorButton");

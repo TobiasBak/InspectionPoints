@@ -69,20 +69,15 @@ class CommandMessage:
         return self.__str__()
 
 
-class InspectionPointFormatFromFrontend:
-    def __init__(self, id: int, lineNumber: int, command: str):
-        self.id = id
-        self.lineNumber = lineNumber
-        self.command = command
-
-    def get_id(self):
-        return self.id
+class InspectionVariable:
+    def __init__(self, name: str, readCommand: str):
+        self.name = name
+        self.readCommand = readCommand
 
     def dump(self):
         return {
-            "id": self.id,
-            "lineNumber": self.lineNumber,
-            "command": self.command
+            "name": self.name,
+            "readCommand": self.readCommand
         }
 
     def __str__(self):
@@ -92,44 +87,58 @@ class InspectionPointFormatFromFrontend:
         return self.__str__()
 
 
-# let newCommandExec2 = {
-#     type: "Debug",
-#     script: [
-#         "movej()",
-#         "for",
-#         "ehkd",
-#         "end"
-#     ],
-#     inspectionPoints: [
-#         {
-#             id: 1,
-#             lineNumber: 1,
-#             command: "movej()"
-#         },
-#         {
-#             id: 2,
-#             lineNumber: 3,
-#             command: "ehkd",
-#         }
-#     ]
-# }
+class InspectionPointFormatFromFrontend:
+    def __init__(self, id: int, lineNumber: int, command: str, additionalVariables: list[InspectionVariable]):
+        self.id = id
+        self.lineNumber = lineNumber
+        self.command = command
+        self.additionalVariables: list[InspectionVariable] = additionalVariables
+
+    def get_id(self):
+        return self.id
+
+    def dump(self):
+        return {
+            "id": self.id,
+            "lineNumber": self.lineNumber,
+            "command": self.command,
+            "additionalVariablesToRead": [var.dump() for var in self.additionalVariables]
+        }
+
+    def __str__(self):
+        return json.dumps(self.dump())
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class InspectionPointMessage:
-    def __init__(self, script_text: list[str], inspection_points: list[dict]):
+    def __init__(self, script_text: list[str], inspection_points: list[dict], globalVariables: list[dict]):
         self.type = MessageType.Debug
         self.scriptText: list[str] = script_text
         self.inspectionPoints: list[InspectionPointFormatFromFrontend] = []
+        self.globalVariables: list[InspectionVariable] = []
 
         if not isinstance(script_text, list):
             raise ValueError(f"Script text is not a list: {script_text}")
 
         sorted_inspection_points = sorted(inspection_points, key=lambda i: i["lineNumber"])
 
+        # Transform the untyped dictionary to a list of InspectionPointFormatFromFrontend objects
         for point in sorted_inspection_points:
             self.inspectionPoints.append(
-                InspectionPointFormatFromFrontend(point["id"], point["lineNumber"] - 1, point["command"])
+                InspectionPointFormatFromFrontend(
+                    point["id"],
+                    point["lineNumber"] - 1,
+                    point["command"],
+                    [InspectionVariable(var["name"], var["readCommand"]) for var in point["additionalVariablesToRead"]]
+                )
             )
-
-
+            
+        # Transform the untyped dictionary to a list of InspectionVariable objects
+        for globalVariable in globalVariables:
+            parsed = InspectionVariable(globalVariable["name"], globalVariable["readCommand"])
+            self.globalVariables.append(parsed)
 
         #     Check that the commands in the inspection points match the line numbers received.
         for point in self.inspectionPoints:
