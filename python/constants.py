@@ -1,9 +1,10 @@
 import logging
 from decouple import config
+from socket import gethostbyname, gethostname
 
 
 ROBOT_FEEDBACK_PORT: int = config("ROBOT_FEEDBACK_PORT", default=8000)
-ROBOT_FEEDBACK_HOST: str = config("ROBOT_FEEDBACK_HOST", default="proxy")
+ROBOT_FEEDBACK_HOST: str = config("ROBOT_FEEDBACK_HOST", default=gethostbyname(gethostname()))
 ROBOT_IP: str = config("ROBOT_IP", default="polyscope")
 
 FRONTEND_WEBSOCKET_PORT: int = config("FRONTEND_WEBSOCKET_PORT", default=8767)

@@ -29,9 +29,7 @@ class SSH:
         non_recurring_logger.debug(f"SSH: Connecting to {ROBOT_IP} with username {SSH_USERNAME}")
         self.ssh_client.connect(ROBOT_IP, username=SSH_USERNAME, password=SSH_PASSWORD)
 
-        self.path_to_programs_dir = "../ursim/programs"
-        if IS_PHYSICAL_ROBOT:
-            self.path_to_programs_dir = "/programs"
+        self.path_to_programs_dir = "/programs"
 
         self.path_to_error_log = "../ursim/URControl.log"
         if IS_PHYSICAL_ROBOT:

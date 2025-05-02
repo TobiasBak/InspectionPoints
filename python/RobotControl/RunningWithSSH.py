@@ -1,16 +1,14 @@
-from time import sleep
-import re
 import asyncio
+import re
 import threading
+from time import sleep
 from typing import Callable
 
-from URIFY import SOCKET_NAME 
-from constants import ROBOT_FEEDBACK_HOST, ROBOT_FEEDBACK_PORT, IS_PHYSICAL_ROBOT
-from custom_logging import LogConfig
 from RobotControl.Robot import Robot
 from SocketMessages import AckResponse, Status
-from WebsocketNotifier import  websocket_notifier
-
+from WebsocketNotifier import websocket_notifier
+from constants import IS_PHYSICAL_ROBOT
+from custom_logging import LogConfig
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
