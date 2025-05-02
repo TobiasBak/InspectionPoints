@@ -7,13 +7,19 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class VariableRegistry:
-    def __init__(self):
+    def __init__(self, code_variables: list[CodeVariableDefinition] = None,):
         self._code_variables: list[CodeVariableDefinition] = []
         self._code_variable_dict: dict[str, CodeVariableDefinition] = {}
         self._rtde_variables: list[RtdeVariableDefinition] = []
+        if code_variables is not None:
+            for variable in code_variables:
+                self.register_code_variable(variable, True)
 
-    def register_code_variable(self, variable: CodeVariableDefinition) -> None:
+    def register_code_variable(self, variable: CodeVariableDefinition, ensure_single_definition: bool = False) -> None:
         recurring_logger.debug(f"Registering variable: {variable.name}")
+        if variable.name in self._code_variable_dict and ensure_single_definition:
+            recurring_logger.debug(f"Variable {variable.name} already exists, removing it")
+            self.remove_code_variable(self._code_variable_dict[variable.name])
         self._code_variables.append(variable)
         self._code_variable_dict[variable.name] = variable
         recurring_logger.debug(f"Code variables: {self._code_variables}")
