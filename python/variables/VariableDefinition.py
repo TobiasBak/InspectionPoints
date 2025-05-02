@@ -8,27 +8,25 @@ non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
 
 
 class VariableDefinition(ABC):
-    def __init__(self, name: str, is_collapsible: bool = True):
+    def __init__(self, name: str):
         self.name = name
-        self.is_collapsible = is_collapsible
         self.is_rtde = False
         self.is_code = False
 
     def __str__(self):
-        collapsible = "Collapsible" if self.is_collapsible else "Not Collapsible"
-        return self.name + ": " + collapsible
+        return self.name
 
 
 class RtdeVariableDefinition(VariableDefinition):
-    def __init__(self, name: str, rtde_variable_name: str, is_collapsible: bool = True):
-        super().__init__(name, is_collapsible)
+    def __init__(self, name: str, rtde_variable_name: str):
+        super().__init__(name)
         self.is_rtde = True
         self.rtde_variable_name = rtde_variable_name
 
 
 class CodeVariableDefinition(VariableDefinition):
-    def __init__(self, name: str, command_for_reading: str, is_collapsible: bool = True):
-        super().__init__(name, is_collapsible)
+    def __init__(self, name: str, command_for_reading: str):
+        super().__init__(name)
         self.is_code = True
         self.command_for_reading = command_for_reading
         "This must be the urscript code that is necessary to return a value for this variable."

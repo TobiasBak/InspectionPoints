@@ -1,6 +1,6 @@
 from RobotControl.RobotSocketMessages import VariableObject
 from custom_logging import LogConfig
-from undo.VariableDefinition import CodeVariableDefinition, RtdeVariableDefinition
+from variables.VariableDefinition import CodeVariableDefinition, RtdeVariableDefinition
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -93,7 +93,7 @@ def register_all_rtde_variables(in_registry: VariableRegistry):
         # RtdeVariableDefinition("digital_out_7", "digital_out_7", False)
     ]
     code_variables: list[CodeVariableDefinition] = [
-        CodeVariableDefinition("joints", "get_actual_joint_positions()", False),
+        CodeVariableDefinition("joints", "get_actual_joint_positions()"),
     ]
     for variable in variables:
         in_registry.register_rtde_variable(variable)

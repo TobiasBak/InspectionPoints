@@ -1,3 +1,4 @@
+import re
 from time import sleep
 import socket 
 from socket import socket as Socket
@@ -44,3 +45,16 @@ def __create_get_socket_function() -> Callable[[str, int], Socket]:
         return inner_get_socket
 
 get_socket = __create_get_socket_function()
+
+def find_variables_in_command(command: str) -> list[tuple[str, str]]:
+    # Regular expression pattern to match variable definitions excluding those within method parameters
+    pattern = r'\b(\w+)\s*=\s*("[^"]*"|\S+)\b(?![^(]*\))(?![^:]*end)'
+    # Use re.findall to find all matches in the string
+    matches = re.findall(pattern, command)
+    list_of_matches = []
+    if matches:
+        for match in matches:
+            non_recurring_logger.debug(f"Match: {match}")
+            variable = match
+            list_of_matches.append(variable)
+    return list_of_matches

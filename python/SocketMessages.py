@@ -5,7 +5,7 @@ from enum import Enum, auto
 from rtde.serialize import DataObject
 
 from custom_logging import LogConfig
-from undo.VariableDefinition import CodeVariableDefinition
+from variables.VariableDefinition import CodeVariableDefinition
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)

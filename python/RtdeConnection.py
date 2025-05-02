@@ -31,11 +31,8 @@ from rtde.serialize import DataObject
 from SocketMessages import RtdeState
 from WebsocketNotifier import websocket_notifier
 from WebsocketProxy import has_new_client
-from custom_logging import LogConfig
-from undo.History import History
-from undo.HistorySupport import create_state_from_rtde_state
 from constants import ROBOT_IP, RTDE_PORT, RTDE_CONFIG_FILE
-from undo.State import State
+from custom_logging import LogConfig
 
 conf = rtde_config.ConfigFile(RTDE_CONFIG_FILE)
 state_names, state_types = conf.get_recipe("state")
@@ -100,16 +97,6 @@ def state_is_new(new_state: DataObject | None, old_state: DataObject | None):
 
 def register_listener(listener: ListenerFunction):
     listeners.append(listener)
-
-
-async def log_state(state: DataObject):
-    history = History.get_history()
-    rtde_state: State = create_state_from_rtde_state(state)
-    history.append_state(rtde_state)
-    recurring_logger.debug(f"State logged: {state}")
-
-
-register_listener(log_state)
 
 
 async def call_listeners(with_state: DataObject):
