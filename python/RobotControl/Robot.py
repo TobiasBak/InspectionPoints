@@ -28,7 +28,6 @@ class Robot:
         self.interpreter_mode: InterpreterMode = InterpreterMode.get_instance()
 
         # Write program.urp to the robot
-        if not IS_PHYSICAL_ROBOT:
-            self.ssh.write_file("RobotControl/program.urp", "../ursim/programs/program.urp")
+        self.ssh.write_file("RobotControl/program.urp", "/programs/program.urp")
 
     
