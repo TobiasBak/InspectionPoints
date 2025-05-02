@@ -28,7 +28,7 @@ from typing import Callable, Coroutine
 from rtde import rtde_config, rtde
 from rtde.serialize import DataObject
 
-from SocketMessages import RobotState
+from SocketMessages import RtdeState
 from WebsocketNotifier import websocket_notifier
 from WebsocketProxy import has_new_client
 from custom_logging import LogConfig
@@ -83,10 +83,7 @@ def states_are_equal(obj1: DataObject, obj2: DataObject):
 
 
 async def send_state_through_websocket(state: DataObject) -> None:
-    robot_state = RobotState(state)
-    # Round to nearest 4 decimals for all floats
-    robot_state.round_values()
-
+    robot_state = RtdeState(state)
     websocket_notifier.notify_observers(str(robot_state))
 
 

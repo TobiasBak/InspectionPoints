@@ -2,7 +2,7 @@ import {parseMessage} from "./responseMessages/responseMessageParsing";
 import {ResponseMessage, ResponseMessageType} from "./responseMessages/responseMessageDefinitions";
 import {handleAckResponseMessage} from "./responseMessages/AckResponseHandler";
 import {handleFeedbackMessage} from "./responseMessages/FeedbackMessageHandler";
-import {handleRobotStateMessage} from "./responseMessages/RobotStateMessageHandler";
+import {handleRtdeStateMessage} from "./responseMessages/RtdeStateMessageHandler";
 import {BeginDebugEvent, CommandEnteredEvent, EventList} from "./interaction/EventList";
 import {createCommandMessage, createDebugMessage, createInspectionPointFormat} from "./userMessages/userMessageFactory";
 import {InspectionPointFormat, UserMessage} from "./userMessages/userMessageDefinitions";
@@ -35,8 +35,8 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
         case ResponseMessageType.Feedback:
             handleFeedbackMessage(message);
             break;
-        case ResponseMessageType.RobotState:
-            handleRobotStateMessage(message);
+        case ResponseMessageType.RtdeState:
+            handleRtdeStateMessage(message);
             break;
         case ResponseMessageType.ReportState:
             handleReportStateMessage(message);

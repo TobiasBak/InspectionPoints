@@ -4,7 +4,7 @@
 export enum ResponseMessageType {
     AckResponse = 'Ack_response',
     Feedback = 'Feedback',
-    RobotState = 'Robot_state',
+    RtdeState = 'Robot_state',
     ReportState = 'Report_state'
 }
 
@@ -13,7 +13,7 @@ export enum Status {
     Error = 'Error'
 }
 
-export type ResponseMessage = AckResponseMessage | FeedbackMessage | RobotStateMessage | ReportStateMessage
+export type ResponseMessage = AckResponseMessage | FeedbackMessage | RtdeStateMessage | ReportStateMessage
 
 export type AckResponseMessageData = {
     id: number,
@@ -33,14 +33,10 @@ export type TCPInformation = {
     force: [number, number, number, number, number, number]
 }
 
-export type RobotStateMessageData = {
+export type RtdeStateMessageData = {
     safety_status: string,
     runtime_state: string,
-    robot_mode: string,
-    joints: [number, number, number, number, number, number],
-    tcp: TCPInformation,
-    payload: number
-    digital_out: [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean]
+    robot_mode: string
 }
 
 export type VariableType = 'String' | 'Integer' | 'Float' | 'Boolean' | 'List' | 'Pose'
@@ -53,6 +49,7 @@ export type VariableObject = {
 
 export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation | [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean] | boolean
 
+export type rtdeStateMessageType = string
 
 export type AckResponseMessage = {
     type: ResponseMessageType.AckResponse,
@@ -64,9 +61,9 @@ export type FeedbackMessage = {
     data: FeedbackMessageData
 }
 
-export type RobotStateMessage = {
-    type: ResponseMessageType.RobotState,
-    data: RobotStateMessageData
+export type RtdeStateMessage = {
+    type: ResponseMessageType.RtdeState,
+    data: RtdeStateMessageData
 }
 
 export type ReportStateMessage = {

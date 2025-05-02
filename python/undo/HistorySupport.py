@@ -3,7 +3,7 @@ import re
 from rtde.serialize import DataObject
 
 from RobotControl.RobotSocketMessages import ReportState
-from SocketMessages import RobotState, CommandMessage
+from SocketMessages import RtdeState, CommandMessage
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
 from undo.History import History, CommandStateHistory
@@ -24,7 +24,7 @@ def get_variable_registry():
 
 def create_state_from_rtde_state(state: DataObject) -> State:
     state_values: list[VariableValue] = []
-    robot_state = RobotState(state)
+    robot_state = RtdeState(state)
 
     rtde_variables = get_variable_registry().get_rtde_variables()
 
