@@ -1,7 +1,9 @@
 import re
 
+from rtde.serialize import DataObject
+
 from RobotControl.RobotSocketMessages import ReportState
-from SocketMessages import CommandMessage
+from SocketMessages import RobotState, CommandMessage
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
 from undo.History import History, CommandStateHistory
@@ -18,6 +20,37 @@ _variable_registry = VariableRegistry()
 
 def get_variable_registry():
     return _variable_registry
+
+
+def create_state_from_rtde_state(state: DataObject) -> State:
+    state_values: list[VariableValue] = []
+    robot_state = RobotState(state)
+
+    rtde_variables = get_variable_registry().get_rtde_variables()
+
+    received_variables = robot_state.data.dump()
+
+    for variable_definition in rtde_variables:
+        try:
+            variable_value = received_variables[variable_definition.rtde_variable_name]
+        except KeyError:
+            raise ValueError(
+                f"Variable {variable_definition.name} not found in received state,"
+                f" with keys: {received_variables.keys()}")
+        if variable_value is None:
+            raise ValueError(
+                f"Variable {variable_definition.name} is none in received state,"
+                f" with keys: {received_variables.keys()}")
+
+        state_values.append(VariableValue(variable_value, variable_definition))
+
+    if len(state_values) != len(received_variables):
+        recurring_logger.debug(f"Received state has {len(received_variables)} variables,"
+                                   f" but only {len(state_values)} were processed.")
+        pass
+
+    return State(StateType.rtde_state, state_values)
+
 
 def register_all_variables():
     register_all_rtde_variables(_variable_registry)
@@ -108,6 +141,7 @@ def new_command(command: CommandMessage):
         history.command_state_history = {}
         history.active_command_state = None
         clean_variable_code_registry()
+        # clear_interpreter_mode()
 
     history.new_command(command)
 
