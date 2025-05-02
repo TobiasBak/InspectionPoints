@@ -17,7 +17,7 @@ from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
-from variables.VariableRegistry import VariableRegistry
+from variables.InspectionGenerator import InspectionGenerator
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -45,9 +45,9 @@ def handle_command_message(message: CommandMessage) -> str:
 
 
 def generate_read_point(inspectionPoint: InspectionPointFormatFromFrontend, globalVariables: list[InspectionVariable])->str:
-    registry = VariableRegistry([v.codeVariable for v in globalVariables])
+    registry = InspectionGenerator([v.codeVariable for v in globalVariables])
     for v in inspectionPoint.additionalVariables:
-        registry.register_code_variable(v.codeVariable, ensure_single_definition=True)
+        registry.register_code_variable(v.codeVariable)
     read_commands = registry.generate_read_commands()
     report_state = ReportState(inspectionPoint.id, read_commands)
     return report_state.dump_string_post_urify()
