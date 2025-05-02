@@ -131,6 +131,22 @@ p {
     background-color: var(--group-A-active-color) !important;
 }
 
+.stateVariableSection{
+    padding: 0.25em;
+    background: #1e262e;
+    border-radius: .2em;
+    margin: 0.5em 0;
+    border: 1px solid #1d242b;
+}
+
+.inactive-section{
+    background: #3a3d41;
+    border-color: #424242;
+}
+
+.stateVariableSection > div{
+    padding: 0.25em;
+}
 
 .stateVariableSelectionWrapper label {
     margin-left: .3em;

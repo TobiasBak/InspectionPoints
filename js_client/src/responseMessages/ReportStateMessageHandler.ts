@@ -11,7 +11,7 @@ import {
 const storage: ReportStateMessage[] = [];
 
 /**
- * Get the stored messages.
+ * Get the stored messages in the received order.
  * @param forIds {Set<number>} - The ids of the messages to return. If undefined, return all messages.
  */
 export function getStoredMessages(forIds: Set<number> = undefined): ReportStateMessage[] {
@@ -89,27 +89,29 @@ function ensureType(input: any): URDataType{
  */
 const sectionStorage = new Map<string, HTMLElement>();
 
-function displayMessageData(message: ReportStateMessage): void {
+export function displayMessageData(message: ReportStateMessage): void {
     const data: VariableObject[] = message.data
 
     const id: 'codeVariableDisplay' = "codeVariableDisplay"
-    const oldStateVariableView: HTMLElement = document.getElementById(id);
-    const codeVariableView: HTMLElement = document.createElement('div');
-    codeVariableView.id = id;
+    const codeVariableDisplay: HTMLElement = document.getElementById(id);
 
-    console.log("Provided_id from last logged report state", message.id)
+    // console.log("Provided_id from last logged report state", message.id)
 
-    data.forEach((variable): void => {
-        const newSection = generateHtmlFromMessageData(variable.name, variable.value)
-        sectionStorage.set(variable.name, newSection);
-        codeVariableView.appendChild(newSection);
+    sectionStorage.forEach(section => {
+        section.classList.add("inactive-section")
     });
 
-    if (oldStateVariableView) {
-        oldStateVariableView.replaceWith(codeVariableView);
-    } else {
-        document.getElementById('stateVariables').appendChild(codeVariableView);
-    }
+    data.forEach((variable): void => {
+        const oldSection = sectionStorage.get(variable.name);
+        const newSection = generateHtmlFromMessageData(variable.name, variable.value)
+        if (oldSection) {
+            oldSection.replaceWith(newSection);
+        }else{
+            codeVariableDisplay.appendChild(newSection);
+        }
+        sectionStorage.set(variable.name, newSection);
+    });
+
 }
 
 function generateHtmlFromMessageData(messageDataKey: string, messageDataValue:URDataType): HTMLElement {
