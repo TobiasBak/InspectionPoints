@@ -4,7 +4,12 @@ import {handleAckResponseMessage} from "./responseMessages/AckResponseHandler";
 import {handleFeedbackMessage} from "./responseMessages/FeedbackMessageHandler";
 import {handleRtdeStateMessage} from "./responseMessages/RtdeStateMessageHandler";
 import {BeginDebugEvent, CommandEnteredEvent, EventList} from "./interaction/EventList";
-import {createCommandMessage, createDebugMessage, createInspectionPointFormat} from "./userMessages/userMessageFactory";
+import {
+    createCommandMessage,
+    createDebugMessage,
+    createDebugMessageData,
+    createInspectionPointFormat
+} from "./userMessages/userMessageFactory";
 import {InspectionPointFormat, UserMessage} from "./userMessages/userMessageDefinitions";
 import {handleReportStateMessage} from "./responseMessages/ReportStateMessageHandler";
 
@@ -68,15 +73,16 @@ async function testCommands() {
     };
 
     const sendDebugCommandToServer = function (e: BeginDebugEvent) {
-        const inspectionPoints: InspectionPointFormat[] = []
-        e.detail.inspectionPoints.forEach(point =>
-            inspectionPoints.push(createInspectionPointFormat(point.id, point.lineNumber, point.command)));
-        const debugCommand = createDebugMessage(e.detail.script, inspectionPoints);
-        send(proxyServer, debugCommand);
+        // const inspectionPoints: InspectionPointFormat[] = []
+        // e.detail.inspectionPoints.forEach(point =>
+        //     inspectionPoints.push(createInspectionPointFormat(point.id, point.lineNumber, point.command, point.additionalVariablesToRead)));
+        // const debugCommand = createDebugMessage(e.detail);
+        send(proxyServer, createDebugMessage(e.detail));
     };
 
 
     proxyServer.onopen = () => {
+        console.log("Connected to the server");
         document.addEventListener(EventList.CommandEntered, sendCommandToServer);
         document.addEventListener(EventList.BeginDebug, sendDebugCommandToServer);
     };

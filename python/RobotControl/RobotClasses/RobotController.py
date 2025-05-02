@@ -5,7 +5,7 @@ from time import sleep
 
 from ToolBox import get_socket
 from URIFY import SOCKET_NAME
-from constants import ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, ROBOT_FEEDBACK_PORT
+from constants import ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, ROBOT_FEEDBACK_PORT, ROBOT_FEEDBACK_HOST
 from custom_logging import LogConfig
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -77,7 +77,7 @@ class RobotController:
         return self.__get_value_from_dashboard("programState")
     
     @property
-    def open_feedback_socket_string(self, host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT) -> str:
+    def open_feedback_socket_string(self, host: str = ROBOT_FEEDBACK_HOST, port: int = ROBOT_FEEDBACK_PORT) -> str:
         try:
             socket.inet_aton(host)
         except socket.error:

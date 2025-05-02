@@ -1,8 +1,8 @@
 import * as monaco from 'monaco-editor';
-import { editor } from "../monacoExperiment";
-import { createInspectionPointFormat, createDebugMessage } from '../userMessages/userMessageFactory';
-import { InspectionPointFormat } from '../userMessages/userMessageDefinitions';
-import { BeginDebugEvent } from './EventList';
+import {editor} from "../monacoExperiment";
+import {createInspectionPointFormat, createDebugMessageData} from '../userMessages/userMessageFactory';
+import {InspectionPointFormat, InspectionVariable} from '../userMessages/userMessageDefinitions';
+import {BeginDebugEvent} from './EventList';
 
 const model = editor.getModel();
 if (!model) {
@@ -60,9 +60,13 @@ function createDebugEvent(): BeginDebugEvent {
         if (range) {
             const currentLineNumber = range.startLineNumber;
             const lineContent = model.getLineContent(currentLineNumber);
+
+
+            const additionalVariables: InspectionVariable[] = [];
+
             inspectionPointsMap.set(
                 currentLineNumber,
-                createInspectionPointFormat(idCounter++, currentLineNumber, lineContent)
+                createInspectionPointFormat(idCounter++, currentLineNumber, lineContent, additionalVariables)
             );
         }
     });
@@ -71,17 +75,16 @@ function createDebugEvent(): BeginDebugEvent {
         (a, b) => a.lineNumber - b.lineNumber
     );
 
-    const debugMessage = createDebugMessage(model.getLinesContent(), inspectionPoints).data;
-    return new BeginDebugEvent(debugMessage);
+    const globalVariables: InspectionVariable[] = [{
+        name: "joints",
+        readCommand: "get_actual_joint_positions()"
+    }]
+    const messageData = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
+    return new BeginDebugEvent(messageData);
 }
 
-const debugButton = document.getElementById("debugEditorButton");
-//Ensure the button exists
-if (debugButton) {
-    debugButton.addEventListener("click", () => {
-        const debugEvent = createDebugEvent();
-        document.dispatchEvent(debugEvent);
-
-        console.log("Debug event dispatched:", debugEvent);
-    });
-}
+document.getElementById("debugEditorButton")?.addEventListener("click", () => {
+    const debugEvent = createDebugEvent();
+    document.dispatchEvent(debugEvent);
+    console.log("Debug event dispatched:", debugEvent);
+});

@@ -1,7 +1,6 @@
-import {ResponseMessageType} from "../responseMessages/responseMessageDefinitions";
 import {
     CommandMessage,
-    InspectionPointFormat, InspectionPointMessage,
+    InspectionPointFormat, InspectionPointMessage, InspectionVariable, InspectionPointMessageData,
     UserMessageType
 } from "./userMessageDefinitions";
 
@@ -16,20 +15,26 @@ export function createCommandMessage(id: number, command: string): CommandMessag
     };
 }
 
-export function createInspectionPointFormat(id: number, lineNumber: number, command: string): InspectionPointFormat {
+export function createInspectionPointFormat(id: number, lineNumber: number, command: string, additionalVariables: InspectionVariable[]): InspectionPointFormat {
     return {
         id: id,
         lineNumber: lineNumber,
         command: command,
+        additionalVariablesToRead: additionalVariables,
     };
 }
 
-export function createDebugMessage(scriptLines: string[], inspectionPoints: InspectionPointFormat[]): InspectionPointMessage {
+export function createDebugMessageData(scriptLines: string[], inspectionPoints: InspectionPointFormat[], globalVariables: InspectionVariable[]): InspectionPointMessageData {
+    return {
+        script: scriptLines,
+        inspectionPoints: inspectionPoints,
+        globalVariables: globalVariables,
+    };
+}
+
+export function createDebugMessage(data: InspectionPointMessageData): InspectionPointMessage {
     return {
         type: UserMessageType.Debug,
-        data: {
-            script: scriptLines,
-            inspectionPoints: inspectionPoints,
-        }
+        data: data
     };
 }
