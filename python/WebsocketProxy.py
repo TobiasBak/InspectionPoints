@@ -210,27 +210,27 @@ async def client_task(reader: StreamReader, writer: StreamWriter):
 
 
 async def recover_mangled_data(extra_data: bytes) -> None:
-    recurring_logger.debug(f"Fucked data: {extra_data}")
+    recurring_logger.debug(f"Mangled data: {extra_data}")
     # We have extra data and the rest was lost
-    fucked_data = extra_data.decode()
+    mangled_data = extra_data.decode()
 
-    if await search_for_report_state(fucked_data):
+    if await search_for_report_state(mangled_data):
         return
 
     recurring_logger.error("Pattern not found in the message.")
 
 
-async def search_for_report_state(fucked_data: str) -> bool:
+async def search_for_report_state(mangled_data: str) -> bool:
     pattern = r'"type":\s*"([^"]+)"'
     # Use re.search to find the pattern in the string
-    match = re.search(pattern, fucked_data)
+    match = re.search(pattern, mangled_data)
     # If match is found, extract the values
     if match:
         message_type = match.group(1)
         data_value = int(match.group(2))
         match message_type:
             case RobotSocketMessageTypes.Report_state.name:
-                recurring_logger.warning("Found a match for report state in fucked data")
+                recurring_logger.warning("Found a match for report state in mangled data")
                 # WE SHOULD PROLLY DO SOMETHING IF WE FIND A MATCH, BEFORE WE STARTED A NEW READ REPORT STATE
                 return True
     return False

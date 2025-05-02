@@ -14,7 +14,7 @@ SECONDARY_PORT = 30002
 INTERPRETER_PORT = 30020
 
 SSH_USERNAME: str = config("SSH_USERNAME", default="robot")
-SSH_PASSWORD: str = "easybot"
+SSH_PASSWORD: str = config("SSH_PASSWORD", default=None)
 
 
 recurring_level = logging.INFO

@@ -37,6 +37,7 @@ services:
       - ROBOT_FEEDBACK_PORT=8000
       - ROBOT_FEEDBACK_HOST=proxy
       - SSH_USERNAME=root
+      - SSH_PASSWORD=easybot
     profiles:
         - ""
   
