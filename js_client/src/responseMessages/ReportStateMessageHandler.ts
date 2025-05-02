@@ -8,6 +8,18 @@ import {
 } from "./responseMessageDefinitions";
 
 
+/***
+ * The public method to handle the ReportStateMessage are.
+ * ReportStateMessageHandler.getStoredMessages()
+ *
+ * ReportStateMessageHandler.displayMessageData()
+ *
+ * Use getStoredMessages() to get the stored messages first.
+ * Then use displayMessageData() to display the messages that you want.
+ * It will handle greying out the sections that are not currently displayed.
+ */
+
+
 const storage: ReportStateMessage[] = [];
 
 /**
@@ -89,6 +101,11 @@ function ensureType(input: any): URDataType{
  */
 const sectionStorage = new Map<string, HTMLElement>();
 
+/**
+ * Display the message data in the HTML.
+ * This function will grey out the sections that are not active in this message, but keep them in the view.
+ * @param message {ReportStateMessage} - The message to display variables from.
+ */
 export function displayMessageData(message: ReportStateMessage): void {
     const data: VariableObject[] = message.data
 
