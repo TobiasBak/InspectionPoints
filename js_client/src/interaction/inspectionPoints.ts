@@ -75,8 +75,8 @@ function createDebugEvent(): BeginDebugEvent {
     );
 
     const globalVariables: InspectionVariable[] = []
-    const debugMessage = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
-    return new BeginDebugEvent(debugMessage);
+    const messageData = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
+    return new BeginDebugEvent(messageData);
 }
 
 const debugButton = document.getElementById("debugEditorButton");

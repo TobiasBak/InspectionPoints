@@ -126,6 +126,7 @@ class InspectionPointMessage:
 
         sorted_inspection_points = sorted(inspection_points, key=lambda i: i["lineNumber"])
 
+        # Transform the untyped dictionary to a list of InspectionPointFormatFromFrontend objects
         for point in sorted_inspection_points:
             self.inspectionPoints.append(
                 InspectionPointFormatFromFrontend(
@@ -135,7 +136,8 @@ class InspectionPointMessage:
                     [InspectionVariable(var["name"], var["readCommand"]) for var in point["additionalVariablesToRead"]]
                 )
             )
-
+            
+        # Transform the untyped dictionary to a list of InspectionVariable objects
         for globalVariable in globalVariables:
             parsed = InspectionVariable(globalVariable["name"], globalVariable["readCommand"])
             self.globalVariables.append(parsed)
