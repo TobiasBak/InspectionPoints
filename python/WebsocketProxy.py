@@ -9,13 +9,13 @@ from typing import Final
 from websockets.server import serve
 
 from RobotControl.RunningWithSSH import run_script_on_robot
-from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes
+from RobotControl.RobotSocketMessages import parse_robot_message, ReportState, RobotSocketMessageTypes
 from SocketMessages import AckResponse
 from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
-from undo.HistorySupport import handle_report_state, handle_command_finished, get_variable_registry
+from undo.HistorySupport import handle_report_state, get_variable_registry
 from RobotControl.Robot import Robot
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -254,9 +254,6 @@ def message_from_robot_received(message: bytes):
 
     robot_message = parse_robot_message(decoded_message)
     match robot_message:
-        case CommandFinished():
-            handle_command_finished(robot_message)
-            send_to_all_web_clients(str(robot_message))
         case ReportState():
             handle_report_state(robot_message)
             send_to_all_web_clients(str(robot_message))

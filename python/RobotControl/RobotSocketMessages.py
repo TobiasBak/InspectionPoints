@@ -41,39 +41,6 @@ class VariableObject:
         non_recurring_logger.debug(f"stringing: {self.dump()['value']}")
         return json.dumps(self.dump())
 
-
-class CommandFinishedData:
-    def __init__(self, id: int, command: str):
-        self.id = id
-        self.command = command
-
-
-class CommandFinished:
-    def __init__(self, id: int, command: str):
-        self.type = RobotSocketMessageTypes.Command_finished
-        self.data: CommandFinishedData = CommandFinishedData(id, command)
-
-    def command_contains_comment(self):
-        if "#" in self.data.command:
-            return True
-        return False
-
-    def __str__(self):
-        return json.dumps(self.dump())
-
-    def dump(self):
-        return {
-            "type": self.type.name,
-            "data": {
-                "id": self.data.id,
-                "command": self.data.command
-            }
-        }
-
-    def dump_ur_string(self):
-        return json.dumps(self.dump())
-
-
 class ReportState:
     def __init__(self, id: int, variables: list[VariableObject]):
         self.id = id
@@ -113,7 +80,7 @@ def parse_list_to_variable_objects(variable_list: list[dict]) -> list[VariableOb
     return out
 
 
-def parse_robot_message(message: str) -> CommandFinished | ReportState:
+def parse_robot_message(message: str) -> ReportState:
     parsed = json.loads(message)
 
     match parsed:
@@ -124,13 +91,5 @@ def parse_robot_message(message: str) -> CommandFinished | ReportState:
         }:
             parsed_variable_list = parse_list_to_variable_objects(variable_list)
             return ReportState(parsed_id, parsed_variable_list)
-        case {
-            'type': RobotSocketMessageTypes.Command_finished.name,
-            'data': {
-                'id': id,
-                'command': command,
-            }
-        }:
-            return CommandFinished(id, command)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage type: {parsed}")

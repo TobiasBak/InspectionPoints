@@ -1,5 +1,5 @@
 import {
-    AckResponseMessage, CommandFinishedMessage,
+    AckResponseMessage,
     FeedbackMessage, ReportStateMessage,
     ResponseMessage,
     ResponseMessageType,
@@ -19,9 +19,6 @@ export function parseMessage(message: string): ResponseMessage {
             return parseRobotStateMessage(parsed);
         case "Report_state":
             return parseReportStateMessage(parsed);
-            break;
-        case "Command_finished":
-            return parseCommandFinishedMessage(parsed);
         default:
             throw new Error(`Invalid message type: ${parsed.type}`);
     }
@@ -105,19 +102,5 @@ function parseReportStateMessage(message: any): ReportStateMessage {
             };
         })],
         id: noneGuard(message.id),
-    };
-}
-
-
-function parseCommandFinishedMessage(message: any): CommandFinishedMessage {
-    if (message.type !== "Command_finished") {
-        throw new Error(`Invalid message type: ${message.type}`);
-    }
-    return {
-        type: ResponseMessageType.CommandFinished,
-        data: {
-            id: noneGuard(message.data.id),
-            command: noneGuard(message.data.command)
-        }
     };
 }

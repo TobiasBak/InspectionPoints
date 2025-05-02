@@ -47,7 +47,6 @@ class AckResponseData:
         self.message = message
 
 
-
 class CommandMessage:
     def __init__(self, id: int, command: str):
         self.type = MessageType.Command

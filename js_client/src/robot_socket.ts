@@ -6,7 +6,6 @@ import {handleRobotStateMessage} from "./responseMessages/RobotStateMessageHandl
 import {BeginDebugEvent, CommandEnteredEvent, EventList} from "./interaction/EventList";
 import {createCommandMessage, createDebugMessage, createInspectionPointFormat} from "./userMessages/userMessageFactory";
 import {InspectionPointFormat, UserMessage} from "./userMessages/userMessageDefinitions";
-import {handleCommandFinishedMessage} from "./responseMessages/MessageFinishedHandler";
 import {handleReportStateMessage} from "./responseMessages/ReportStateMessageHandler";
 
 /**
@@ -38,9 +37,6 @@ function handleMessageFromProxyServer(message: ResponseMessage) {
             break;
         case ResponseMessageType.RobotState:
             handleRobotStateMessage(message);
-            break;
-        case ResponseMessageType.CommandFinished:
-            handleCommandFinishedMessage(message);
             break;
         case ResponseMessageType.ReportState:
             handleReportStateMessage(message);

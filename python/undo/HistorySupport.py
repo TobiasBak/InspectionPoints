@@ -1,6 +1,6 @@
 import re
 
-from RobotControl.RobotSocketMessages import ReportState, CommandFinished
+from RobotControl.RobotSocketMessages import ReportState
 from SocketMessages import CommandMessage
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
@@ -86,24 +86,12 @@ def handle_report_state(reported_state: ReportState):
     history = History.get_history()
     history.append_state(state)
 
-
 def history_debug_print():
     history = History.get_history()
     history.debug_print()
 
-
 def clean_variable_code_registry():
     _variable_registry.clean_variable_code_registry()
-
-
-def handle_command_finished(command_finished: CommandFinished):
-    recurring_logger.debug(f"Handling command finished: {command_finished}")
-    history = History.get_history()
-    history.close_command(command_finished)
-
-    if history.get_active_command_state() is None:
-        clean_variable_code_registry()
-
 
 def new_command(command: CommandMessage):
     history = History.get_history()

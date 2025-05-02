@@ -5,8 +5,7 @@ export enum ResponseMessageType {
     AckResponse = 'Ack_response',
     Feedback = 'Feedback',
     RobotState = 'Robot_state',
-    ReportState = 'Report_state',
-    CommandFinished = 'Command_finished'
+    ReportState = 'Report_state'
 }
 
 export enum Status {
@@ -14,7 +13,7 @@ export enum Status {
     Error = 'Error'
 }
 
-export type ResponseMessage = AckResponseMessage | FeedbackMessage | RobotStateMessage | ReportStateMessage | CommandFinishedMessage
+export type ResponseMessage = AckResponseMessage | FeedbackMessage | RobotStateMessage | ReportStateMessage
 
 export type AckResponseMessageData = {
     id: number,
@@ -54,10 +53,6 @@ export type VariableObject = {
 
 export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation | [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean] | boolean
 
-export type CommandFinishedMessageData = {
-    id: number,
-    command: string
-}
 
 export type AckResponseMessage = {
     type: ResponseMessageType.AckResponse,
@@ -72,11 +67,6 @@ export type FeedbackMessage = {
 export type RobotStateMessage = {
     type: ResponseMessageType.RobotState,
     data: RobotStateMessageData
-}
-
-export type CommandFinishedMessage = {
-    type: ResponseMessageType.CommandFinished,
-    data: CommandFinishedMessageData
 }
 
 export type ReportStateMessage = {

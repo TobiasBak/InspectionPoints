@@ -1,6 +1,6 @@
 from typing import Self
 
-from RobotControl.RobotSocketMessages import CommandFinished, ReportState
+from RobotControl.RobotSocketMessages import ReportState
 from SocketMessages import CommandMessage
 from custom_logging import LogConfig
 from undo.CommandStates import CommandStates
@@ -106,7 +106,7 @@ class History(object):
         self.append_state(self.latest_code_state)
         self.append_state(self.latest_rtde_state)
 
-    def close_command(self, command_finished: CommandFinished) -> None:
+    def close_command(self, command_finished) -> None:
         if self.active_command_state is None:
             self.debug_print()
             non_recurring_logger.info(f"There is no active command state. But close was called anyway"
