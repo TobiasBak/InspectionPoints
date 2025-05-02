@@ -183,8 +183,8 @@ p {
     background: #313131;
     color: #cccccc;
     border: #ffffff12;
-    border-radius: .1em;
-    margin: 0 .1em;
+    border-radius: .15em;
+    margin: 0 .2em;
 }
 
 .vs-like-button:hover{
