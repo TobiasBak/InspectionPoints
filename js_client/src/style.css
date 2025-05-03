@@ -280,25 +280,14 @@ p {
     color: var(--text-on-background-color);
     margin: 5px 0;
     padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-radius: 4px;
     border: 1px solid #ddd;
 }
-.inspectionpoint-popup-box .checkbox-group {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.2em;
-    justify-items: start;
-    align-items: center;
-}
-.inspectionpoint-popup-box .checkbox-group label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #333;
-    cursor: pointer;
-}
-.inspectionpoint-popup-box .checkbox-group input[type="checkbox"] {
-    accent-color: var(--group-B-active-color);
-    margin: 0;
+
+.inspectionpoint-popup-box .popup-body ul li .delete-variable {
+    background-color: var(--error-color);
+    padding: 2px;
 }
