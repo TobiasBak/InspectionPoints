@@ -53,7 +53,6 @@ editor.onMouseDown((event) => {
         }
     }
 });
-
 editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
     localStorage.setItem('urscript', editor.getValue());
 });

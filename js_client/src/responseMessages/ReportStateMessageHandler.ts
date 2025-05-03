@@ -1,9 +1,38 @@
 import {
+    ReportStateMessage,
     ResponseMessage,
     ResponseMessageType,
-    stateMessageTypes, VariableObject
+    URDataType,
+    VariableObject,
+    VariableType
 } from "./responseMessageDefinitions";
 
+
+/***
+ * The public method to handle the ReportStateMessage are.
+ * ReportStateMessageHandler.getStoredMessages()
+ *
+ * ReportStateMessageHandler.displayMessageData()
+ *
+ * Use getStoredMessages() to get the stored messages first.
+ * Then use displayMessageData() to display the messages that you want.
+ * It will handle greying out the sections that are not currently displayed.
+ */
+
+
+const storage: ReportStateMessage[] = [];
+
+/**
+ * Get the stored messages in the received order.
+ * @param forIds {Set<number>} - The ids of the messages to return. If undefined, return all messages.
+ */
+export function getStoredMessages(forIds: Set<number> = undefined): ReportStateMessage[] {
+    if (forIds === undefined) {
+        return storage;
+    }
+
+    return storage.filter((message: ReportStateMessage) => forIds.has(message.id));
+}
 
 export function handleReportStateMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.ReportState) {
@@ -12,30 +41,97 @@ export function handleReportStateMessage(message: ResponseMessage): void {
 
     console.log(`Received message:`, message);
 
-    iterateMessageData(message.data, message.id);
+    message.data.forEach((variable: VariableObject) => {
+      if (typeof variable.value === 'string'){
+        variable.value = parseStringContent(variable.value);
+        variable.type = checkNewType(variable.value);
+      }
+    })
+
+    storage.push(message);
+
+    displayMessageData(message);
 }
 
-function iterateMessageData(data: VariableObject[], log_id: number): void {
-    const id: 'codeVariableDisplay' = "codeVariableDisplay"
-    const oldStateVariableView: HTMLElement = document.getElementById(id);
-    const codeVariableView: HTMLElement = document.createElement('div');
-    codeVariableView.id = id;
 
-    console.log("Provided_id from last logged report state", log_id)
+function parseStringContent(message: string): URDataType {
+    return ensureType(rawParseStringContent(message));
+}
 
-    data.forEach((variable): void => {
-        generateHtmlFromMessageData(variable.name, codeVariableView, variable.value)
-    });
+function checkNewType(data: URDataType): VariableType {
+    if (typeof data === 'string') {
+        return "String";
+    }
+    if (typeof data === 'number') {
+        return "Float";
+    }
+    if (typeof data === 'boolean') {
+        return "Boolean";
+    }
+    if (Array.isArray(data)) {
+        return "List";
+    }
 
-    if (oldStateVariableView) {
-        oldStateVariableView.replaceWith(codeVariableView);
-    } else {
-        document.getElementById('stateVariables').appendChild(codeVariableView);
+    throw new Error(`Unsupported type: ${typeof data} - ${data}`);
+}
+
+function rawParseStringContent(message: string) {
+    try {
+        return JSON.parse(message);
+    }catch (error){
+        if (!(error instanceof SyntaxError)) {
+            throw error;
+        }
+        return message;
     }
 }
 
-function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: HTMLElement, messageDataValue:any): void {
+function ensureType(input: any): URDataType{
+    if (typeof input === 'string' ||typeof input === 'number' || typeof input === 'boolean') {
+        return input;
+    }
+    if (Array.isArray(input)) {
+        return input.map(item => ensureType(item));
+    }
+    throw new Error(`Unsupported type: ${typeof input} - ${input}`);
+}
 
+/**
+ * Map the variable name to the section element that stores it.
+ */
+const sectionStorage = new Map<string, HTMLElement>();
+
+/**
+ * Display the message data in the HTML.
+ * This function will grey out the sections that are not active in this message, but keep them in the view.
+ * @param message {ReportStateMessage} - The message to display variables from.
+ */
+export function displayMessageData(message: ReportStateMessage): void {
+    const data: VariableObject[] = message.data
+
+    const id: 'codeVariableDisplay' = "codeVariableDisplay"
+    const codeVariableDisplay: HTMLElement = document.getElementById(id);
+
+    // console.log("Provided_id from last logged report state", message.id)
+
+    sectionStorage.forEach(section => {
+        section.classList.add("inactive-section")
+    });
+
+    data.forEach((variable): void => {
+        const oldSection = sectionStorage.get(variable.name);
+        const newSection = generateHtmlFromMessageData(variable.name, variable.value)
+        if (oldSection) {
+            oldSection.replaceWith(newSection);
+        }else{
+            codeVariableDisplay.appendChild(newSection);
+        }
+        sectionStorage.set(variable.name, newSection);
+    });
+
+}
+
+function generateHtmlFromMessageData(messageDataKey: string, messageDataValue:URDataType): HTMLElement {
     const stateVariableSection: HTMLElement = document.createElement('section');
     stateVariableSection.classList.add('stateVariableSection', 'flex');
 
@@ -49,16 +145,23 @@ function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: 
     column45Text.textContent = messageDataKey;
 
     const column55Text: HTMLParagraphElement = document.createElement('p');
-    column55Text.textContent = prettyPrint(messageDataValue);
+    if (Array.isArray(messageDataValue)) {
+        for (let i = 0; i < messageDataValue.length; i++) {
+            column55Text.appendChild(document.createTextNode("[" + (i) + "]: " + prettyPrint(messageDataValue[i])));
+            column55Text.appendChild(document.createElement('br'));
+        }
+    }else{
+        column55Text.textContent = prettyPrint(messageDataValue);
+    }
 
     sectionColumn45.appendChild(column45Text);
     sectionColumn55.appendChild(column55Text);
     stateVariableSection.appendChild(sectionColumn45);
     stateVariableSection.appendChild(sectionColumn55);
-    stateVariableView.appendChild(stateVariableSection);
+    return stateVariableSection
 }
 
-function prettyPrint(information: stateMessageTypes): string {
+function prettyPrint(information: URDataType): string {
     if (typeof information === 'string') {
         return information;
     }
@@ -70,5 +173,8 @@ function prettyPrint(information: stateMessageTypes): string {
     }
     if (typeof information === 'object') {
         return JSON.stringify(information);
+    }
+    if (typeof information === 'boolean') {
+        return information ? 'True' : 'False';
     }
 }

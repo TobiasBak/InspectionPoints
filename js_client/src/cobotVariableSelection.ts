@@ -1,10 +1,10 @@
-import {RobotStateMessageData} from "./responseMessages/responseMessageDefinitions";
+import {RtdeStateMessageData} from "./responseMessages/responseMessageDefinitions";
 
 
 const listId: 'stateVariableSelection' = "stateVariableSelection";
 const stateVariableSelectionList: HTMLElement = document.getElementById(listId);
 
-export function generateVariableSelection(data: RobotStateMessageData, handleCheckboxChange: () => void): void {
+export function generateVariableSelection(data: RtdeStateMessageData, handleCheckboxChange: () => void): void {
     if (isVariableSelectionGenerated()) {
         return;
     }

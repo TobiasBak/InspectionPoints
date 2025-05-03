@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 from asyncio import StreamReader, StreamWriter, Task
 from socket import gethostbyname, gethostname
 from time import sleep
@@ -8,7 +9,7 @@ from typing import Final
 from websockets.server import serve
 
 from RobotControl.Robot import Robot
-from RobotControl.RobotSocketMessages import parse_robot_message, CommandFinished, ReportState, RobotSocketMessageTypes
+from RobotControl.RobotSocketMessages import parse_robot_message, ReportState, RobotSocketMessageTypes
 from RobotControl.RunningWithSSH import run_script_on_robot
 from SocketMessages import AckResponse
 from SocketMessages import InspectionPointFormatFromFrontend, InspectionVariable
@@ -16,8 +17,7 @@ from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
-from undo.HistorySupport import create_variable_registry
-from undo.HistorySupport import handle_report_state, handle_command_finished
+from variables.InspectionGenerator import InspectionGenerator
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -45,9 +45,9 @@ def handle_command_message(message: CommandMessage) -> str:
 
 
 def generate_read_point(inspectionPoint: InspectionPointFormatFromFrontend, globalVariables: list[InspectionVariable])->str:
-    registry = create_variable_registry([v.codeVariable for v in globalVariables])
+    registry = InspectionGenerator([v.codeVariable for v in globalVariables])
     for v in inspectionPoint.additionalVariables:
-        registry.register_code_variable(v.codeVariable, ensure_single_definition=True)
+        registry.register_code_variable(v.codeVariable)
     read_commands = registry.generate_read_commands()
     report_state = ReportState(inspectionPoint.id, read_commands)
     return report_state.dump_string_post_urify()
@@ -258,11 +258,7 @@ def message_from_robot_received(message: bytes):
 
     robot_message = parse_robot_message(decoded_message)
     match robot_message:
-        case CommandFinished():
-            handle_command_finished(robot_message)
-            send_to_all_web_clients(str(robot_message))
         case ReportState():
-            handle_report_state(robot_message)
             send_to_all_web_clients(str(robot_message))
         case _:
             raise ValueError(f"Unknown RobotSocketMessage message: {robot_message}")

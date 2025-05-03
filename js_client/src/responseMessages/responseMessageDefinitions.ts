@@ -4,9 +4,8 @@
 export enum ResponseMessageType {
     AckResponse = 'Ack_response',
     Feedback = 'Feedback',
-    RobotState = 'Robot_state',
-    ReportState = 'Report_state',
-    CommandFinished = 'Command_finished'
+    RtdeState = 'Robot_state',
+    ReportState = 'Report_state'
 }
 
 export enum Status {
@@ -14,7 +13,7 @@ export enum Status {
     Error = 'Error'
 }
 
-export type ResponseMessage = AckResponseMessage | FeedbackMessage | RobotStateMessage | ReportStateMessage | CommandFinishedMessage
+export type ResponseMessage = AckResponseMessage | FeedbackMessage | RtdeStateMessage | ReportStateMessage
 
 export type AckResponseMessageData = {
     id: number,
@@ -34,30 +33,25 @@ export type TCPInformation = {
     force: [number, number, number, number, number, number]
 }
 
-export type RobotStateMessageData = {
+export type RtdeStateMessageData = {
     safety_status: string,
     runtime_state: string,
-    robot_mode: string,
-    joints: [number, number, number, number, number, number],
-    tcp: TCPInformation,
-    payload: number
-    digital_out: [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean]
+    robot_mode: string
 }
 
 export type VariableType = 'String' | 'Integer' | 'Float' | 'Boolean' | 'List' | 'Pose'
 
+export type URDataType = string | number | boolean | any[] | [number, number, number, number, number, number]
+
 export type VariableObject = {
     name: string,
     type: VariableType,
-    value: string | number | boolean | any[] | [number, number, number, number, number, number]
+    value: URDataType
 }
 
 export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation | [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean] | boolean
 
-export type CommandFinishedMessageData = {
-    id: number,
-    command: string
-}
+export type rtdeStateMessageType = string
 
 export type AckResponseMessage = {
     type: ResponseMessageType.AckResponse,
@@ -69,16 +63,14 @@ export type FeedbackMessage = {
     data: FeedbackMessageData
 }
 
-export type RobotStateMessage = {
-    type: ResponseMessageType.RobotState,
-    data: RobotStateMessageData
+export type RtdeStateMessage = {
+    type: ResponseMessageType.RtdeState,
+    data: RtdeStateMessageData
 }
 
-export type CommandFinishedMessage = {
-    type: ResponseMessageType.CommandFinished,
-    data: CommandFinishedMessageData
-}
-
+/**
+ * The id corresponds to the inspectionPoint id, where this was emitted from.
+ */
 export type ReportStateMessage = {
     type: ResponseMessageType.ReportState,
     data: VariableObject[],

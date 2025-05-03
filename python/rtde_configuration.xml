@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<rtde_config>
+	<recipe key="state">
+		<field name="safety_status" type="INT32"/>
+		<field name="runtime_state" type="UINT32"/>
+		<field name="robot_mode" type="INT32"/>
+	</recipe>
+</rtde_config>

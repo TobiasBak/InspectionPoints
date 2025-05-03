@@ -64,7 +64,8 @@ p {
 
 .commandArea {
     flex: 1;
-    height: 95vh;
+    height: 90vh;
+    padding: 0;
 }
 
 .commandArea > * {
@@ -108,7 +109,7 @@ p {
 }
 
 .variableView {
-    height: 95vh;
+    height: 90vh;
     width: 100%;
     box-sizing: border-box;
     padding: .8em;
@@ -130,6 +131,22 @@ p {
     background-color: var(--group-A-active-color) !important;
 }
 
+.stateVariableSection{
+    padding: 0.25em;
+    background: #1e262e;
+    border-radius: .2em;
+    margin: 0.5em 0;
+    border: 1px solid #1d242b;
+}
+
+.inactive-section{
+    background: #3a3d41;
+    border-color: #424242;
+}
+
+.stateVariableSection > div{
+    padding: 0.25em;
+}
 
 .stateVariableSelectionWrapper label {
     margin-left: .3em;
@@ -170,6 +187,38 @@ p {
     width: 100%;
 }
 
+/*https://stackoverflow.com/a/71876526*/
+.monaco-editor { position: absolute !important; }
+
+.editorArea {
+    height: 100%;
+    padding: 0;
+}
+
+.vs-like-button{
+    background: #313131;
+    color: #cccccc;
+    border: #ffffff12;
+    border-radius: .15em;
+    margin: 0 .2em;
+}
+
+.vs-like-button:hover{
+    background: #3c3c3c;
+}
+
+
+#btnRow{
+    max-width: none;
+}
+
+.right-aligned{
+    padding-right: 0;
+}
+
+.left-aligned{
+    padding-left: 0;
+}
 
 /* POPUP */
 .popup {
