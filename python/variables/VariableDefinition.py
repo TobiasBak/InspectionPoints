@@ -25,12 +25,12 @@ class RtdeVariableDefinition(VariableDefinition):
 
 
 class CodeVariableDefinition(VariableDefinition):
-    def __init__(self, name: str, command_for_reading: str):
+    def __init__(self, name: str, command_for_reading: str, global_variable: bool = False):
         super().__init__(name)
         self.is_code = True
         self.command_for_reading = command_for_reading
         "This must be the urscript code that is necessary to return a value for this variable."
-        self.socket_representation = VariableObject(name, VariableTypes.String, command_for_reading)
+        self.socket_representation = VariableObject(name, VariableTypes.String, command_for_reading, global_variable)
 
     def __str__(self):
         return f"Codevariable {self.name} with command for reading: {self.command_for_reading}"

@@ -71,10 +71,10 @@ class CommandMessage:
 
 
 class InspectionVariable:
-    def __init__(self, name: str, readCommand: str):
+    def __init__(self, name: str, readCommand: str, globalVariable: bool = False):
         self.name = name
         self.readCommand = readCommand
-        self.codeVariable: CodeVariableDefinition = CodeVariableDefinition(name, readCommand)
+        self.codeVariable: CodeVariableDefinition = CodeVariableDefinition(name, readCommand, globalVariable)
 
     def dump(self):
         return {
@@ -139,7 +139,7 @@ class InspectionPointMessage:
             
         # Transform the untyped dictionary to a list of InspectionVariable objects
         for globalVariable in globalVariables:
-            parsed = InspectionVariable(globalVariable["name"], globalVariable["readCommand"])
+            parsed = InspectionVariable(globalVariable["name"], globalVariable["readCommand"], globalVariable=True)
             self.globalVariables.append(parsed)
 
         #     Check that the commands in the inspection points match the line numbers received.
