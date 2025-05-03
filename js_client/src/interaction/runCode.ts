@@ -1,5 +1,6 @@
 import {CommandEnteredEvent} from "./EventList";
 import { editor } from "../monacoExperiment";
+import * as monaco from "monaco-editor";
 
 let current_id: number = 0;
 
@@ -17,5 +18,7 @@ document.getElementById('runEditorContentButton')?.addEventListener('click', fun
     console.log(`Command: ${command}`);
     if (command === '') return;
     sendCommand(command);
+
+    localStorage.setItem('urscript', command);
 });
 
