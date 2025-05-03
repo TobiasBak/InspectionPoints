@@ -11,7 +11,9 @@ import {wireTmGrammars} from 'monaco-editor-textmate';
 //as always, shoutout to Ahern guo for the TextMate grammar
 // https://github.com/ahernguo/urscript-extension/blob/master/syntaxes/urscript.tmLanguage.json
 
-const code = `
+
+
+const defaultCode = `
 a = p[-0.421, -0.436, 0.1, 2.61, -1.806, -0.019]
 movej(a, a=0.3, v=0.3)
 
@@ -25,6 +27,8 @@ end
 
 movej(b, a=0.3, v=0.3)
 `;
+
+const code = localStorage.getItem('urscript') || defaultCode;
 
 const editorElement = document.getElementById('editor');
 

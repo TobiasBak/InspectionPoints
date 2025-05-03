@@ -90,4 +90,10 @@ document.getElementById("debugEditorButton")?.addEventListener("click", () => {
     const debugEvent = createDebugEvent();
     document.dispatchEvent(debugEvent);
     console.log("Debug event dispatched:", debugEvent);
+
+    localStorage.setItem('urscript', editor.getValue());
+});
+
+editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
+    localStorage.setItem('urscript', editor.getValue());
 });
