@@ -110,8 +110,10 @@ const sectionStorage = new Map<string, HTMLElement>();
 export function displayMessageData(message: ReportStateMessage): void {
     const data: VariableObject[] = message.data
 
-    const id: 'codeVariableDisplay' = "codeVariableDisplay"
-    const codeVariableDisplay: HTMLElement = document.getElementById(id);
+    
+
+    const cobotStateDisplay: HTMLElement = document.getElementById("stateVariableDisplay");
+    const codeVariableDisplay: HTMLElement = document.getElementById("codeVariableDisplay");
 
     // console.log("Provided_id from last logged report state", message.id)
 
@@ -120,12 +122,14 @@ export function displayMessageData(message: ReportStateMessage): void {
     });
 
     data.forEach((variable): void => {
+        const targetSection = variable.global ? cobotStateDisplay : codeVariableDisplay;
+
         const oldSection = sectionStorage.get(variable.name);
         const newSection = generateHtmlFromMessageData(variable.name, variable.value)
         if (oldSection) {
             oldSection.replaceWith(newSection);
         }else{
-            codeVariableDisplay.appendChild(newSection);
+            targetSection.appendChild(newSection);
         }
         sectionStorage.set(variable.name, newSection);
     });
@@ -180,7 +184,11 @@ function prettyPrint(information: URDataType): string {
     }
 }
 
-
+/**
+ * Update the message points in the HTML.
+ * This function will create a button for each message in the storage.
+ * When the button is clicked, it will display the message data in the HTML.
+ */
 function updateMessagePoints(): void {
     const container = document.getElementById('inspectionPointsMessageSelector');
     container.innerHTML = '';
