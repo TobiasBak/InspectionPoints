@@ -50,6 +50,7 @@ export function handleReportStateMessage(message: ResponseMessage): void {
 
     storage.push(message);
 
+    updateMessagePoints();
     displayMessageData(message);
 }
 
@@ -177,4 +178,29 @@ function prettyPrint(information: URDataType): string {
     if (typeof information === 'boolean') {
         return information ? 'True' : 'False';
     }
+}
+
+
+function updateMessagePoints(): void {
+    const container = document.getElementById('inspectionPointsMessageSelector');
+    container.innerHTML = '';
+
+    storage.forEach((message, index) => {
+        const point = document.createElement('button');
+        point.textContent = `${message.id}`;
+        point.classList.add('messageSelectionPoint');
+        point.setAttribute('data-index', index.toString());
+
+        point.addEventListener('click', () => {
+            const allPoints = container.querySelectorAll('.messageSelectionPoint');
+            allPoints.forEach((p) => p.classList.remove('active'));
+
+            point.classList.add('active');
+
+            const message = storage[index];
+            displayMessageData(message);
+        });
+
+        container.appendChild(point);
+    });
 }
