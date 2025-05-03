@@ -1,10 +1,10 @@
 import { editor } from "../monacoExperiment";
 import { decorationIds, model } from "./inspectionPoints";
+import { inspectionVariables } from "./inspectionPopupManager";
 import {createInspectionPointFormat, createDebugMessageData} from '../userMessages/userMessageFactory';
 import {InspectionPointFormat, InspectionVariable} from '../userMessages/userMessageDefinitions';
 import { BeginDebugEvent } from "./EventList";
 
-// Function to collect decorated lines and create a BeginDebugEvent
 function createDebugEvent(): BeginDebugEvent {
     const inspectionPointsMap = new Map<number, InspectionPointFormat>();
     let idCounter = 1;
@@ -15,8 +15,11 @@ function createDebugEvent(): BeginDebugEvent {
             const currentLineNumber = range.startLineNumber;
             const lineContent = model.getLineContent(currentLineNumber);
 
-
-            const additionalVariables: InspectionVariable[] = [];
+            const trackedVariables = inspectionVariables.get(decorationId) || [];
+            const additionalVariables: InspectionVariable[] = trackedVariables.map((variableName) => ({
+                name: variableName,
+                readCommand: "",
+            }));
 
             inspectionPointsMap.set(
                 currentLineNumber,

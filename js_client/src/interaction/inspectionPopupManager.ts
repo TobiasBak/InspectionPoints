@@ -1,4 +1,4 @@
-const inspectionVariables = new Map<string, string[]>();
+export const inspectionVariables = new Map<string, string[]>();
 
 export function openPopup(decorationId: string, x: number, y: number) {
     closePopup();
