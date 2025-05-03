@@ -1,9 +1,9 @@
 import {
-    AckResponseMessage, CommandFinishedMessage,
+    AckResponseMessage,
     FeedbackMessage, ReportStateMessage,
     ResponseMessage,
     ResponseMessageType,
-    RobotStateMessage,
+    RtdeStateMessage,
     Status, VariableObject
 } from "./responseMessageDefinitions";
 
@@ -16,12 +16,9 @@ export function parseMessage(message: string): ResponseMessage {
         case "Feedback":
             return parseFeedbackMessage(parsed);
         case "Robot_state":
-            return parseRobotStateMessage(parsed);
+            return parseRtdeStateMessage(parsed);
         case "Report_state":
             return parseReportStateMessage(parsed);
-            break;
-        case "Command_finished":
-            return parseCommandFinishedMessage(parsed);
         default:
             throw new Error(`Invalid message type: ${parsed.type}`);
     }
@@ -69,24 +66,16 @@ function noneGuard(value: any): any {
     return value;
 }
 
-function parseRobotStateMessage(message: any): RobotStateMessage {
+function parseRtdeStateMessage(message: any): RtdeStateMessage {
     if (message.type !== "Robot_state") {
         throw new Error(`Invalid message type: ${message.type}`);
     }
     return {
-        type: ResponseMessageType.RobotState,
+        type: ResponseMessageType.RtdeState,
         data: {
             safety_status: noneGuard(message.data.safety_status),
             runtime_state: noneGuard(message.data.runtime_state),
-            robot_mode: noneGuard(message.data.robot_mode),
-            joints: noneGuard(message.data.joints),
-            tcp: {
-                pose: noneGuard(message.data.tcp.pose),
-                speed: noneGuard(message.data.tcp.speed),
-                force: noneGuard(message.data.tcp.force)
-            },
-            payload: noneGuard(message.data.payload),
-            digital_out: [noneGuard(message.data.digital_out_0), noneGuard(message.data.digital_out_1), noneGuard(message.data.digital_out_2), noneGuard(message.data.digital_out_3), noneGuard(message.data.digital_out_4), noneGuard(message.data.digital_out_5), noneGuard(message.data.digital_out_6), noneGuard(message.data.digital_out_7)],
+            robot_mode: noneGuard(message.data.robot_mode)
         }
     };
 }
@@ -105,19 +94,5 @@ function parseReportStateMessage(message: any): ReportStateMessage {
             };
         })],
         id: noneGuard(message.id),
-    };
-}
-
-
-function parseCommandFinishedMessage(message: any): CommandFinishedMessage {
-    if (message.type !== "Command_finished") {
-        throw new Error(`Invalid message type: ${message.type}`);
-    }
-    return {
-        type: ResponseMessageType.CommandFinished,
-        data: {
-            id: noneGuard(message.data.id),
-            command: noneGuard(message.data.command)
-        }
     };
 }

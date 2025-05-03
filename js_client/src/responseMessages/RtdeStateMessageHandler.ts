@@ -2,31 +2,31 @@ import {generateVariableSelection, listOfVariablesToDisplay} from "../cobotVaria
 import {
     ResponseMessage,
     ResponseMessageType,
-    RobotStateMessage,
-    RobotStateMessageData, stateMessageTypes
+    RtdeStateMessage,
+    RtdeStateMessageData, rtdeStateMessageType
 } from "./responseMessageDefinitions";
 
 
-let lastRobotStateMessage: RobotStateMessage;
+let lastRtdeStateMessage: RtdeStateMessage;
 
-export function handleRobotStateMessage(message: ResponseMessage): void {
-    if (message.type !== ResponseMessageType.RobotState) {
+export function handleRtdeStateMessage(message: ResponseMessage): void {
+    if (message.type !== ResponseMessageType.RtdeState) {
         throw new Error(`Invalid message type: ${message.type}`);
     }
 
-    lastRobotStateMessage = message;
+    lastRtdeStateMessage = message;
 
-    generateVariableSelection(message.data, replayRobotStateMessage);
+    generateVariableSelection(message.data, replayRtdeStateMessage);
     iterateMessageData(message.data);
 }
 
-function replayRobotStateMessage(): void {
-    if (lastRobotStateMessage) {
-        handleRobotStateMessage(lastRobotStateMessage);
+function replayRtdeStateMessage(): void {
+    if (lastRtdeStateMessage) {
+        handleRtdeStateMessage(lastRtdeStateMessage);
     }
 }
 
-function iterateMessageData(data: RobotStateMessageData): void {
+function iterateMessageData(data: RtdeStateMessageData): void {
     const id: 'stateVariableDisplay' = "stateVariableDisplay"
     const oldStateVariableView: HTMLElement = document.getElementById(id);
     const stateVariableView: HTMLElement = document.createElement('div');
@@ -34,12 +34,6 @@ function iterateMessageData(data: RobotStateMessageData): void {
 
     Object.entries(data).forEach(([key, value]): void => {
         if (listOfVariablesToDisplay().includes(key)) {
-            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-                Object.entries(value).forEach(([innerKey, innerValue]): void => {
-                    generateHtmlFromMessageData(innerKey, stateVariableView, innerValue);
-                });
-                return;
-            }
             generateHtmlFromMessageData(key, stateVariableView, value);
         }
     });
@@ -51,7 +45,7 @@ function iterateMessageData(data: RobotStateMessageData): void {
     }
 }
 
-function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: HTMLElement, messageDataValue: stateMessageTypes): void {
+function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: HTMLElement, messageDataValue: rtdeStateMessageType): void {
 
     const stateVariableSection: HTMLElement = document.createElement('section');
     stateVariableSection.classList.add('stateVariableSection', 'flex');
@@ -66,15 +60,8 @@ function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: 
     column45Text.textContent = messageDataKey;
 
     const column55Text: HTMLParagraphElement = document.createElement('p');
-    if (Array.isArray(messageDataValue)) {
-        for (let i = 0; i < messageDataValue.length; i++) {
-            column55Text.appendChild(document.createTextNode("[" + (i) + "]: " + prettyPrint(messageDataValue[i])));
-            column55Text.appendChild(document.createElement('br'));
-        }
-    }else{
-        column55Text.textContent = prettyPrint(messageDataValue);
-    }
-
+    column55Text.textContent = prettyPrint(messageDataValue);
+    
     sectionColumn45.appendChild(column45Text);
     sectionColumn55.appendChild(column55Text);
     stateVariableSection.appendChild(sectionColumn45);
@@ -82,20 +69,8 @@ function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: 
     stateVariableView.appendChild(stateVariableSection);
 }
 
-function prettyPrint(information: stateMessageTypes): string {
+function prettyPrint(information: rtdeStateMessageType): string {
     if (typeof information === 'string') {
         return information;
-    }
-    if (typeof information === 'number') {
-        return information.toString();
-    }
-    if (Array.isArray(information)) {
-        return information.join(', ');
-    }
-    if (typeof information === 'object') {
-        return JSON.stringify(information);
-    }
-    if (typeof information === 'boolean') {
-        return information ? 'True' : 'False';
     }
 }

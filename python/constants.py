@@ -12,10 +12,13 @@ FRONTEND_WEBSOCKET_PORT: int = config("FRONTEND_WEBSOCKET_PORT", default=8767)
 DASHBOARD_PORT = 29999
 PRIMARY_PORT = 30001
 SECONDARY_PORT = 30002
+RTDE_PORT = 30004
 INTERPRETER_PORT = 30020
 
 SSH_USERNAME: str = config("SSH_USERNAME", default="robot")
 SSH_PASSWORD: str = config("SSH_PASSWORD", default=None)
+
+RTDE_CONFIG_FILE: str = config("RTDE_CONFIG_FILE", default="rtde_configuration.xml")
 
 IS_PHYSICAL_ROBOT: bool = config("IS_PHYSICAL_ROBOT", default=False, cast=bool)
 
