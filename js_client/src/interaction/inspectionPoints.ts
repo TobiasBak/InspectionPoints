@@ -78,6 +78,9 @@ function createDebugEvent(): BeginDebugEvent {
     const globalVariables: InspectionVariable[] = [{
         name: "joints",
         readCommand: "get_actual_joint_positions()"
+    },{
+        name: "pose",
+        readCommand: "get_actual_tcp_pose()"
     }]
     const messageData = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
     return new BeginDebugEvent(messageData);

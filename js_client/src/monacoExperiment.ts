@@ -72,6 +72,7 @@ export let editor: monaco.editor.IStandaloneCodeEditor = await (async () => {
         minimap: {
             enabled: false,
         },
+        automaticLayout: true
     });
 
     await wireTmGrammars(monaco, registry, grammars, out);
