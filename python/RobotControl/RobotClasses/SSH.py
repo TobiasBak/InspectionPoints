@@ -1,9 +1,9 @@
 import os
 import paramiko
 
-from constants import ROBOT_IP, SSH_USERNAME
+from constants import ROBOT_IP, SSH_USERNAME, SSH_PASSWORD, IS_PHYSICAL_ROBOT
 from custom_logging import LogConfig
-from RobotControl.RobotController import RobotController
+from RobotControl.RobotClasses.RobotController import RobotController
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
@@ -26,9 +26,14 @@ class SSH:
         self.controller: RobotController = RobotController.get_instance()
         self.ssh_client = paramiko.SSHClient()
         self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        non_recurring_logger.debug("Connecting to SSH")
-        non_recurring_logger.debug(f"Connecting to {ROBOT_IP} with username {SSH_USERNAME}")
-        self.ssh_client.connect(ROBOT_IP, username=SSH_USERNAME, password='easybot')
+        non_recurring_logger.debug(f"SSH: Connecting to {ROBOT_IP} with username {SSH_USERNAME}")
+        self.ssh_client.connect(ROBOT_IP, username=SSH_USERNAME, password=SSH_PASSWORD)
+
+        self.path_to_programs_dir = "/programs"
+
+        self.path_to_error_log = "../ursim/URControl.log"
+        if IS_PHYSICAL_ROBOT:
+            self.path_to_error_log = "/root/polyscope.log"
 
     def close(self):
         """
@@ -40,7 +45,7 @@ class SSH:
         """
         Writes a script to the robot's file system using SSH.
         """
-        filepath = os.path.join("../ursim/programs", filename)
+        filepath = os.path.join(self.path_to_programs_dir, filename)
 
         try:
             sftp = self.ssh_client.open_sftp()
@@ -93,7 +98,6 @@ class SSH:
         """
         Reads the last `lines` number of lines from the robot's log file.
         """
-        error_log_path = "../ursim/URControl.log"
 
         try:
             sftp = self.ssh_client.open_sftp()
@@ -103,7 +107,7 @@ class SSH:
             return ""
 
         try:
-            with sftp.file(error_log_path, 'rb') as f:
+            with sftp.file(self.path_to_error_log, 'rb') as f:
                 # Move to the end of the file
                 f.seek(0, os.SEEK_END)
                 position = f.tell()

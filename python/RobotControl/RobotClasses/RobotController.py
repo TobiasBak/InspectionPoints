@@ -5,7 +5,7 @@ from time import sleep
 
 from ToolBox import get_socket
 from URIFY import SOCKET_NAME
-from constants import ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, ROBOT_FEEDBACK_PORT
+from constants import ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, ROBOT_FEEDBACK_PORT, ROBOT_FEEDBACK_HOST
 from custom_logging import LogConfig
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -31,9 +31,11 @@ class RobotController:
         self.dashboard_socket: Socket = get_socket(ROBOT_IP, DASHBOARD_PORT)
         self.secondary_socket: Socket = get_socket(ROBOT_IP, SECONDARY_PORT)
         sleep(0.5)  # Wait for sockets to be ready
-        
-        # Wait for the robot to be reachable
-        # TODO 
+
+        # Wait for polyscope to be ready
+        while not self.is_polyscope_ready:
+            recurring_logger.info("Waiting for Polyscope to be ready...")
+            sleep(0.1)
 
         # Initialize the robot
         self.power_on()
@@ -75,22 +77,37 @@ class RobotController:
         return self.__get_value_from_dashboard("programState")
     
     @property
-    def open_feedback_socket_string(self, host: str = gethostbyname(gethostname()), port: int = ROBOT_FEEDBACK_PORT) -> str:
+    def open_feedback_socket_string(self, host: str = ROBOT_FEEDBACK_HOST, port: int = ROBOT_FEEDBACK_PORT) -> str:
         try:
             socket.inet_aton(host)
         except socket.error:
             host = gethostbyname(host)
         return f"socket_open(\"{host}\", {port}, {SOCKET_NAME})\n"  
+    
+    @property
+    def is_polyscope_ready(self) -> bool:
+        """
+        Property to check if Polyscope is ready.
+        """
+        robot_mode = self.robot_mode
+        if robot_mode in ('', 'BOOTING', 'nothing'):
+            non_recurring_logger.info(f"Polyscope is still starting: {robot_mode}")
+            return False
+        elif robot_mode in ('NO_CONTROLLER', 'DISCONNECTED', 'UniversalRobotsDashboardServer'):
+            non_recurring_logger.info(f"Polyscope is in current state of starting: {robot_mode}")
+            return False
+        else:
+            return True
 
     def send_command(self, socket: Socket, command: str) -> str:
         """
         Sends a command to the specified socket and returns the response.
         """
-        sanitized_command = self._sanitize_command(command)
+        sanitized_command = self.sanitize_command(command)
         socket.send(sanitized_command.encode())
         return self.read_from_socket(socket)
 
-    def _sanitize_command(self, command: str) -> str:
+    def sanitize_command(self, command: str) -> str:
         """
         Sanitizes a command by ensuring it ends with a newline character.
         """

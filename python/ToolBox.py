@@ -15,7 +15,7 @@ def escape_string(string: str) -> str:
         out = string
     return out
 
-def _create_get_socket_function() -> Callable[[str, int], Socket]:
+def __create_get_socket_function() -> Callable[[str, int], Socket]:
         inner_socket_bank: dict[tuple[str, int], Socket] = dict()
 
         def inner_get_socket(ip: str, port: int) -> Socket | None:
@@ -43,4 +43,4 @@ def _create_get_socket_function() -> Callable[[str, int], Socket]:
 
         return inner_get_socket
 
-get_socket = _create_get_socket_function()
+get_socket = __create_get_socket_function()

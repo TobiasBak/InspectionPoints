@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor';
-import { editor } from "../monacoExperiment";
-import { openPopup } from "./inspectionPopupManager";
+import {editor} from "../monacoExperiment";
+import {openPopup} from "./inspectionPopupManager";
 
 export const model = editor.getModel();
 if (!model) {
@@ -52,4 +52,8 @@ editor.onMouseDown((event) => {
             decorationIds.set(newId, lineNumber);
         }
     }
+});
+
+editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
+    localStorage.setItem('urscript', editor.getValue());
 });

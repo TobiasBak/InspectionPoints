@@ -12,6 +12,7 @@ module.exports = {
         dark_mode: './src/Toolbox/auto_dark_mode.ts',
         inspectionPoints: './src/interaction/inspectionPoints.ts',
         debugEventHandler: './src/interaction/debugEventHandler.ts',
+        runCode: './src/interaction/runCode.ts',
         monacoEditor: './src/monacoExperiment.ts'
     },
     devtool: 'inline-source-map',
