@@ -1,4 +1,4 @@
-import {generateVariableSelection, listOfVariablesToDisplay} from "../cobotVariableSelection";
+import {listOfVariablesToDisplay} from "../cobotVariableSelection";
 import {
     ResponseMessage,
     ResponseMessageType,
@@ -16,18 +16,12 @@ export function handleRtdeStateMessage(message: ResponseMessage): void {
 
     lastRtdeStateMessage = message;
 
-    generateVariableSelection(message.data, replayRtdeStateMessage);
     iterateMessageData(message.data);
 }
 
-function replayRtdeStateMessage(): void {
-    if (lastRtdeStateMessage) {
-        handleRtdeStateMessage(lastRtdeStateMessage);
-    }
-}
 
 function iterateMessageData(data: RtdeStateMessageData): void {
-    const id: 'stateVariableDisplay' = "stateVariableDisplay"
+    const id: 'statusVariableDisplay' = "statusVariableDisplay"
     const oldStateVariableView: HTMLElement = document.getElementById(id);
     const stateVariableView: HTMLElement = document.createElement('div');
     stateVariableView.id = id;
