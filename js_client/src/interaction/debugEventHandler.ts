@@ -18,7 +18,7 @@ function createDebugEvent(): BeginDebugEvent {
             const trackedVariables = inspectionVariables.get(decorationId) || [];
             const additionalVariables: InspectionVariable[] = trackedVariables.map((variableName) => ({
                 name: variableName,
-                readCommand: "",
+                readCommand: variableName,
             }));
 
             inspectionPointsMap.set(
