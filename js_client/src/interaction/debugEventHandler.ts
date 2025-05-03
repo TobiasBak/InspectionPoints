@@ -1,6 +1,7 @@
 import { editor } from "../monacoExperiment";
 import { decorationIds, model } from "./inspectionPoints";
 import { inspectionVariables } from "./inspectionPopupManager";
+import { selectedGlobalVariables } from "../cobotVariableSelection";
 import {createInspectionPointFormat, createDebugMessageData} from '../userMessages/userMessageFactory';
 import {InspectionPointFormat, InspectionVariable} from '../userMessages/userMessageDefinitions';
 import { BeginDebugEvent } from "./EventList";
@@ -32,13 +33,7 @@ function createDebugEvent(): BeginDebugEvent {
         (a, b) => a.lineNumber - b.lineNumber
     );
 
-    const globalVariables: InspectionVariable[] = [{
-        name: "joints",
-        readCommand: "get_actual_joint_positions()"
-    },{
-        name: "pose",
-        readCommand: "get_actual_tcp_pose()"
-    }];
+    const globalVariables: InspectionVariable[] = selectedGlobalVariables;
     const messageData = createDebugMessageData(model.getLinesContent(), inspectionPoints, globalVariables);
     return new BeginDebugEvent(messageData);
 }
