@@ -207,6 +207,12 @@ p {
     background: #3c3c3c;
 }
 
+.vs-like-button:disabled {
+    opacity: 0.2;
+    background: #313131;
+    pointer-events: none; /* Prevent interaction */
+}
+
 
 #btnRow{
     max-width: none;
