@@ -3,7 +3,7 @@ import {ResponseMessage, ResponseMessageType} from "./responseMessages/responseM
 import {handleAckResponseMessage} from "./responseMessages/AckResponseHandler";
 import {handleFeedbackMessage} from "./responseMessages/FeedbackMessageHandler";
 import {handleRtdeStateMessage} from "./responseMessages/RtdeStateMessageHandler";
-import {BeginDebugEvent, CommandEnteredEvent, EventList} from "./interaction/EventList";
+import {BeginDebugEvent, CommandEnteredEvent, EventList, StopProgramEvent} from "./interaction/EventList";
 import {
     createCommandMessage,
     createDebugMessage,
@@ -80,11 +80,16 @@ async function testCommands() {
         send(proxyServer, createDebugMessage(e.detail));
     };
 
+    const sendStopCommandToServer = function (e: StopProgramEvent) {
+        const stopCommand = createCommandMessage(e.detail.id, e.detail.text);
+        send(proxyServer, stopCommand);
+    };
 
     proxyServer.onopen = () => {
         console.log("Connected to the server");
         document.addEventListener(EventList.CommandEntered, sendCommandToServer);
         document.addEventListener(EventList.BeginDebug, sendDebugCommandToServer);
+        document.addEventListener(EventList.StopDebug, sendStopCommandToServer);
     };
 
     proxyServer.onclose = () => {
