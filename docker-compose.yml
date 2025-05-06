@@ -33,7 +33,7 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - ROBOT_IP=192.168.10.1
+      - ROBOT_IP=192.168.5.1
       - ROBOT_FEEDBACK_PORT=8000
       - ROBOT_FEEDBACK_HOST=192.168.1.15
       - SSH_USERNAME=root

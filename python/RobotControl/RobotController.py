@@ -123,7 +123,7 @@ class RobotController:
         return out
 
     def power_on(self):
-        return self.send_command(self.dashboard_socket, "power on")
+        return self.__get_value_from_dashboard("power on")
 
     def power_off(self):
         return self.send_command(self.dashboard_socket, "power off")
@@ -142,7 +142,7 @@ class RobotController:
         return self.send_command(self.dashboard_socket, f"load {program_name}")
     
     def start_program(self):
-        return self.send_command(self.dashboard_socket, "play")
+        return self.__get_value_from_dashboard("play")
 
     def unlock_protective_stop(self):
         sleep(5)  # Wait for 5 seconds before attempting to unlock
@@ -156,6 +156,7 @@ class RobotController:
 
     def __get_value_from_dashboard(self, command: str) -> str:
         response = self.send_command(self.dashboard_socket, command)
+        non_recurring_logger.debug(f"Response from dashboard server: {response}")
         return self.__sanitize_dashboard_reads(response)
 
     def __sanitize_dashboard_reads(self, response: str) -> str:

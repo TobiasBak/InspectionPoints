@@ -34,29 +34,13 @@ def run_script_on_robot(script: str) -> str:
         Returns: 
             An error message or an empty string.
     """
-    program_name = "custom_program.urp"
-
     augmented_script = augment_script(script)
     robot.ssh.write_script(augmented_script)
     sleep(0.1)
-    # robot.controller.send_popup(f"Forbereder scripts fra proxy: loader {program_name}")
-    # sleep(1)
-    # robot.controller.close_popup()
-    # robot.controller.load_program(program_name)
-    # sleep(5)
-    # robot.controller.power_on()
-    # sleep(5)
-    # robot.controller.brake_release()
-    # sleep(2)
 
-    # robot.controller.send_popup("Bevæger til start_position")
-    # robot.interpreter_mode.start()
-    # robot.interpreter_mode.send_command("movej(p[-0.42463,-0.57251,0.27721,0.610,3.078,0])")
-    # robot.interpreter_mode.stop()
-    # sleep(2)
-    # robot.controller.close_popup()
+    robot.controller.load_program()
 
-    # robot.controller.send_popup("Starter om 1 sek")
+        # robot.controller.send_popup("Starter om 1 sek")
     # sleep(1)
     # robot.controller.close_popup()
     robot.controller.start_program()
@@ -71,12 +55,12 @@ def run_script_on_robot(script: str) -> str:
     #     parts = re.split(r'ERROR\s+-', error, maxsplit=1)
     #     return parts[1]
 
-    #Start thread to check for runtime errors
-    def run_async_checker():
-        asyncio.run(run_script_finished_error_checker(0))
+    ##Start thread to check for runtime errors
+    # def run_async_checker():
+    #    asyncio.run(run_script_finished_error_checker(0))
 
-    error_checker_thread = threading.Thread(target=run_async_checker)
-    error_checker_thread.start()
+    #error_checker_thread = threading.Thread(target=run_async_checker)
+    #error_checker_thread.start()
 
     return "" 
 
