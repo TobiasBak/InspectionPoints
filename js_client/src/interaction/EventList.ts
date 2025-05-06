@@ -5,7 +5,7 @@ export enum EventList {
     CommandAccepted = "commandAccepted",
     CommandRejected = "commandRejected",
     BeginDebug = "beginDebug",
-    StopDebug = "stopDebug",
+    StopProgram = "stopDebug",
 }
 
 
@@ -34,7 +34,7 @@ export type StopCommandDetail = {
 
 export class StopProgramEvent extends CustomEvent<StopCommandDetail> {
     constructor(detail: StopCommandDetail) {
-        super(EventList.StopDebug, { detail });
+        super(EventList.StopProgram, { detail });
     }
 }
 

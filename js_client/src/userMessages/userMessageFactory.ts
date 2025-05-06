@@ -1,7 +1,7 @@
 import {
     CommandMessage,
     InspectionPointFormat, InspectionPointMessage, InspectionVariable, InspectionPointMessageData,
-    UserMessageType
+    UserMessageType, StopCommandMessage
 } from "./userMessageDefinitions";
 
 
@@ -36,5 +36,15 @@ export function createDebugMessage(data: InspectionPointMessageData): Inspection
     return {
         type: UserMessageType.Debug,
         data: data
+    };
+}
+
+export function createStopCommandMessage(id: number, command: string): StopCommandMessage {
+    return {
+        type: UserMessageType.StopCommand,
+        data: {
+            id: id,
+            message: command,
+        }
     };
 }

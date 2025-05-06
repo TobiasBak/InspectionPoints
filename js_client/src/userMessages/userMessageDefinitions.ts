@@ -3,10 +3,11 @@
 
 export enum UserMessageType {
     Command = 'Command',
-    Debug = 'Debug'
+    Debug = 'Debug',
+    StopCommand = 'StopCommand',
 }
 
-export type UserMessage = CommandMessage | InspectionPointMessage
+export type UserMessage = CommandMessage | InspectionPointMessage | StopCommandMessage;
 
 export type CommandMessageData = {
     id: number,
@@ -39,4 +40,14 @@ export type InspectionPointMessageData = {
 export type InspectionPointMessage = {
     type: UserMessageType.Debug,
     data: InspectionPointMessageData
+}
+
+export type StopCommandMessageData = {
+    id: number,
+    message: string,
+}
+
+export type StopCommandMessage = {
+    type: UserMessageType.StopCommand,
+    data: StopCommandMessageData
 }

@@ -8,7 +8,7 @@ import {
     createCommandMessage,
     createDebugMessage,
     createDebugMessageData,
-    createInspectionPointFormat
+    createInspectionPointFormat, createStopCommandMessage
 } from "./userMessages/userMessageFactory";
 import {InspectionPointFormat, UserMessage} from "./userMessages/userMessageDefinitions";
 import {handleReportStateMessage} from "./responseMessages/ReportStateMessageHandler";
@@ -81,7 +81,7 @@ async function testCommands() {
     };
 
     const sendStopCommandToServer = function (e: StopProgramEvent) {
-        const stopCommand = createCommandMessage(e.detail.id, e.detail.text);
+        const stopCommand = createStopCommandMessage(e.detail.id, e.detail.text);
         send(proxyServer, stopCommand);
     };
 
@@ -89,7 +89,7 @@ async function testCommands() {
         console.log("Connected to the server");
         document.addEventListener(EventList.CommandEntered, sendCommandToServer);
         document.addEventListener(EventList.BeginDebug, sendDebugCommandToServer);
-        document.addEventListener(EventList.StopDebug, sendStopCommandToServer);
+        document.addEventListener(EventList.StopProgram, sendStopCommandToServer);
     };
 
     proxyServer.onclose = () => {
