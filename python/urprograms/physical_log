@@ -1,0 +1,675 @@
+2025-05-06_07:53:04:81984 00:00:00:000 INFO    - Marketing Ver = 5.16.0
+2025-05-06_07:53:04:81998 00:00:00:000 INFO    - parseOpts(): The following ports will be used: Primary - 30001, Secondary - 30002, Interpreter - 30020, Matlab - 30003, RTDE - 30004, Primary_read_only - 30011, Secondary_read_only - 30012, Matlab_read_only - 30013.
+2025-05-06_07:53:05:79511 00:00:00:000 INFO    - ConfigurationManager::loadConfiguration: Loading urcontrol.conf from: /root/.urcontrol/urcontrol.conf.
+2025-05-06_07:53:05:79515 00:00:00:000 WARNING - Configuration property "resistance" not found in section "Energy Eater"; setting to default value: "0"
+2025-05-06_07:53:05:79518 00:00:00:000 WARNING - Configuration property "avg_time" not found in section "Energy Eater"; setting to default value: "5"
+2025-05-06_07:53:05:79520 00:00:00:000 WARNING - Configuration property "ramup_time" not found in section "Fan Control"; setting to default value: "1"
+2025-05-06_07:53:05:79522 00:00:00:000 WARNING - Configuration property "ramdown_time" not found in section "Fan Control"; setting to default value: "50"
+URControl 68.0.40 [] G5 (10-04-2024, 15:32:13)
+2025-05-06_07:53:06:31149 00:00:00:000 INFO    - Applying default console logging configuration for Actin
+2025-05-06_07:53:06:31154 00:00:00:000 INFO    - [ACTIN][1664][default] Actin logging configured
+2025-05-06_07:53:06:42463 00:00:00:000 INFO    - [ACTIN][1664][default] EcShmSyncChannel::EcShmSyncChannel created segment external_axes_bus_sync
+2025-05-06_07:53:06:44890 00:00:00:000 INFO    - Loading calibration from '/root/.urcontrol/calibration.conf'
+2025-05-06_07:53:06:44894 00:00:00:000 WARNING - Configuration property "file_save_count" not found in section "mounting"; setting to default value: "0"
+2025-05-06_07:53:07:30357 00:00:00:000 INFO    - Socket "SocketBridgeServer"  disconnected by Socket::close()
+2025-05-06_07:53:07:30362 00:00:00:000 INFO    - Socket "SocketBridgeServer" object was destroyed.
+2025-05-06_07:53:07:31173 00:00:00:000 INFO    - Safety Version 5:6
+2025-05-06_07:53:07:31179 00:00:00:000 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_07:53:07:31182 00:00:00:000 INFO    - URbus was found
+2025-05-06_07:53:07:32800 00:00:00:000 INFO    - LLInterface::open: Interfaces opened
+2025-05-06_07:53:07:32805 00:00:00:000 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_07:53:07:32807 00:00:00:000 INFO    - LLInterface::open: Already open
+2025-05-06_07:53:07:32809 00:00:00:000 INFO    - SCB::resetSCBMode: Resetting SCB mode from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_07:53:07:32811 00:00:00:000 INFO    - LLInterface::restart: Rebooting Embedded Modules...
+2025-05-06_07:53:07:39268 00:00:00:000 INFO    - robot_mode changed from ROBOT_MODE_DISCONNECTED to ROBOT_MODE_BOOTING
+2025-05-06_07:53:07:39273 00:00:00:001 ERROR   - ControlDataSender unable to send: Device '/dev/urbus/robot_ctrl_ds' not open for write operation
+2025-05-06_07:53:07:39275 00:00:00:001 WARNING - Runtime is blocked, but runtime data queue is empty, trying to recover
+2025-05-06_07:53:07:39277 00:00:00:002 ERROR   - ControlDataSender unable to send: Device '/dev/urbus/robot_ctrl_ds' not open for write operation
+2025-05-06_07:53:07:40086 00:00:00:003 INFO    - Socket "RobotControlDataLoggerServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:07:40091 00:00:00:003 INFO    - Socket "RobotControlDataLoggerServerSocket" object was destroyed.
+2025-05-06_07:53:07:40093 00:00:00:007 INFO    - Socket "DataScopeServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:07:40095 00:00:00:007 INFO    - Socket "DataScopeServerSocket" object was destroyed.
+2025-05-06_07:53:08:31994 00:00:00:929 INFO    - Socket "SocketBridgeServer"  disconnected by Socket::close()
+2025-05-06_07:53:08:31999 00:00:00:929 INFO    - Socket "SocketBridgeServer" object was destroyed.
+2025-05-06_07:53:10:06327 00:00:02:672 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_07:53:10:06334 00:00:02:672 INFO    - URbus was found
+2025-05-06_07:53:10:07951 00:00:02:678 INFO    - LLInterface::open: Interfaces opened
+2025-05-06_07:53:10:08764 00:00:02:684 INFO    - FpgaRebooter::setXillybusIRQPriority - Xillybus IRQ priority was set to: 79 on pid: 1776
+2025-05-06_07:53:12:97442 00:00:05:570 INFO    - Safety Version 5:6
+2025-05-06_07:53:13:78867 00:00:06:387 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_DISCONNECTED
+2025-05-06_07:53:13:79680 00:00:06:397 INFO    - SCB::logSafetyModeChange: SafetyA safety mode limit state changed from UNKNOWN to NORMAL
+2025-05-06_07:53:13:79696 00:00:06:397 INFO    - SCB::logSafetyModeChange: SafetyB safety mode limit state changed from UNKNOWN to NORMAL
+2025-05-06_07:53:13:86147 00:00:06:457 INFO    - SCB::logScbStateChange: SafetyB main state changed from UNKNOWN to INITIALIZING
+2025-05-06_07:53:14:36142 00:00:06:959 INFO    - SCB::logScbStateChange: SafetyA main state changed from UNKNOWN to INITIALIZING
+2025-05-06_07:53:14:36148 00:00:06:959 INFO    - SCB::update: scb mode changed from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_07:53:14:64406 00:00:07:244 INFO    - TP::update: TP state changed from SELF_DIAGNOSTIC to BOOTING
+2025-05-06_07:53:14:64411 00:00:07:244 INFO    - IMMI::update: DeviceMode A state changed from UNDEFINED to NOT_RESPONDING
+2025-05-06_07:53:14:64413 00:00:07:244 INFO    - IMMI::update: DeviceMode B state changed from UNDEFINED to NOT_RESPONDING
+2025-05-06_07:53:14:64415 00:00:07:244 INFO    - robot_mode changed from ROBOT_MODE_DISCONNECTED to ROBOT_MODE_CONFIRM_SAFETY
+2025-05-06_07:53:14:64417 00:00:07:244 INFO    - SCBMode changed from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_07:53:14:64419 00:00:07:244 INFO    - LLInterface::restart: Reboot of Embedded Modules succeeded.
+2025-05-06_07:53:36:43754 00:00:29:035 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_07:53:36:43760 00:00:29:035 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56568
+URControl::handler caught SIGTERM
+2025-05-06_07:53:43:74943 00:00:36:347 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_DISCONNECTED to ROBOT_MODE_BOOTING
+2025-05-06_07:53:43:74948 00:00:36:347 INFO    - New safety mode: SAFETY_MODE_NORMAL
+2025-05-06_07:53:43:74950 00:00:36:347 INFO    - Runtime state change: from PROGRAM_STATE_UNDEFINED to PROGRAM_STATE_STOPPED
+2025-05-06_07:53:44:04804 00:00:36:349 INFO    - Socket "CLIENTTYPE_MATLAB_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:04809 00:00:36:349 INFO    - Socket "CLIENTTYPE_MATLAB_CLIENT ClientSocket" object was destroyed.
+2025-05-06_07:53:44:11258 00:00:36:349 INFO    - Socket "SocketBridgeServer"  disconnected by Socket::close()
+2025-05-06_07:53:44:11263 00:00:36:349 INFO    - Socket "SocketBridgeServer" object was destroyed.
+2025-05-06_07:53:44:49986 00:00:36:349 INFO    - Succeeded writing joint angles: [3.938608, 4.702715, 4.706066, 4.698816, 1.577284, 0.000507]
+2025-05-06_07:53:44:51607 00:00:36:349 INFO    - Socket "ModbusServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51613 00:00:36:349 INFO    - Socket "ModbusServerSocket" object was destroyed.
+2025-05-06_07:53:44:51615 00:00:36:349 INFO    - Socket "PrimaryServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51617 00:00:36:349 INFO    - Socket "PrimaryServerSocket" object was destroyed.
+2025-05-06_07:53:44:51619 00:00:36:349 INFO    - Socket "SecondaryServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51621 00:00:36:349 INFO    - Socket "SecondaryServerSocket" object was destroyed.
+2025-05-06_07:53:44:51623 00:00:36:349 INFO    - Socket "InterpreterServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51625 00:00:36:349 INFO    - Socket "InterpreterServerSocket" object was destroyed.
+2025-05-06_07:53:44:51626 00:00:36:349 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56568 disconnected by Socket::close()
+2025-05-06_07:53:44:51628 00:00:36:349 INFO    - Socket "MATLABServerSocket" object was destroyed.
+2025-05-06_07:53:44:51630 00:00:36:349 INFO    - Socket "RTDEServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51632 00:00:36:349 INFO    - Socket "RTDEServerSocket" object was destroyed.
+2025-05-06_07:53:44:51634 00:00:36:349 INFO    - Socket "ReadOnlyPrimaryServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51636 00:00:36:349 INFO    - Socket "ReadOnlyPrimaryServerSocket" object was destroyed.
+2025-05-06_07:53:44:51638 00:00:36:349 INFO    - Socket "ReadOnlySecondaryServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51689 00:00:36:349 INFO    - Socket "ReadOnlySecondaryServerSocket" object was destroyed.
+2025-05-06_07:53:44:51692 00:00:36:349 INFO    - Socket "ReadOnlyMATLABServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51694 00:00:36:349 INFO    - Socket "ReadOnlyMATLABServerSocket" object was destroyed.
+2025-05-06_07:53:44:51696 00:00:36:349 INFO    - WatchdogService::stopAllWatchdog()
+2025-05-06_07:53:44:51698 00:00:36:353 INFO    - Socket "RobotControlDataLoggerServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:51700 00:00:36:353 INFO    - Socket "RobotControlDataLoggerServerSocket" object was destroyed.
+2025-05-06_07:53:44:53311 00:00:36:365 INFO    - Socket "DataScopeServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:53317 00:00:36:365 INFO    - Socket "DataScopeServerSocket" object was destroyed.
+2025-05-06_07:53:44:57349 00:00:36:403 INFO    - Socket "FilesysServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:57355 00:00:36:403 INFO    - Socket "FilesysServerSocket" object was destroyed.
+2025-05-06_07:53:44:63005 00:00:36:467 INFO    - Socket "BootloaderServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:63011 00:00:36:467 INFO    - Socket "BootloaderServerSocket" object was destroyed.
+2025-05-06_07:53:44:73504 00:00:36:565 INFO    - Killing profisafebridge
+2025-05-06_07:53:44:73510 00:00:36:565 INFO    - Socket "ProfiSafeBridgeServerSocket"  disconnected by Socket::close()
+2025-05-06_07:53:44:73513 00:00:36:565 INFO    - Socket "ProfiSafeBridgeServerSocket" object was destroyed.
+2025-05-06_07:53:44:83222 00:00:36:662 INFO    - Killing profisafebridge
+URControl::shutdown
+2025-05-06_07:53:45:19946 00:00:00:000 INFO    - Marketing Ver = 5.16.0
+2025-05-06_07:53:45:19960 00:00:00:000 INFO    - parseOpts(): The following ports will be used: Primary - 30001, Secondary - 30002, Interpreter - 30020, Matlab - 30003, RTDE - 30004, Primary_read_only - 30011, Secondary_read_only - 30012, Matlab_read_only - 30013.
+URControl 68.0.40 [] G5 (10-04-2024, 15:32:13)
+2025-05-06_07:53:45:28053 00:00:00:000 INFO    - ConfigurationManager::loadConfiguration: Loading urcontrol.conf from: /root/.urcontrol/urcontrol.conf.
+2025-05-06_07:53:45:28058 00:00:00:000 WARNING - Configuration property "resistance" not found in section "Energy Eater"; setting to default value: "0"
+2025-05-06_07:53:45:28060 00:00:00:000 WARNING - Configuration property "avg_time" not found in section "Energy Eater"; setting to default value: "5"
+2025-05-06_07:53:45:28062 00:00:00:000 WARNING - Configuration property "ramup_time" not found in section "Fan Control"; setting to default value: "1"
+2025-05-06_07:53:45:28064 00:00:00:000 WARNING - Configuration property "ramdown_time" not found in section "Fan Control"; setting to default value: "50"
+2025-05-06_07:53:45:35349 00:00:00:000 INFO    - Applying default console logging configuration for Actin
+2025-05-06_07:53:45:35354 00:00:00:000 INFO    - [ACTIN][1917][default] Actin logging configured
+2025-05-06_07:53:45:53200 00:00:00:000 INFO    - [ACTIN][1917][default] EcShmSyncChannel::EcShmSyncChannel created segment external_axes_bus_sync
+2025-05-06_07:53:45:57244 00:00:00:000 INFO    - Loading calibration from '/root/.urcontrol/calibration.conf'
+2025-05-06_07:53:45:57250 00:00:00:000 WARNING - Configuration property "file_save_count" not found in section "mounting"; setting to default value: "0"
+2025-05-06_07:53:45:88794 00:00:00:000 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_07:53:45:88800 00:00:00:000 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56584
+2025-05-06_07:53:46:35607 00:00:00:000 INFO    - Socket "SocketBridgeServer"  disconnected by Socket::close()
+2025-05-06_07:53:46:35706 00:00:00:000 INFO    - Socket "SocketBridgeServer" object was destroyed.
+2025-05-06_07:53:46:35711 00:00:00:000 INFO    - Safety Version 5:6
+2025-05-06_07:53:46:35713 00:00:00:000 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_07:53:46:35715 00:00:00:000 INFO    - URbus was found
+2025-05-06_07:53:46:38174 00:00:00:001 WARNING - Runtime is blocked, but runtime data queue is empty, trying to recover
+2025-05-06_07:53:46:38179 00:00:00:002 INFO    - LLInterface::open: Interfaces opened
+2025-05-06_07:53:46:38181 00:00:00:002 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_07:53:46:38183 00:00:00:002 INFO    - LLInterface::open: Already open
+2025-05-06_07:53:46:38185 00:00:00:002 INFO    - SCB::resetSCBMode: Resetting SCB mode from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_07:53:46:38187 00:00:00:002 INFO    - LLInterface::restart: Rebooting Embedded Modules...
+2025-05-06_07:53:46:60813 00:00:00:226 INFO    - robot_mode changed from ROBOT_MODE_DISCONNECTED to ROBOT_MODE_BOOTING
+2025-05-06_07:53:49:32787 00:00:02:945 INFO    - Safety Version 5:6
+2025-05-06_07:53:50:15063 00:00:03:772 INFO    - SCB::logSafetyModeChange: SafetyA safety mode limit state changed from UNKNOWN to NORMAL
+2025-05-06_07:53:50:15068 00:00:03:772 INFO    - SCB::logSafetyModeChange: SafetyB safety mode limit state changed from UNKNOWN to NORMAL
+2025-05-06_07:53:50:15070 00:00:03:772 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_DISCONNECTED
+2025-05-06_07:53:50:21528 00:00:03:832 INFO    - SCB::logScbStateChange: SafetyB main state changed from UNKNOWN to INITIALIZING
+2025-05-06_07:53:50:71557 00:00:04:334 INFO    - SCB::logScbStateChange: SafetyA main state changed from UNKNOWN to INITIALIZING
+2025-05-06_07:53:50:71563 00:00:04:334 INFO    - SCB::update: scb mode changed from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_07:53:50:99828 00:00:04:620 INFO    - TP::update: TP state changed from SELF_DIAGNOSTIC to BOOTING
+2025-05-06_07:53:50:99833 00:00:04:620 INFO    - IMMI::update: DeviceMode A state changed from UNDEFINED to NOT_RESPONDING
+2025-05-06_07:53:50:99835 00:00:04:620 INFO    - IMMI::update: DeviceMode B state changed from UNDEFINED to NOT_RESPONDING
+2025-05-06_07:53:50:99837 00:00:04:620 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_CONFIRM_SAFETY
+2025-05-06_07:53:50:99843 00:00:04:620 INFO    - SCBMode changed from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_07:53:50:99868 00:00:04:620 INFO    - LLInterface::restart: Reboot of Embedded Modules succeeded.
+2025-05-06_07:53:56:19628 00:00:09:820 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_07:53:56:19633 00:00:09:820 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56588
+2025-05-06_07:54:03:79373 00:00:17:412 WARNING - TCPReceiver closed (CLIENTTYPE_MATLAB_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_07:54:03:80992 00:00:17:431 INFO    - Socket "CLIENTTYPE_MATLAB_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_07:54:03:80998 00:00:17:431 INFO    - Socket "CLIENTTYPE_MATLAB_CLIENT ClientSocket" object was destroyed.
+2025-05-06_07:54:05:71227 00:00:19:333 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_07:54:05:71233 00:00:19:333 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56590
+2025-05-06_07:54:06:11514 00:00:19:737 INFO    - TCPServer: Accepted connection on CLIENTTYPE_PRIMARY_CLIENT interface
+2025-05-06_07:54:06:11520 00:00:19:738 INFO    - Socket "PrimaryServerSocket"  server with address 127.0.0.1:30001 connected to 127.0.0.1:55668
+2025-05-06_07:54:06:31672 00:00:19:940 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_07:54:06:31678 00:00:19:940 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56592
+2025-05-06_07:54:06:32487 00:00:19:942 INFO    - TCPServer: Accepted connection on CLIENTTYPE_RTDE_CLIENT interface
+2025-05-06_07:54:06:32495 00:00:19:942 INFO    - Socket "RTDEServerSocket"  server with address 127.0.0.1:30004 connected to 127.0.0.1:40542
+2025-05-06_07:54:06:32497 00:00:19:942 INFO    - TCPServer: RTDE client connected
+2025-05-06_07:54:06:32499 00:00:19:945 INFO    - RTDE: Client connected with protocol version: 2
+2025-05-06_07:54:06:32501 00:00:19:948 INFO    - RTDE: Paused sending RT data
+2025-05-06_07:54:06:34116 00:00:19:960 INFO    - RTDE: Started sending RT data
+2025-05-06_07:54:06:47824 00:00:20:097 INFO    - CONFIRM_USER_SAFETY_PARAMETERS
+2025-05-06_07:54:06:47829 00:00:20:100 INFO    - SCB::logScbStateChange: SafetyA main state changed from INITIALIZING to IDLE
+2025-05-06_07:54:06:47831 00:00:20:100 INFO    - SCB::logScbStateChange: SafetyB main state changed from INITIALIZING to IDLE
+2025-05-06_07:54:06:47833 00:00:20:101 WARNING - Runtime is blocked, but runtime data queue is empty, trying to recover
+2025-05-06_07:54:06:48642 00:00:20:106 INFO    - TP::update: TP state changed from BOOTING to IDLE
+2025-05-06_07:54:06:51882 00:00:20:142 INFO    - TP::update: TP state changed from IDLE to RUNNING
+2025-05-06_07:54:06:98654 00:00:20:610 INFO    - SCB::logScbStateChange: SafetyA main state changed from IDLE to RUNNING
+2025-05-06_07:54:06:99466 00:00:20:619 INFO    - SCB::logScbStateChange: SafetyB main state changed from IDLE to RUNNING
+2025-05-06_07:54:06:99470 00:00:20:619 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_07:54:06:99473 00:00:20:619 INFO    - robot_mode changed from ROBOT_MODE_CONFIRM_SAFETY to ROBOT_MODE_POWER_OFF
+2025-05-06_07:54:06:99475 00:00:20:619 INFO    - SCBMode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_07:54:07:00282 00:00:20:622 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_DISCONNECTED to ROBOT_MODE_POWER_OFF
+2025-05-06_07:54:07:00288 00:00:20:622 INFO    - New safety mode: SAFETY_MODE_NORMAL
+2025-05-06_07:54:07:00291 00:00:20:622 INFO    - Runtime state change: from PROGRAM_STATE_UNDEFINED to PROGRAM_STATE_STOPPED
+2025-05-06_07:54:07:44674 00:00:21:072 INFO    - tool_mode changed from UNDEFINED to NOT_RESPONDING
+2025-05-06_07:54:12:34753 00:00:25:966 WARNING - Failed to send state to client 127.0.0.1. Sending discontinued.
+2025-05-06_07:54:38:05312 00:00:51:673 INFO    - RESTART_SCB
+2025-05-06_07:54:38:05318 00:00:51:674 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_07:54:38:05320 00:00:51:674 INFO    - LLInterface::open: Already open
+2025-05-06_07:54:38:05322 00:00:51:674 INFO    - SCB::resetSCBMode: Resetting SCB mode from SCB_MODE_RUNNING to SCB_MODE_INITIALIZING
+2025-05-06_07:54:38:05325 00:00:51:674 INFO    - LLInterface::restart: Rebooting Embedded Modules...
+2025-05-06_07:54:38:27908 00:00:51:898 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_BOOTING
+2025-05-06_07:54:39:76228 00:00:53:382 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_07:54:39:76233 00:00:53:382 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56598
+2025-05-06_07:54:40:98842 00:00:54:607 INFO    - Safety Version 5:8
+2025-05-06_07:54:41:80237 00:00:55:426 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_CONFIRM_SAFETY
+2025-05-06_07:54:41:81049 00:00:55:436 INFO    - SCB::logScbStateChange: SafetyA main state changed from RUNNING to UNKNOWN
+2025-05-06_07:54:41:81052 00:00:55:436 INFO    - SCB::logScbStateChange: SafetyB main state changed from RUNNING to UNKNOWN
+2025-05-06_07:54:41:81054 00:00:55:436 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_DISCONNECTED
+2025-05-06_07:54:41:87507 00:00:55:496 INFO    - SCB::logScbStateChange: SafetyB main state changed from UNKNOWN to INITIALIZING
+2025-05-06_07:54:42:37491 00:00:55:998 INFO    - SCB::logScbStateChange: SafetyA main state changed from UNKNOWN to INITIALIZING
+2025-05-06_07:54:42:37498 00:00:55:998 INFO    - SCB::update: scb mode changed from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_07:54:42:65707 00:00:56:280 WARNING - Runtime is blocked, but runtime data queue is empty, trying to recover
+2025-05-06_07:54:42:65712 00:00:56:282 INFO    - TP::update: TP state changed from RUNNING to BOOTING
+2025-05-06_07:54:42:65714 00:00:56:282 INFO    - SCBMode changed from SCB_MODE_RUNNING to SCB_MODE_INITIALIZING
+2025-05-06_07:54:42:65716 00:00:56:282 INFO    - LLInterface::restart: Reboot of Embedded Modules succeeded.
+2025-05-06_07:54:42:77822 00:00:56:402 INFO    - CONFIRM_USER_SAFETY_PARAMETERS
+2025-05-06_07:54:42:78634 00:00:56:404 INFO    - SCB::logScbStateChange: SafetyA main state changed from INITIALIZING to IDLE
+2025-05-06_07:54:42:78641 00:00:56:406 INFO    - SCB::logScbStateChange: SafetyB main state changed from INITIALIZING to IDLE
+2025-05-06_07:54:42:78643 00:00:56:410 INFO    - TP::update: TP state changed from BOOTING to IDLE
+2025-05-06_07:54:42:81870 00:00:56:440 INFO    - TP::update: TP state changed from IDLE to RUNNING
+2025-05-06_07:54:43:29436 00:00:56:914 INFO    - SCB::logScbStateChange: SafetyA main state changed from IDLE to RUNNING
+2025-05-06_07:54:43:29443 00:00:56:920 INFO    - SCB::logScbStateChange: SafetyB main state changed from IDLE to RUNNING
+2025-05-06_07:54:43:29445 00:00:56:920 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_07:54:43:29447 00:00:56:920 INFO    - robot_mode changed from ROBOT_MODE_CONFIRM_SAFETY to ROBOT_MODE_POWER_OFF
+2025-05-06_07:54:43:29449 00:00:56:920 INFO    - SCBMode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_07:54:52:26856 00:01:05:889 WARNING - Failed to send state to client 127.0.0.1. Sending discontinued.
+2025-05-06_07:54:59:17068 00:01:12:790 INFO    - RESTART_SCB
+2025-05-06_07:54:59:17074 00:01:12:791 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_07:54:59:17076 00:01:12:791 INFO    - LLInterface::open: Already open
+2025-05-06_07:54:59:17078 00:01:12:791 INFO    - SCB::resetSCBMode: Resetting SCB mode from SCB_MODE_RUNNING to SCB_MODE_INITIALIZING
+2025-05-06_07:54:59:17080 00:01:12:791 INFO    - LLInterface::restart: Rebooting Embedded Modules...
+2025-05-06_07:54:59:38972 00:01:13:015 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_BOOTING
+2025-05-06_07:55:00:48604 00:01:14:107 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_07:55:00:48610 00:01:14:107 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56600
+2025-05-06_07:55:02:10593 00:01:15:730 INFO    - Safety Version 5:8
+2025-05-06_07:55:02:91994 00:01:16:544 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_CONFIRM_SAFETY
+2025-05-06_07:55:02:92805 00:01:16:554 INFO    - SCB::logScbStateChange: SafetyA main state changed from RUNNING to UNKNOWN
+2025-05-06_07:55:02:92807 00:01:16:554 INFO    - SCB::logScbStateChange: SafetyB main state changed from RUNNING to UNKNOWN
+2025-05-06_07:55:02:92810 00:01:16:554 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_DISCONNECTED
+2025-05-06_07:55:02:99258 00:01:16:614 INFO    - SCB::logScbStateChange: SafetyB main state changed from UNKNOWN to INITIALIZING
+2025-05-06_07:55:03:50036 00:01:17:126 INFO    - SCB::logScbStateChange: SafetyA main state changed from UNKNOWN to INITIALIZING
+2025-05-06_07:55:03:50043 00:01:17:126 INFO    - SCB::update: scb mode changed from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_07:55:03:78252 00:01:17:409 WARNING - Runtime is blocked, but runtime data queue is empty, trying to recover
+2025-05-06_07:55:03:79063 00:01:17:411 INFO    - TP::update: TP state changed from RUNNING to BOOTING
+2025-05-06_07:55:03:79065 00:01:17:411 INFO    - SCBMode changed from SCB_MODE_RUNNING to SCB_MODE_INITIALIZING
+2025-05-06_07:55:03:79068 00:01:17:411 INFO    - LLInterface::restart: Reboot of Embedded Modules succeeded.
+2025-05-06_07:55:03:95994 00:01:17:578 INFO    - CONFIRM_USER_SAFETY_PARAMETERS
+2025-05-06_07:55:03:95999 00:01:17:581 INFO    - SCB::logScbStateChange: SafetyA main state changed from INITIALIZING to IDLE
+2025-05-06_07:55:03:96002 00:01:17:581 INFO    - SCB::logScbStateChange: SafetyB main state changed from INITIALIZING to IDLE
+2025-05-06_07:55:03:96810 00:01:17:587 INFO    - TP::update: TP state changed from BOOTING to IDLE
+2025-05-06_07:55:04:00040 00:01:17:623 INFO    - TP::update: TP state changed from IDLE to RUNNING
+2025-05-06_07:55:04:46773 00:01:18:094 INFO    - SCB::logScbStateChange: SafetyA main state changed from IDLE to RUNNING
+2025-05-06_07:55:04:47584 00:01:18:100 INFO    - SCB::logScbStateChange: SafetyB main state changed from IDLE to RUNNING
+2025-05-06_07:55:04:47588 00:01:18:100 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_07:55:04:47590 00:01:18:100 INFO    - robot_mode changed from ROBOT_MODE_CONFIRM_SAFETY to ROBOT_MODE_POWER_OFF
+2025-05-06_07:55:04:47592 00:01:18:100 INFO    - SCBMode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_07:55:09:75646 00:01:23:383 WARNING - Failed to send state to client 127.0.0.1. Sending discontinued.
+2025-05-06_07:55:11:95723 00:01:25:582 WARNING - TCPReceiver closed (CLIENTTYPE_MATLAB_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_07:55:12:10237 00:01:25:722 INFO    - Socket "CLIENTTYPE_MATLAB_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_07:55:12:10245 00:01:25:722 INFO    - Socket "CLIENTTYPE_MATLAB_CLIENT ClientSocket" object was destroyed.
+2025-05-06_07:58:09:13006 00:04:22:753 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_IDLE
+2025-05-06_07:58:09:63814 00:04:23:267 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_OFF to ROBOT_STATE_BOOTING
+2025-05-06_07:58:09:65431 00:04:23:283 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_POWER_ON
+2025-05-06_07:58:09:84827 00:04:23:475 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_OFF to ROBOT_STATE_BOOTING
+2025-05-06_07:58:11:85612 00:04:25:485 INFO    - robot_mode changed from ROBOT_MODE_POWER_ON to ROBOT_MODE_BOOTING
+2025-05-06_07:58:14:66114 00:04:28:289 INFO    - tool_mode changed from NOT_RESPONDING to BOOTING
+2025-05-06_07:58:14:66927 00:04:28:293 INFO    - tool_mode changed from BOOTING to IDLE
+2025-05-06_07:58:17:02275 00:04:30:651 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_POWER_ON
+2025-05-06_07:58:17:07141 00:04:30:693 WARNING - JointFileHandler::parseData: file ForceTorqueCompensation not available on joint 5
+2025-05-06_07:58:17:89399 00:04:31:523 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_BOOTING to ROBOT_STATE_IDLE
+2025-05-06_07:58:17:89404 00:04:31:523 INFO    - SCB::logSafetyStateChange: SafetyA safety state changed from ROBOT_OFF to RUNNING
+2025-05-06_07:58:17:89406 00:04:31:523 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_BOOTING to ROBOT_STATE_IDLE
+2025-05-06_07:58:17:89408 00:04:31:523 INFO    - SCB::logSafetyStateChange: SafetyB safety state changed from ROBOT_OFF to RUNNING
+2025-05-06_07:58:17:89410 00:04:31:523 INFO    - robot_mode changed from ROBOT_MODE_POWER_ON to ROBOT_MODE_IDLE
+2025-05-06_07:58:17:89412 00:04:31:524 INFO    - tool_mode changed from IDLE to RUNNING
+2025-05-06_07:58:17:90222 00:04:31:525 INFO    - Joint ID: 1 - Received Serial Number: 20185501065
+2025-05-06_07:58:17:90237 00:04:31:526 INFO    - Joint ID: 2 - Received Serial Number: 20185501065
+2025-05-06_07:58:17:90256 00:04:31:526 INFO    - Joint ID: 3 - Received Serial Number: 20185501065
+2025-05-06_07:58:17:90258 00:04:31:526 INFO    - Joint ID: 4 - Received Serial Number: 20185501065
+2025-05-06_07:58:17:90260 00:04:31:526 INFO    - Joint ID: 6 - Received Serial Number: 20185501065
+2025-05-06_07:58:17:90262 00:04:31:526 INFO    - Joint ID: 5 - Received Serial Number: 20185501065
+2025-05-06_07:58:21:48305 00:04:35:109 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_IDLE to ROBOT_MODE_RUNNING
+2025-05-06_07:58:21:49926 00:04:35:123 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_BRAKERELEASE
+2025-05-06_07:58:21:49931 00:04:35:123 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_BRAKERELEASE
+2025-05-06_07:58:22:34537 00:04:35:969 WARNING - hmc_is_robot_mounting_correct::execute: measurement angle (49.955255) > threshold (30)
+2025-05-06_07:58:28:15823 00:04:41:787 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_BRAKERELEASE to ROBOT_STATE_RUNNING
+2025-05-06_07:58:28:15828 00:04:41:787 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_BRAKERELEASE to ROBOT_STATE_RUNNING
+2025-05-06_07:58:28:15831 00:04:41:787 INFO    - robot_mode changed from ROBOT_MODE_IDLE to ROBOT_MODE_RUNNING
+2025-05-06_07:58:33:22107 00:04:46:850 INFO    - Runtime state change: from PROGRAM_STATE_STOPPED to PROGRAM_STATE_RUNNING
+2025-05-06_07:58:33:56765 00:04:47:198 INFO    - Runtime state change: from PROGRAM_STATE_RUNNING to PROGRAM_STATE_STOPPING
+2025-05-06_07:58:33:57577 00:04:47:200 INFO    - Runtime state change: from PROGRAM_STATE_STOPPING to PROGRAM_STATE_STOPPED
+2025-05-06_07:58:33:60002 00:04:47:226 INFO    - Runtime state change: from PROGRAM_STATE_STOPPED to PROGRAM_STATE_RUNNING
+2025-05-06_07:58:37:45447 00:04:51:078 INFO    - Runtime state change: from PROGRAM_STATE_RUNNING to PROGRAM_STATE_STOPPING
+2025-05-06_07:58:37:45452 00:04:51:080 INFO    - Runtime state change: from PROGRAM_STATE_STOPPING to PROGRAM_STATE_STOPPED
+2025-05-06_08:09:03:99255 00:15:17:636 INFO    - TCPServer: Accepted connection on CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY interface
+2025-05-06_08:09:03:99260 00:15:17:636 INFO    - Socket "ReadOnlySecondaryServerSocket"  server with address 192.168.5.1:30012 connected to 192.168.1.15:53280
+2025-05-06_08:09:05:09690 00:15:18:738 INFO    - TCPServer: Accepted connection on CLIENTTYPE_INTERPRETER_CLIENT interface
+2025-05-06_08:09:05:09695 00:15:18:738 INFO    - Socket "InterpreterServerSocket"  server with address 192.168.5.1:30020 connected to 192.168.1.15:54834
+2025-05-06_08:09:05:20176 00:15:18:840 INFO    - TCPServer: Accepted connection on CLIENTTYPE_RTDE_CLIENT interface
+2025-05-06_08:09:05:20182 00:15:18:841 INFO    - Socket "RTDEServerSocket"  server with address 192.168.5.1:30004 connected to 192.168.1.15:40838
+2025-05-06_08:09:05:20184 00:15:18:841 INFO    - TCPServer: RTDE client connected
+2025-05-06_08:09:05:20186 00:15:18:843 INFO    - RTDE: Client connected with protocol version: 2
+2025-05-06_08:09:05:20996 00:15:18:847 INFO    - RTDE: Started sending RT data
+2025-05-06_08:09:21:04540 00:15:34:687 WARNING - Failed to send state to client 192.168.1.15. Sending discontinued.
+2025-05-06_08:10:48:65912 00:17:02:304 WARNING - TCPReceiver closed (CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:10:48:65917 00:17:02:304 WARNING - TCPReceiver closed (CLIENTTYPE_INTERPRETER_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:10:48:65919 00:17:02:304 WARNING - RTDETCPReceiver closed (exception caught): ServerSocket: Socket::recv() failed.
+2025-05-06_08:10:48:66728 00:17:02:308 ERROR   - RTDETCPSender send: ServerSocket: Socket::sendall() failed.
+2025-05-06_08:10:48:81241 00:17:02:457 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:10:48:81245 00:17:02:457 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket" object was destroyed.
+2025-05-06_08:10:48:81248 00:17:02:457 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:10:48:81250 00:17:02:457 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:10:48:81251 00:17:02:457 INFO    - TCPServer: RTDE client disconnected
+2025-05-06_08:10:48:81253 00:17:02:457 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:10:48:81255 00:17:02:457 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:11:38:26262 00:17:51:910 INFO    - TCPServer: Accepted connection on CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY interface
+2025-05-06_08:11:38:26284 00:17:51:910 INFO    - Socket "ReadOnlySecondaryServerSocket"  server with address 192.168.5.1:30012 connected to 192.168.1.15:40544
+2025-05-06_08:11:39:36723 00:17:53:013 INFO    - TCPServer: Accepted connection on CLIENTTYPE_INTERPRETER_CLIENT interface
+2025-05-06_08:11:39:36728 00:17:53:013 INFO    - Socket "InterpreterServerSocket"  server with address 192.168.5.1:30020 connected to 192.168.1.15:57298
+2025-05-06_08:11:39:47216 00:17:53:114 INFO    - TCPServer: Accepted connection on CLIENTTYPE_RTDE_CLIENT interface
+2025-05-06_08:11:39:47222 00:17:53:114 INFO    - Socket "RTDEServerSocket"  server with address 192.168.5.1:30004 connected to 192.168.1.15:59432
+2025-05-06_08:11:39:47224 00:17:53:114 INFO    - TCPServer: RTDE client connected
+2025-05-06_08:11:39:47244 00:17:53:115 INFO    - RTDE: Client connected with protocol version: 2
+2025-05-06_08:11:39:47246 00:17:53:118 INFO    - RTDE: Started sending RT data
+2025-05-06_08:11:55:30202 00:18:08:948 WARNING - Failed to send state to client 192.168.1.15. Sending discontinued.
+2025-05-06_08:14:21:46779 00:20:35:116 WARNING - RTDETCPReceiver closed (exception caught): ServerSocket: Socket::recv() failed.
+2025-05-06_08:14:21:46788 00:20:35:116 ERROR   - RTDETCPSender send: ServerSocket: Socket::sendall() failed.
+2025-05-06_08:14:21:46790 00:20:35:116 WARNING - TCPReceiver closed (CLIENTTYPE_INTERPRETER_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:14:21:46792 00:20:35:116 WARNING - TCPReceiver closed (CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:14:21:54853 00:20:35:197 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:14:21:54857 00:20:35:197 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket" object was destroyed.
+2025-05-06_08:14:21:54860 00:20:35:197 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:14:21:54861 00:20:35:197 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:14:21:54863 00:20:35:197 INFO    - TCPServer: RTDE client disconnected
+2025-05-06_08:14:21:54865 00:20:35:197 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:14:21:54867 00:20:35:197 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:14:45:37253 00:20:59:023 INFO    - TCPServer: Accepted connection on CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY interface
+2025-05-06_08:14:45:37257 00:20:59:023 INFO    - Socket "ReadOnlySecondaryServerSocket"  server with address 192.168.5.1:30012 connected to 192.168.1.15:58246
+2025-05-06_08:14:46:47670 00:21:00:126 INFO    - TCPServer: Accepted connection on CLIENTTYPE_INTERPRETER_CLIENT interface
+2025-05-06_08:14:46:47675 00:21:00:126 INFO    - Socket "InterpreterServerSocket"  server with address 192.168.5.1:30020 connected to 192.168.1.15:46078
+2025-05-06_08:14:46:58159 00:21:00:227 INFO    - TCPServer: Accepted connection on CLIENTTYPE_RTDE_CLIENT interface
+2025-05-06_08:14:46:58163 00:21:00:227 INFO    - Socket "RTDEServerSocket"  server with address 192.168.5.1:30004 connected to 192.168.1.15:37070
+2025-05-06_08:14:46:58181 00:21:00:227 INFO    - TCPServer: RTDE client connected
+2025-05-06_08:14:46:58183 00:21:00:229 INFO    - RTDE: Client connected with protocol version: 2
+2025-05-06_08:14:46:58185 00:21:00:231 INFO    - RTDE: Started sending RT data
+2025-05-06_08:15:02:49453 00:21:16:140 WARNING - Failed to send state to client 192.168.1.15. Sending discontinued.
+2025-05-06_08:20:22:85104 00:26:36:512 WARNING - TCPReceiver closed (CLIENTTYPE_INTERPRETER_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:20:22:85109 00:26:36:512 WARNING - TCPReceiver closed (CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:20:22:85918 00:26:36:512 WARNING - RTDETCPReceiver closed (exception caught): ServerSocket: Socket::recv() failed.
+2025-05-06_08:20:22:85923 00:26:36:518 ERROR   - RTDETCPSender send: ServerSocket: Socket::sendall() failed.
+2025-05-06_08:20:23:24624 00:26:36:900 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:20:23:24629 00:26:36:900 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket" object was destroyed.
+2025-05-06_08:20:23:24631 00:26:36:900 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:20:23:24633 00:26:36:900 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:20:23:24636 00:26:36:900 INFO    - TCPServer: RTDE client disconnected
+2025-05-06_08:20:23:24638 00:26:36:900 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:20:23:24665 00:26:36:900 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:20:27:85035 00:26:41:505 INFO    - TCPServer: Accepted connection on CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY interface
+2025-05-06_08:20:27:85053 00:26:41:505 INFO    - Socket "ReadOnlySecondaryServerSocket"  server with address 192.168.5.1:30012 connected to 192.168.1.15:53422
+2025-05-06_08:20:28:94741 00:26:42:608 INFO    - TCPServer: Accepted connection on CLIENTTYPE_INTERPRETER_CLIENT interface
+2025-05-06_08:20:28:94746 00:26:42:608 INFO    - Socket "InterpreterServerSocket"  server with address 192.168.5.1:30020 connected to 192.168.1.15:56042
+2025-05-06_08:20:41:06322 00:26:54:723 INFO    - TCPServer: Accepted connection on CLIENTTYPE_RTDE_CLIENT interface
+2025-05-06_08:20:41:06341 00:26:54:723 INFO    - Socket "RTDEServerSocket"  server with address 192.168.5.1:30004 connected to 192.168.1.15:41592
+2025-05-06_08:20:41:06344 00:26:54:723 INFO    - TCPServer: RTDE client connected
+2025-05-06_08:20:41:06346 00:26:54:724 INFO    - RTDE: Client connected with protocol version: 2
+2025-05-06_08:20:41:07155 00:26:54:728 INFO    - RTDE: Started sending RT data
+2025-05-06_08:20:44:87565 00:26:58:533 WARNING - Failed to send state to client 192.168.1.15. Sending discontinued.
+2025-05-06_08:21:32:49834 00:27:46:155 WARNING - TCPReceiver closed (CLIENTTYPE_INTERPRETER_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:21:32:49853 00:27:46:155 WARNING - RTDETCPReceiver closed (exception caught): ServerSocket: Socket::recv() failed.
+2025-05-06_08:21:32:49856 00:27:46:156 WARNING - TCPReceiver closed (CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:21:32:49858 00:27:46:158 ERROR   - RTDETCPSender send: ServerSocket: Socket::sendall() failed.
+2025-05-06_08:21:32:61947 00:27:46:280 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:21:32:61952 00:27:46:280 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket" object was destroyed.
+2025-05-06_08:21:32:61954 00:27:46:280 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:21:32:61956 00:27:46:280 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:21:32:61958 00:27:46:280 INFO    - TCPServer: RTDE client disconnected
+2025-05-06_08:21:32:61960 00:27:46:280 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:21:32:61962 00:27:46:280 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:21:35:92495 00:27:49:584 INFO    - TCPServer: Accepted connection on CLIENTTYPE_SECONDARY_CLIENT interface
+2025-05-06_08:21:35:92500 00:27:49:584 INFO    - Socket "SecondaryServerSocket"  server with address 192.168.5.1:30002 connected to 192.168.1.15:58820
+2025-05-06_08:21:37:53055 00:27:51:187 INFO    - TCPServer: Accepted connection on CLIENTTYPE_INTERPRETER_CLIENT interface
+2025-05-06_08:21:37:53060 00:27:51:187 INFO    - Socket "InterpreterServerSocket"  server with address 192.168.5.1:30020 connected to 192.168.1.15:55466
+2025-05-06_08:21:37:64379 00:27:51:306 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_RUNNING to ROBOT_MODE_POWER_OFF
+2025-05-06_08:21:37:65196 00:27:51:310 INFO    - tool_mode changed from RUNNING to JOINT_READY_FOR_POWER_OFF
+2025-05-06_08:21:37:65201 00:27:51:312 INFO    - robot_mode changed from ROBOT_MODE_RUNNING to ROBOT_MODE_POWER_ON
+2025-05-06_08:21:37:65204 00:27:51:313 WARNING - Runtime is too much behind (Runtime is not running, and not Blocked)
+2025-05-06_08:21:37:65206 00:27:51:314 WARNING - Runtime is blocked, but runtime data queue is empty, trying to recover
+2025-05-06_08:21:37:66015 00:27:51:316 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_RUNNING to ROBOT_STATE_PARKING
+2025-05-06_08:21:37:66020 00:27:51:316 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_RUNNING to ROBOT_STATE_PARKING
+2025-05-06_08:21:37:99161 00:27:51:652 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_PARKING to ROBOT_STATE_IDLE
+2025-05-06_08:21:37:99166 00:27:51:652 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_PARKING to ROBOT_STATE_IDLE
+2025-05-06_08:21:38:00786 00:27:51:668 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_READY_TO_POWER_OFF
+2025-05-06_08:21:38:00790 00:27:51:668 INFO    - SCB::logSafetyStateChange: SafetyA safety state changed from RUNNING to ROBOT_OFF
+2025-05-06_08:21:38:00793 00:27:51:668 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_READY_TO_POWER_OFF
+2025-05-06_08:21:38:00795 00:27:51:668 INFO    - SCB::logSafetyStateChange: SafetyB safety state changed from RUNNING to ROBOT_OFF
+2025-05-06_08:21:38:01604 00:27:51:676 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_READY_TO_POWER_OFF to ROBOT_STATE_SHUTDOWN
+2025-05-06_08:21:38:01609 00:27:51:676 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_READY_TO_POWER_OFF to ROBOT_STATE_SHUTDOWN
+2025-05-06_08:21:38:04840 00:27:51:708 INFO    - RESTART_SCB
+2025-05-06_08:21:38:04847 00:27:51:710 INFO    - robot_mode changed from ROBOT_MODE_POWER_ON to ROBOT_MODE_POWER_OFF
+2025-05-06_08:21:38:11316 00:27:51:770 INFO    - tool_mode changed from JOINT_READY_FOR_POWER_OFF to POWER_OFF
+2025-05-06_08:21:38:11322 00:27:51:770 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_08:21:38:11324 00:27:51:770 INFO    - LLInterface::open: Already open
+2025-05-06_08:21:38:11326 00:27:51:770 INFO    - SCB::resetSCBMode: Resetting SCB mode from SCB_MODE_RUNNING to SCB_MODE_INITIALIZING
+2025-05-06_08:21:38:11328 00:27:51:770 INFO    - LLInterface::restart: Rebooting Embedded Modules...
+2025-05-06_08:21:38:11330 00:27:51:773 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_08:21:38:33914 00:27:51:997 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_BOOTING
+2025-05-06_08:21:39:12892 00:27:52:790 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_08:21:39:12896 00:27:52:790 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56602
+2025-05-06_08:21:41:04753 00:27:54:710 INFO    - Safety Version 5:6
+2025-05-06_08:21:41:86164 00:27:55:522 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_POWER_OFF
+2025-05-06_08:21:41:86976 00:27:55:532 INFO    - SCB::logScbStateChange: SafetyA main state changed from RUNNING to UNKNOWN
+2025-05-06_08:21:41:86979 00:27:55:532 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_SHUTDOWN to ROBOT_STATE_OFF
+2025-05-06_08:21:41:86981 00:27:55:532 INFO    - SCB::logScbStateChange: SafetyB main state changed from RUNNING to UNKNOWN
+2025-05-06_08:21:41:86983 00:27:55:532 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_SHUTDOWN to ROBOT_STATE_OFF
+2025-05-06_08:21:41:86985 00:27:55:532 INFO    - SCB::update: scb mode changed from SCB_MODE_RUNNING to SCB_MODE_DISCONNECTED
+2025-05-06_08:21:41:93433 00:27:55:592 INFO    - SCB::logScbStateChange: SafetyB main state changed from UNKNOWN to INITIALIZING
+2025-05-06_08:21:42:43388 00:27:56:094 INFO    - SCB::logScbStateChange: SafetyA main state changed from UNKNOWN to INITIALIZING
+2025-05-06_08:21:42:43392 00:27:56:094 INFO    - SCB::update: scb mode changed from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_08:21:42:71593 00:27:56:376 INFO    - TP::update: TP state changed from RUNNING to BOOTING
+2025-05-06_08:21:42:71597 00:27:56:376 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_CONFIRM_SAFETY
+2025-05-06_08:21:42:71599 00:27:56:376 INFO    - SCBMode changed from SCB_MODE_RUNNING to SCB_MODE_INITIALIZING
+2025-05-06_08:21:42:71614 00:27:56:376 INFO    - LLInterface::restart: Reboot of Embedded Modules succeeded.
+2025-05-06_08:21:42:86121 00:27:56:519 INFO    - CONFIRM_USER_SAFETY_PARAMETERS
+2025-05-06_08:21:42:86126 00:27:56:522 INFO    - SCB::logScbStateChange: SafetyA main state changed from INITIALIZING to IDLE
+2025-05-06_08:21:42:86128 00:27:56:522 INFO    - SCB::logScbStateChange: SafetyB main state changed from INITIALIZING to IDLE
+2025-05-06_08:21:42:86934 00:27:56:528 INFO    - TP::update: TP state changed from BOOTING to IDLE
+2025-05-06_08:21:42:90158 00:27:56:564 INFO    - TP::update: TP state changed from IDLE to RUNNING
+2025-05-06_08:21:43:36936 00:27:57:032 INFO    - SCB::logScbStateChange: SafetyA main state changed from IDLE to RUNNING
+2025-05-06_08:21:43:37746 00:27:57:038 INFO    - SCB::logScbStateChange: SafetyB main state changed from IDLE to RUNNING
+2025-05-06_08:21:43:37749 00:27:57:038 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_08:21:43:37751 00:27:57:038 INFO    - robot_mode changed from ROBOT_MODE_CONFIRM_SAFETY to ROBOT_MODE_POWER_OFF
+2025-05-06_08:21:43:37753 00:27:57:038 INFO    - SCBMode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_08:21:43:82888 00:27:57:491 INFO    - tool_mode changed from POWER_OFF to NOT_RESPONDING
+2025-05-06_08:21:47:09212 00:28:00:749 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_RUNNING
+2025-05-06_08:21:47:60794 00:28:01:265 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_OFF to ROBOT_STATE_BOOTING
+2025-05-06_08:21:47:61605 00:28:01:279 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_POWER_ON
+2025-05-06_08:21:47:80940 00:28:01:471 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_OFF to ROBOT_STATE_BOOTING
+2025-05-06_08:21:49:15500 00:28:02:817 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_RUNNING to ROBOT_MODE_IDLE
+2025-05-06_08:21:49:16312 00:28:02:819 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_IDLE to ROBOT_MODE_RUNNING
+2025-05-06_08:21:49:54184 00:28:03:202 INFO    - TCPServer: Accepted connection on CLIENTTYPE_RTDE_CLIENT interface
+2025-05-06_08:21:49:54189 00:28:03:202 INFO    - Socket "RTDEServerSocket"  server with address 192.168.5.1:30004 connected to 192.168.1.15:54328
+2025-05-06_08:21:49:54191 00:28:03:203 INFO    - TCPServer: RTDE client connected
+2025-05-06_08:21:49:54194 00:28:03:204 INFO    - RTDE: Client connected with protocol version: 2
+2025-05-06_08:21:49:55002 00:28:03:208 INFO    - RTDE: Started sending RT data
+2025-05-06_08:21:49:85622 00:28:03:517 INFO    - robot_mode changed from ROBOT_MODE_POWER_ON to ROBOT_MODE_BOOTING
+2025-05-06_08:21:52:40288 00:28:06:061 WARNING - Failed to send state to client 127.0.0.1. Sending discontinued.
+2025-05-06_08:21:53:00749 00:28:06:663 WARNING - Failed to send state to client 192.168.1.15. Sending discontinued.
+2025-05-06_08:21:54:99005 00:28:08:649 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_POWER_ON
+2025-05-06_08:21:54:99816 00:28:08:661 INFO    - tool_mode changed from NOT_RESPONDING to BOOTING
+2025-05-06_08:21:55:00630 00:28:08:665 INFO    - tool_mode changed from BOOTING to IDLE
+2025-05-06_08:21:55:86067 00:28:09:519 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_BOOTING to ROBOT_STATE_IDLE
+2025-05-06_08:21:55:86071 00:28:09:519 INFO    - SCB::logSafetyStateChange: SafetyA safety state changed from ROBOT_OFF to RUNNING
+2025-05-06_08:21:55:86074 00:28:09:519 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_BOOTING to ROBOT_STATE_IDLE
+2025-05-06_08:21:55:86076 00:28:09:519 INFO    - SCB::logSafetyStateChange: SafetyB safety state changed from ROBOT_OFF to RUNNING
+2025-05-06_08:21:55:86078 00:28:09:519 INFO    - robot_mode changed from ROBOT_MODE_POWER_ON to ROBOT_MODE_IDLE
+2025-05-06_08:21:55:86080 00:28:09:521 INFO    - Joint ID: 6 - Received Serial Number: 20185501065
+2025-05-06_08:21:55:86082 00:28:09:521 INFO    - Joint ID: 1 - Received Serial Number: 20185501065
+2025-05-06_08:21:55:86084 00:28:09:522 INFO    - Joint ID: 2 - Received Serial Number: 20185501065
+2025-05-06_08:21:55:86086 00:28:09:522 INFO    - Joint ID: 3 - Received Serial Number: 20185501065
+2025-05-06_08:21:55:86088 00:28:09:522 INFO    - Joint ID: 4 - Received Serial Number: 20185501065
+2025-05-06_08:21:55:86089 00:28:09:522 INFO    - Joint ID: 5 - Received Serial Number: 20185501065
+2025-05-06_08:21:55:86091 00:28:09:522 INFO    - tool_mode changed from IDLE to RUNNING
+2025-05-06_08:21:55:87705 00:28:09:535 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_BRAKERELEASE
+2025-05-06_08:21:55:87710 00:28:09:535 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_BRAKERELEASE
+2025-05-06_08:22:02:59126 00:28:16:255 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_BRAKERELEASE to ROBOT_STATE_RUNNING
+2025-05-06_08:22:02:59131 00:28:16:255 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_BRAKERELEASE to ROBOT_STATE_RUNNING
+2025-05-06_08:22:02:59133 00:28:16:255 INFO    - robot_mode changed from ROBOT_MODE_IDLE to ROBOT_MODE_RUNNING
+2025-05-06_08:29:23:24642 00:35:36:914 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_RUNNING to ROBOT_MODE_POWER_OFF
+2025-05-06_08:29:23:24648 00:35:36:918 INFO    - tool_mode changed from RUNNING to JOINT_READY_FOR_POWER_OFF
+2025-05-06_08:29:23:24650 00:35:36:920 INFO    - robot_mode changed from ROBOT_MODE_RUNNING to ROBOT_MODE_POWER_ON
+2025-05-06_08:29:23:24652 00:35:36:921 WARNING - Runtime is too much behind (Runtime is not running, and not Blocked)
+2025-05-06_08:29:23:25461 00:35:36:922 WARNING - Runtime is blocked, but runtime data queue is empty, trying to recover
+2025-05-06_08:29:23:25466 00:35:36:928 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_RUNNING to ROBOT_STATE_PARKING
+2025-05-06_08:29:23:25468 00:35:36:928 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_RUNNING to ROBOT_STATE_PARKING
+2025-05-06_08:29:23:39991 00:35:37:069 INFO    - RESTART_SCB
+2025-05-06_08:29:23:63420 00:35:37:304 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_PARKING to ROBOT_STATE_IDLE
+2025-05-06_08:29:23:63425 00:35:37:304 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_PARKING to ROBOT_STATE_IDLE
+2025-05-06_08:29:23:65033 00:35:37:320 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_READY_TO_POWER_OFF
+2025-05-06_08:29:23:65036 00:35:37:320 INFO    - SCB::logSafetyStateChange: SafetyA safety state changed from RUNNING to ROBOT_OFF
+2025-05-06_08:29:23:65038 00:35:37:320 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_READY_TO_POWER_OFF
+2025-05-06_08:29:23:65058 00:35:37:320 INFO    - SCB::logSafetyStateChange: SafetyB safety state changed from RUNNING to ROBOT_OFF
+2025-05-06_08:29:23:65866 00:35:37:328 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_READY_TO_POWER_OFF to ROBOT_STATE_SHUTDOWN
+2025-05-06_08:29:23:65870 00:35:37:328 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_READY_TO_POWER_OFF to ROBOT_STATE_SHUTDOWN
+2025-05-06_08:29:23:69096 00:35:37:362 INFO    - robot_mode changed from ROBOT_MODE_POWER_ON to ROBOT_MODE_POWER_OFF
+2025-05-06_08:29:23:71536 00:35:37:382 INFO    - LLInterface::open: Opening interfaces
+2025-05-06_08:29:23:71541 00:35:37:382 INFO    - LLInterface::open: Already open
+2025-05-06_08:29:23:71544 00:35:37:382 INFO    - SCB::resetSCBMode: Resetting SCB mode from SCB_MODE_RUNNING to SCB_MODE_INITIALIZING
+2025-05-06_08:29:23:71546 00:35:37:382 INFO    - LLInterface::restart: Rebooting Embedded Modules...
+2025-05-06_08:29:23:71548 00:35:37:385 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_08:29:23:97332 00:35:37:647 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_BOOTING
+2025-05-06_08:29:25:03732 00:35:38:710 INFO    - TCPServer: Accepted connection on CLIENTTYPE_MATLAB_CLIENT interface
+2025-05-06_08:29:25:03737 00:35:38:710 INFO    - Socket "MATLABServerSocket"  server with address 127.0.0.1:30003 connected to 127.0.0.1:56608
+2025-05-06_08:29:25:08602 00:35:38:752 WARNING - BootDataReader::parseRevisionedVersion - Unknown ApplicationInfo Revision from 0x4F, attempting to parse as unrevisioned data
+2025-05-06_08:29:25:08607 00:35:38:753 WARNING - BootDataReader::parseRevisionedVersion - Unknown ApplicationInfo Revision from 0x4F, attempting to parse as unrevisioned data
+2025-05-06_08:29:25:08610 00:35:38:753 WARNING - BootDevice(0x4D)::handleMessage - Ignoring non-validated App-Info
+2025-05-06_08:29:26:69026 00:35:40:359 INFO    - Safety Version 5:8
+2025-05-06_08:29:27:50452 00:35:41:176 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_POWER_OFF
+2025-05-06_08:29:27:51263 00:35:41:186 INFO    - SCB::logScbStateChange: SafetyA main state changed from RUNNING to UNKNOWN
+2025-05-06_08:29:27:51266 00:35:41:186 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_SHUTDOWN to ROBOT_STATE_OFF
+2025-05-06_08:29:27:51269 00:35:41:186 INFO    - SCB::logScbStateChange: SafetyB main state changed from RUNNING to UNKNOWN
+2025-05-06_08:29:27:51270 00:35:41:186 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_SHUTDOWN to ROBOT_STATE_OFF
+2025-05-06_08:29:27:51272 00:35:41:186 INFO    - SCB::update: scb mode changed from SCB_MODE_RUNNING to SCB_MODE_DISCONNECTED
+2025-05-06_08:29:27:57725 00:35:41:246 INFO    - SCB::logScbStateChange: SafetyB main state changed from UNKNOWN to INITIALIZING
+2025-05-06_08:29:28:07694 00:35:41:748 INFO    - SCB::logScbStateChange: SafetyA main state changed from UNKNOWN to INITIALIZING
+2025-05-06_08:29:28:07697 00:35:41:748 INFO    - SCB::update: scb mode changed from SCB_MODE_DISCONNECTED to SCB_MODE_INITIALIZING
+2025-05-06_08:29:28:35907 00:35:42:033 INFO    - TP::update: TP state changed from RUNNING to BOOTING
+2025-05-06_08:29:28:35912 00:35:42:033 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_CONFIRM_SAFETY
+2025-05-06_08:29:28:35915 00:35:42:033 INFO    - SCBMode changed from SCB_MODE_RUNNING to SCB_MODE_INITIALIZING
+2025-05-06_08:29:28:35917 00:35:42:033 INFO    - LLInterface::restart: Reboot of Embedded Modules succeeded.
+2025-05-06_08:29:28:44785 00:35:42:122 INFO    - CONFIRM_USER_SAFETY_PARAMETERS
+2025-05-06_08:29:28:45615 00:35:42:125 INFO    - SCB::logScbStateChange: SafetyA main state changed from INITIALIZING to IDLE
+2025-05-06_08:29:28:45635 00:35:42:125 INFO    - SCB::logScbStateChange: SafetyB main state changed from INITIALIZING to IDLE
+2025-05-06_08:29:28:45637 00:35:42:131 INFO    - TP::update: TP state changed from BOOTING to IDLE
+2025-05-06_08:29:28:49689 00:35:42:167 INFO    - TP::update: TP state changed from IDLE to RUNNING
+2025-05-06_08:29:28:56947 00:35:42:237 WARNING - TCPReceiver closed (CLIENTTYPE_MATLAB_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:29:28:64220 00:35:42:315 INFO    - Socket "CLIENTTYPE_MATLAB_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:29:28:64227 00:35:42:315 INFO    - Socket "CLIENTTYPE_MATLAB_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:29:28:96467 00:35:42:635 INFO    - SCB::logScbStateChange: SafetyA main state changed from IDLE to RUNNING
+2025-05-06_08:29:28:97279 00:35:42:641 INFO    - SCB::logScbStateChange: SafetyB main state changed from IDLE to RUNNING
+2025-05-06_08:29:28:97284 00:35:42:641 INFO    - SCB::update: scb mode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_08:29:28:97286 00:35:42:641 INFO    - robot_mode changed from ROBOT_MODE_CONFIRM_SAFETY to ROBOT_MODE_POWER_OFF
+2025-05-06_08:29:28:97288 00:35:42:641 INFO    - SCBMode changed from SCB_MODE_INITIALIZING to SCB_MODE_RUNNING
+2025-05-06_08:29:29:40041 00:35:43:068 INFO    - tool_mode changed from JOINT_READY_FOR_POWER_OFF to NOT_RESPONDING
+2025-05-06_08:34:25:22230 00:40:38:899 WARNING - RTDETCPReceiver closed (exception caught): ServerSocket: Socket::recv() failed.
+2025-05-06_08:34:25:22236 00:40:38:899 WARNING - TCPReceiver closed (CLIENTTYPE_INTERPRETER_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:34:25:23059 00:40:38:906 ERROR   - RTDETCPSender send: ServerSocket: Socket::sendall() failed.
+2025-05-06_08:34:25:77877 00:40:39:457 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:34:25:77882 00:40:39:457 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:34:25:77885 00:40:39:457 INFO    - TCPServer: RTDE client disconnected
+2025-05-06_08:34:25:77886 00:40:39:457 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:34:25:77889 00:40:39:457 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:34:29:58348 00:40:43:261 INFO    - TCPServer: Accepted connection on CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY interface
+2025-05-06_08:34:29:58353 00:40:43:261 INFO    - Socket "ReadOnlySecondaryServerSocket"  server with address 192.168.5.1:30012 connected to 192.168.1.15:55340
+2025-05-06_08:34:30:72026 00:40:44:395 INFO    - TCPServer: Accepted connection on CLIENTTYPE_INTERPRETER_CLIENT interface
+2025-05-06_08:34:30:72032 00:40:44:395 INFO    - Socket "InterpreterServerSocket"  server with address 192.168.5.1:30020 connected to 192.168.1.15:57462
+2025-05-06_08:34:42:78042 00:40:56:462 INFO    - RTM: Target RobotMode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_RUNNING
+2025-05-06_08:34:42:82885 00:40:56:510 INFO    - TCPServer: Accepted connection on CLIENTTYPE_RTDE_CLIENT interface
+2025-05-06_08:34:42:82909 00:40:56:510 INFO    - Socket "RTDEServerSocket"  server with address 192.168.5.1:30004 connected to 192.168.1.15:44998
+2025-05-06_08:34:42:82912 00:40:56:510 INFO    - TCPServer: RTDE client connected
+2025-05-06_08:34:42:82914 00:40:56:511 INFO    - RTDE: Client connected with protocol version: 2
+2025-05-06_08:34:42:83723 00:40:56:513 INFO    - RTDE: Started sending RT data
+2025-05-06_08:34:43:29677 00:40:56:976 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_OFF to ROBOT_STATE_BOOTING
+2025-05-06_08:34:43:31304 00:40:56:992 INFO    - robot_mode changed from ROBOT_MODE_POWER_OFF to ROBOT_MODE_POWER_ON
+2025-05-06_08:34:43:51459 00:40:57:192 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_OFF to ROBOT_STATE_BOOTING
+2025-05-06_08:34:45:52160 00:40:59:204 INFO    - robot_mode changed from ROBOT_MODE_POWER_ON to ROBOT_MODE_BOOTING
+2025-05-06_08:34:46:57771 00:41:00:253 WARNING - Failed to send state to client 192.168.1.15. Sending discontinued.
+2025-05-06_08:34:50:68942 00:41:04:370 INFO    - robot_mode changed from ROBOT_MODE_BOOTING to ROBOT_MODE_POWER_ON
+2025-05-06_08:34:50:70561 00:41:04:382 INFO    - tool_mode changed from NOT_RESPONDING to BOOTING
+2025-05-06_08:34:50:70567 00:41:04:386 INFO    - tool_mode changed from BOOTING to IDLE
+2025-05-06_08:34:51:56041 00:41:05:239 INFO    - tool_mode changed from IDLE to RUNNING
+2025-05-06_08:34:51:56046 00:41:05:240 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_BOOTING to ROBOT_STATE_IDLE
+2025-05-06_08:34:51:56049 00:41:05:240 INFO    - SCB::logSafetyStateChange: SafetyA safety state changed from ROBOT_OFF to RUNNING
+2025-05-06_08:34:51:56051 00:41:05:240 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_BOOTING to ROBOT_STATE_IDLE
+2025-05-06_08:34:51:56052 00:41:05:240 INFO    - SCB::logSafetyStateChange: SafetyB safety state changed from ROBOT_OFF to RUNNING
+2025-05-06_08:34:51:56054 00:41:05:240 INFO    - robot_mode changed from ROBOT_MODE_POWER_ON to ROBOT_MODE_IDLE
+2025-05-06_08:34:51:56056 00:41:05:242 INFO    - Joint ID: 4 - Received Serial Number: 20185501065
+2025-05-06_08:34:51:56058 00:41:05:242 INFO    - Joint ID: 5 - Received Serial Number: 20185501065
+2025-05-06_08:34:51:56060 00:41:05:243 INFO    - Joint ID: 6 - Received Serial Number: 20185501065
+2025-05-06_08:34:51:56062 00:41:05:243 INFO    - Joint ID: 1 - Received Serial Number: 20185501065
+2025-05-06_08:34:51:56064 00:41:05:243 INFO    - Joint ID: 2 - Received Serial Number: 20185501065
+2025-05-06_08:34:51:56066 00:41:05:243 INFO    - Joint ID: 3 - Received Serial Number: 20185501065
+2025-05-06_08:34:51:57682 00:41:05:256 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_BRAKERELEASE
+2025-05-06_08:34:51:57686 00:41:05:256 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_IDLE to ROBOT_STATE_BRAKERELEASE
+2025-05-06_08:34:58:24479 00:41:11:928 INFO    - SCB::logRobotStateChange: SafetyA robot state changed from ROBOT_STATE_BRAKERELEASE to ROBOT_STATE_RUNNING
+2025-05-06_08:34:58:24486 00:41:11:928 INFO    - SCB::logRobotStateChange: SafetyB robot state changed from ROBOT_STATE_BRAKERELEASE to ROBOT_STATE_RUNNING
+2025-05-06_08:34:58:24488 00:41:11:928 INFO    - robot_mode changed from ROBOT_MODE_IDLE to ROBOT_MODE_RUNNING
+2025-05-06_08:36:09:95392 00:42:23:635 WARNING - TCPReceiver closed (CLIENTTYPE_SECONDARY_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:36:10:42966 00:42:24:112 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:36:10:42977 00:42:24:112 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:47:15:97116 00:53:29:671 WARNING - RTDETCPReceiver closed (exception caught): ServerSocket: Socket::recv() failed.
+2025-05-06_08:47:15:97162 00:53:29:671 WARNING - TCPReceiver closed (CLIENTTYPE_INTERPRETER_CLIENT) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:47:15:97206 00:53:29:672 WARNING - TCPReceiver closed (CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY) :: Exception caught: ServerSocket: Socket::OperatorOverload >> failed.
+2025-05-06_08:47:15:98022 00:53:29:674 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:47:15:98029 00:53:29:674 INFO    - Socket "CLIENTTYPE_SECONDARY_CLIENT_READ_ONLY ClientSocket" object was destroyed.
+2025-05-06_08:47:15:98031 00:53:29:674 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:47:15:98033 00:53:29:674 INFO    - Socket "CLIENTTYPE_INTERPRETER_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:47:15:98841 00:53:29:687 INFO    - TCPServer: RTDE client disconnected
+2025-05-06_08:47:15:98845 00:53:29:687 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket"  disconnected by Socket::close()
+2025-05-06_08:47:15:98848 00:53:29:687 INFO    - Socket "CLIENTTYPE_RTDE_CLIENT ClientSocket" object was destroyed.
+2025-05-06_08:47:34:50715 00:53:48:208 INFO    - TCPServer: Accepted connection on CLIENTTYPE_SECONDARY_CLIENT interface
+2025-05-06_08:47:34:50720 00:53:48:208 INFO    - Socket "SecondaryServerSocket"  server with address 192.168.5.1:30002 connected to 192.168.1.15:34026
+2025-05-06_08:47:36:11254 00:53:49:811 INFO    - TCPServer: Accepted connection on CLIENTTYPE_INTERPRETER_CLIENT interface
+2025-05-06_08:47:36:11266 00:53:49:812 INFO    - Socket "InterpreterServerSocket"  server with address 192.168.5.1:30020 connected to 192.168.1.15:59448
+2025-05-06_08:47:48:22508 00:54:01:927 INFO    - TCPServer: Accepted connection on CLIENTTYPE_RTDE_CLIENT interface
+2025-05-06_08:47:48:22513 00:54:01:927 INFO    - Socket "RTDEServerSocket"  server with address 192.168.5.1:30004 connected to 192.168.1.15:39240
+2025-05-06_08:47:48:22515 00:54:01:927 INFO    - TCPServer: RTDE client connected
+2025-05-06_08:47:48:23324 00:54:01:928 INFO    - RTDE: Client connected with protocol version: 2
+2025-05-06_08:47:48:23335 00:54:01:931 INFO    - RTDE: Started sending RT data
+2025-05-06_08:47:51:57884 00:54:05:276 WARNING - Failed to send state to client 192.168.1.15. Sending discontinued.
+2025-05-06_08:48:05:22159 00:54:18:919 INFO    - Starting program: eris_v2
+2025-05-06_08:48:05:22164 00:54:18:921 INFO    - Runtime state change: from PROGRAM_STATE_STOPPED to PROGRAM_STATE_RUNNING
+2025-05-06_08:48:05:22975 00:54:18:925 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49410 connected to 127.0.0.1:63352
+2025-05-06_08:48:05:22980 00:54:18:931 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49412 connected to 127.0.0.1:63352
+2025-05-06_08:48:05:23790 00:54:18:935 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49414 connected to 127.0.0.1:63352
+2025-05-06_08:48:05:23813 00:54:18:939 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49416 connected to 127.0.0.1:63352
+2025-05-06_08:48:05:29460 00:54:18:991 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49272 connected to 192.168.1.15:8000
+2025-05-06_08:52:32:01561 00:58:45:725 INFO    - Runtime state change: from PROGRAM_STATE_RUNNING to PROGRAM_STATE_STOPPING
+2025-05-06_08:52:32:02374 00:58:45:727 INFO    - Runtime state change: from PROGRAM_STATE_STOPPING to PROGRAM_STATE_STOPPED
+2025-05-06_08:52:32:02378 00:58:45:727 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49410 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:52:32:02381 00:58:45:727 INFO    - Socket "CustomSocket 1" object was destroyed.
+2025-05-06_08:52:32:02383 00:58:45:727 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49412 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:52:32:02385 00:58:45:727 INFO    - Socket "CustomSocket 2" object was destroyed.
+2025-05-06_08:52:32:02387 00:58:45:727 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49414 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:52:32:02389 00:58:45:727 INFO    - Socket "CustomSocket 3" object was destroyed.
+2025-05-06_08:52:32:02390 00:58:45:727 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49416 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:52:32:02392 00:58:45:727 INFO    - Socket "CustomSocket 4" object was destroyed.
+2025-05-06_08:52:32:02394 00:58:45:727 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49272 connected to 192.168.1.15:8000 disconnected by Socket::close()
+2025-05-06_08:52:32:02396 00:58:45:727 INFO    - Socket "CustomSocket abcd" object was destroyed.
+2025-05-06_08:52:57:37773 00:59:11:087 INFO    - Starting program: eris_v2
+2025-05-06_08:52:57:38586 00:59:11:089 INFO    - Runtime state change: from PROGRAM_STATE_STOPPED to PROGRAM_STATE_RUNNING
+2025-05-06_08:52:57:38591 00:59:11:093 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49420 connected to 127.0.0.1:63352
+2025-05-06_08:52:57:39400 00:59:11:099 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49422 connected to 127.0.0.1:63352
+2025-05-06_08:52:57:39405 00:59:11:103 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49424 connected to 127.0.0.1:63352
+2025-05-06_08:52:57:40215 00:59:11:107 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49426 connected to 127.0.0.1:63352
+2025-05-06_08:52:57:45066 00:59:11:159 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49282 connected to 192.168.1.15:8000
+2025-05-06_08:53:00:05772 00:59:13:765 INFO    - Runtime state change: from PROGRAM_STATE_RUNNING to PROGRAM_STATE_STOPPING
+2025-05-06_08:53:00:05776 00:59:13:767 INFO    - Runtime state change: from PROGRAM_STATE_STOPPING to PROGRAM_STATE_STOPPED
+2025-05-06_08:53:00:05778 00:59:13:767 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49420 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:53:00:05780 00:59:13:767 INFO    - Socket "CustomSocket 1" object was destroyed.
+2025-05-06_08:53:00:05782 00:59:13:767 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49422 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:53:00:05784 00:59:13:767 INFO    - Socket "CustomSocket 2" object was destroyed.
+2025-05-06_08:53:00:05786 00:59:13:767 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49424 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:53:00:05788 00:59:13:767 INFO    - Socket "CustomSocket 3" object was destroyed.
+2025-05-06_08:53:00:05790 00:59:13:767 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49426 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:53:00:05792 00:59:13:767 INFO    - Socket "CustomSocket 4" object was destroyed.
+2025-05-06_08:53:00:05794 00:59:13:767 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49282 connected to 192.168.1.15:8000 disconnected by Socket::close()
+2025-05-06_08:53:00:05796 00:59:13:767 INFO    - Socket "CustomSocket abcd" object was destroyed.
+2025-05-06_08:53:04:30813 00:59:18:011 INFO    - Starting program: eris_v2
+2025-05-06_08:53:04:30818 00:59:18:013 INFO    - Runtime state change: from PROGRAM_STATE_STOPPED to PROGRAM_STATE_RUNNING
+2025-05-06_08:53:04:30820 00:59:18:017 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49430 connected to 127.0.0.1:63352
+2025-05-06_08:53:04:31634 00:59:18:023 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49432 connected to 127.0.0.1:63352
+2025-05-06_08:53:04:32484 00:59:18:027 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49434 connected to 127.0.0.1:63352
+2025-05-06_08:53:04:32489 00:59:18:031 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49436 connected to 127.0.0.1:63352
+2025-05-06_08:53:04:37343 00:59:18:083 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49292 connected to 192.168.1.15:8000
+2025-05-06_08:53:09:44735 00:59:23:155 INFO    - Runtime state change: from PROGRAM_STATE_RUNNING to PROGRAM_STATE_STOPPING
+2025-05-06_08:53:09:44747 00:59:23:157 INFO    - Runtime state change: from PROGRAM_STATE_STOPPING to PROGRAM_STATE_STOPPED
+2025-05-06_08:53:09:44750 00:59:23:157 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49430 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:53:09:44752 00:59:23:157 INFO    - Socket "CustomSocket 1" object was destroyed.
+2025-05-06_08:53:09:44754 00:59:23:157 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49432 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:53:09:44756 00:59:23:157 INFO    - Socket "CustomSocket 2" object was destroyed.
+2025-05-06_08:53:09:44758 00:59:23:157 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49434 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:53:09:44760 00:59:23:157 INFO    - Socket "CustomSocket 3" object was destroyed.
+2025-05-06_08:53:09:44762 00:59:23:157 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49436 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:53:09:44764 00:59:23:157 INFO    - Socket "CustomSocket 4" object was destroyed.
+2025-05-06_08:53:09:44766 00:59:23:157 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49292 connected to 192.168.1.15:8000 disconnected by Socket::close()
+2025-05-06_08:53:09:44768 00:59:23:157 INFO    - Socket "CustomSocket abcd" object was destroyed.
+2025-05-06_08:54:17:27800 01:00:30:989 INFO    - Starting program: eris_v2
+2025-05-06_08:54:17:28612 01:00:30:991 INFO    - Runtime state change: from PROGRAM_STATE_STOPPED to PROGRAM_STATE_RUNNING
+2025-05-06_08:54:17:28618 01:00:30:995 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49440 connected to 127.0.0.1:63352
+2025-05-06_08:54:17:29427 01:00:31:001 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49442 connected to 127.0.0.1:63352
+2025-05-06_08:54:17:29431 01:00:31:005 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49444 connected to 127.0.0.1:63352
+2025-05-06_08:54:17:30254 01:00:31:009 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49446 connected to 127.0.0.1:63352
+2025-05-06_08:54:17:35098 01:00:31:061 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49302 connected to 192.168.1.15:8000
+2025-05-06_08:54:22:42642 01:00:36:133 INFO    - Runtime state change: from PROGRAM_STATE_RUNNING to PROGRAM_STATE_STOPPING
+2025-05-06_08:54:22:42647 01:00:36:135 INFO    - Runtime state change: from PROGRAM_STATE_STOPPING to PROGRAM_STATE_STOPPED
+2025-05-06_08:54:22:42660 01:00:36:135 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49440 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:54:22:42662 01:00:36:135 INFO    - Socket "CustomSocket 1" object was destroyed.
+2025-05-06_08:54:22:42664 01:00:36:135 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49442 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:54:22:42666 01:00:36:135 INFO    - Socket "CustomSocket 2" object was destroyed.
+2025-05-06_08:54:22:42668 01:00:36:135 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49444 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:54:22:42670 01:00:36:135 INFO    - Socket "CustomSocket 3" object was destroyed.
+2025-05-06_08:54:22:42672 01:00:36:135 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49446 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:54:22:42674 01:00:36:135 INFO    - Socket "CustomSocket 4" object was destroyed.
+2025-05-06_08:54:22:42676 01:00:36:135 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49302 connected to 192.168.1.15:8000 disconnected by Socket::close()
+2025-05-06_08:54:22:42679 01:00:36:135 INFO    - Socket "CustomSocket abcd" object was destroyed.
+2025-05-06_08:54:29:37841 01:00:43:089 INFO    - Starting program: eris_v2
+2025-05-06_08:54:29:37847 01:00:43:091 INFO    - Runtime state change: from PROGRAM_STATE_STOPPED to PROGRAM_STATE_RUNNING
+2025-05-06_08:54:29:38657 01:00:43:095 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49450 connected to 127.0.0.1:63352
+2025-05-06_08:54:29:39469 01:00:43:101 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49452 connected to 127.0.0.1:63352
+2025-05-06_08:54:29:39473 01:00:43:105 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49454 connected to 127.0.0.1:63352
+2025-05-06_08:54:29:40282 01:00:43:109 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49456 connected to 127.0.0.1:63352
+2025-05-06_08:54:29:45129 01:00:43:161 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49312 connected to 192.168.1.15:8000
+2025-05-06_08:54:34:52295 01:00:48:233 INFO    - Runtime state change: from PROGRAM_STATE_RUNNING to PROGRAM_STATE_STOPPING
+2025-05-06_08:54:34:52315 01:00:48:235 INFO    - Runtime state change: from PROGRAM_STATE_STOPPING to PROGRAM_STATE_STOPPED
+2025-05-06_08:54:34:52329 01:00:48:235 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49450 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:54:34:52331 01:00:48:235 INFO    - Socket "CustomSocket 1" object was destroyed.
+2025-05-06_08:54:34:52334 01:00:48:235 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49452 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:54:34:52335 01:00:48:235 INFO    - Socket "CustomSocket 2" object was destroyed.
+2025-05-06_08:54:34:52337 01:00:48:235 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49454 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:54:34:52368 01:00:48:235 INFO    - Socket "CustomSocket 3" object was destroyed.
+2025-05-06_08:54:34:52370 01:00:48:235 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49456 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:54:34:52372 01:00:48:235 INFO    - Socket "CustomSocket 4" object was destroyed.
+2025-05-06_08:54:34:52374 01:00:48:235 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49312 connected to 192.168.1.15:8000 disconnected by Socket::close()
+2025-05-06_08:54:34:52376 01:00:48:235 INFO    - Socket "CustomSocket abcd" object was destroyed.
+2025-05-06_08:58:27:54229 01:04:41:259 INFO    - Starting program: eris_v2
+2025-05-06_08:58:27:54235 01:04:41:261 INFO    - Runtime state change: from PROGRAM_STATE_STOPPED to PROGRAM_STATE_RUNNING
+2025-05-06_08:58:27:55049 01:04:41:265 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49460 connected to 127.0.0.1:63352
+2025-05-06_08:58:27:55878 01:04:41:271 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49462 connected to 127.0.0.1:63352
+2025-05-06_08:58:27:55882 01:04:41:275 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49464 connected to 127.0.0.1:63352
+2025-05-06_08:58:27:56700 01:04:41:279 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49466 connected to 127.0.0.1:63352
+2025-05-06_08:58:27:61561 01:04:41:331 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49322 connected to 192.168.1.15:8000
+2025-05-06_08:58:30:22090 01:04:43:935 ERROR   - Runtime error (2420:5): Type error: left-hand side of the expression expected type 'Pose' but found 'Const String'
+2025-05-06_08:58:30:22123 01:04:43:937 INFO    - Runtime state change: from PROGRAM_STATE_RUNNING to PROGRAM_STATE_STOPPING
+2025-05-06_08:58:30:22126 01:04:43:939 INFO    - Runtime state change: from PROGRAM_STATE_STOPPING to PROGRAM_STATE_STOPPED
+2025-05-06_08:58:30:22129 01:04:43:939 INFO    - Socket "CustomSocket 1"  client with address 127.0.0.1:49460 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:58:30:22130 01:04:43:939 INFO    - Socket "CustomSocket 1" object was destroyed.
+2025-05-06_08:58:30:22132 01:04:43:939 INFO    - Socket "CustomSocket 2"  client with address 127.0.0.1:49462 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:58:30:22134 01:04:43:939 INFO    - Socket "CustomSocket 2" object was destroyed.
+2025-05-06_08:58:30:22136 01:04:43:939 INFO    - Socket "CustomSocket 3"  client with address 127.0.0.1:49464 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:58:30:22138 01:04:43:939 INFO    - Socket "CustomSocket 3" object was destroyed.
+2025-05-06_08:58:30:22177 01:04:43:939 INFO    - Socket "CustomSocket 4"  client with address 127.0.0.1:49466 connected to 127.0.0.1:63352 disconnected by Socket::close()
+2025-05-06_08:58:30:22180 01:04:43:939 INFO    - Socket "CustomSocket 4" object was destroyed.
+2025-05-06_08:58:30:22182 01:04:43:939 INFO    - Socket "CustomSocket abcd"  client with address 192.168.5.1:49322 connected to 192.168.1.15:8000 disconnected by Socket::close()
+2025-05-06_08:58:30:22184 01:04:43:939 INFO    - Socket "CustomSocket abcd" object was destroyed.

@@ -1,3 +1,5 @@
+from time import sleep
+
 from custom_logging import LogConfig
 from RobotControl.RobotClasses.RobotController import RobotController
 from RobotControl.RobotClasses.SSH import SSH
@@ -23,11 +25,23 @@ class Robot:
         return cls._instance
     
     def __initialize(self):
-        self.controller: RobotController = RobotController.get_instance()
+        self.program_name = "eris_v3.urp"
+        self.controller: RobotController = RobotController.get_instance(self.program_name)
         self.ssh: SSH = SSH.get_instance()
         self.interpreter_mode: InterpreterMode = InterpreterMode.get_instance()
-
         # Write program.urp to the robot
-        self.ssh.write_file("RobotControl/program.urp", "/programs/program.urp")
+        self.ssh.write_file(f"/app/urprograms/{self.program_name}", f"/programs/{self.program_name}")
+        # self.ssh.write_file("RobotControl/program.urp", "../ursim/programs/program.urp")
 
+    
+        self.controller.load_program(self.program_name)
+
+        non_recurring_logger.info("Waiting for program to load")
+        sleep(5)
+        self.controller.power_on()
+        non_recurring_logger.info("Waiting for robot to power on")
+        sleep(5)
+        self.controller.brake_release()
+        non_recurring_logger.info("Waiting for brake release")
+        sleep(2)
     

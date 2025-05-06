@@ -35,10 +35,8 @@ def run_script_on_robot(script: str) -> str:
     augmented_script = augment_script(script)
     robot.ssh.write_script(augmented_script)
     sleep(0.1)
-    
-    if not IS_PHYSICAL_ROBOT: 
-        robot.controller.load_program()
-    
+    robot.controller.load_program(robot.program_name)
+    sleep(0.1)
     robot.controller.start_program()
     sleep(0.1)
 
@@ -51,12 +49,12 @@ def run_script_on_robot(script: str) -> str:
         parts = re.split(r'ERROR\s+-', error, maxsplit=1)
         return parts[1]
 
-    #Start thread to check for runtime errors
-    def run_async_checker():
-        asyncio.run(run_script_finished_error_checker(0))
+    ##Start thread to check for runtime errors
+    # def run_async_checker():
+    #    asyncio.run(run_script_finished_error_checker(0))
 
-    error_checker_thread = threading.Thread(target=run_async_checker)
-    error_checker_thread.start()
+    #error_checker_thread = threading.Thread(target=run_async_checker)
+    #error_checker_thread.start()
 
     return "" 
 

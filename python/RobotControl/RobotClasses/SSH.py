@@ -33,7 +33,7 @@ class SSH:
 
         self.path_to_error_log = "../ursim/URControl.log"
         if IS_PHYSICAL_ROBOT:
-            self.path_to_error_log = "/root/polyscope.log"
+            self.path_to_error_log = "/tmp/log/urcontrol/current"
 
     def close(self):
         """
@@ -81,6 +81,7 @@ class SSH:
         try:
             # Open the local file in binary read mode
             with open(filepath, 'rb') as local_file:
+                non_recurring_logger.debug(f"reading from {filepath}")
                 # Open the remote file in binary write mode
                 with sftp.file(endpath, 'wb') as remote_file:
                     # Read and write the file in chunks to handle large files
@@ -98,6 +99,8 @@ class SSH:
         """
         Reads the last `lines` number of lines from the robot's log file.
         """
+        # error_log_path = "../ursim/URControl.log"
+        error_log_path = "/tmp/log/urcontrol/current"
 
         try:
             sftp = self.ssh_client.open_sftp()

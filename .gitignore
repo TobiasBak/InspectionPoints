@@ -163,8 +163,12 @@ cython_debug/
 */node_modules/
 .npm
 interpreter-examples/interpreter-examples/
-/urprograms
+/python/urprograms
 logs/
 /usecases-memory-all.csv
 
 usecases-memory.csv
+!/python/urprograms/
+/python/urprograms/*
+!/python/urprograms/physical_log
+!/python/urprograms/eris_v3.urp
