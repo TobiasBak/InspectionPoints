@@ -1,5 +1,7 @@
 import * as Plotly from 'plotly.js';
 import {Datum} from "plotly.js";
+import {getIndexFromClick, getTimestampFromClick} from "./toolbox";
+import {plotLineChart} from "./RoboticVisualizations/LinePlotFactory";
 
 const data: Partial<Plotly.ScatterData>[] = [
     {
@@ -68,13 +70,23 @@ const layout: Partial<Plotly.Layout> = {
 
 
 const chart = await (async () => {
-    return Plotly.react('test', data, layout);
+    return await plotLineChart("Hello-world", "newChart", [1,2,5], [
+        [1,2,3,4,5],
+        [2,3,4,5,6],
+        [3,4,5,6,7],
+    ],[
+        [1,2,3,4,5],
+        [2,3,4,5,6],
+        [3,4,5,6,7],
+    ], "myunit");
+    // return Plotly.react('test', data, layout);
 })();
+
+
 
 chart.on(
     "plotly_click",
     async function (data) {
-        console.log(data);
-
+        console.log(data, getTimestampFromClick(data), getIndexFromClick(data));
     }
 )
