@@ -103,7 +103,7 @@ p {
 }
 
 .primary-block{
-    height: 70vh;
+    height: 60vh;
     padding: 0;
     margin: 0 .5em;
 }
@@ -269,7 +269,9 @@ p {
 
 .graphContainer{
     width: 100%;
+    /*height: 25vh;*/
     padding: 1.5em .75em 1em 0;
+    margin: 2em 0;
 }
 
 
