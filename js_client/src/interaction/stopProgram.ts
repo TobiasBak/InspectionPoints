@@ -17,6 +17,10 @@ document.getElementById('stopProgramButton')?.addEventListener('click', function
     stopProgram();
 });
 
+/**
+ * Disable or enable the stop button.
+ * @param state - True to enable the button, false to disable it.
+ */
 export function setStopButtonDisabled(state: boolean): void {
     const stopButton: HTMLButtonElement | null = document.getElementById('stopProgramButton') as HTMLButtonElement;
     if (stopButton) {
