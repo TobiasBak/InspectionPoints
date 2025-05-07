@@ -96,6 +96,7 @@ async function testCommands() {
         console.log(`Connection closed. Starting a new connection in ${timeoutSleepTime}ms...`);
         document.removeEventListener(EventList.CommandEntered, sendCommandToServer);
         document.removeEventListener(EventList.BeginDebug, sendDebugCommandToServer);
+        document.removeEventListener(EventList.StopProgram, sendStopCommandToServer);
         setTimeout(() => {
             testCommands().then();
         }, timeoutSleepTime);
