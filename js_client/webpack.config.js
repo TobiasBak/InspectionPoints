@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack'); // Import webpack for ProvidePlugin
 
 module.exports = {
     mode: 'development', // For production, use 'production' (is set to development for dev server to work properly)
@@ -12,7 +13,8 @@ module.exports = {
         dark_mode: './src/Toolbox/auto_dark_mode.ts',
         inspectionPoints: './src/interaction/inspectionPoints.ts',
         runCode: './src/interaction/runCode.ts',
-        monacoEditor: './src/monacoExperiment.ts'
+        monacoEditor: './src/monacoExperiment.ts',
+        inspectionGraph: './src/inspectionPointGraph/InspectionGraph.ts',
     },
     devtool: 'inline-source-map',
     devServer: {
@@ -41,6 +43,9 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js'],
         fallback: {
             path: require.resolve('path-browserify'), // Add the fallback for 'path'
+            stream: require.resolve('stream-browserify'),
+            assert: require.resolve('assert-browserify'),
+            buffer: require.resolve('buffer-browserify'),
         },
     },
     output: {
@@ -53,7 +58,10 @@ module.exports = {
             hash: true,
             template: './src/index.html',
             filename: './index.html' //relative to root of the application
-        })
+        }),
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+        }),
     ],
     optimization: {
         runtimeChunk: 'single',

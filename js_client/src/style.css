@@ -62,7 +62,8 @@ p {
 .commandArea {
     flex: 1;
     height: 90vh;
-    padding: 0;
+    /*padding: 0;*/
+    /*margin: 0 .5em;*/
 }
 
 .commandArea > * {
@@ -101,15 +102,21 @@ p {
     color: #c52a2a;
 }
 
+.primary-block{
+    height: 70vh;
+    padding: 0;
+    margin: 0 .5em;
+}
+
 .visualizationArea {
     flex: 1;
 }
 
 .variableView {
-    height: 90vh;
     width: 100%;
     box-sizing: border-box;
     padding: .8em;
+    height: 100%;
 }
 
 .variableViewColum {
@@ -259,6 +266,12 @@ p {
 .left-aligned{
     padding-left: 0;
 }
+
+.graphContainer{
+    width: 100%;
+    padding: 1.5em .75em 1em 0;
+}
+
 
 /* POPUP */
 .popup {

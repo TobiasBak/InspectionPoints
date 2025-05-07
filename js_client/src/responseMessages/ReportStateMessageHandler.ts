@@ -6,6 +6,7 @@ import {
     VariableObject,
     VariableType
 } from "./responseMessageDefinitions";
+import {addDataPoint} from "../inspectionPointGraph/InspectionGraph";
 
 
 /***
@@ -129,6 +130,7 @@ export function displayMessageData(message: ReportStateMessage): void {
         sectionStorage.set(variable.name, newSection);
     });
 
+    addDataPoint(storage.length, message.id, storage.length - 1)
 }
 
 function generateHtmlFromMessageData(messageDataKey: string, messageDataValue:URDataType): HTMLElement {
