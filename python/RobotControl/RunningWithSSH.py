@@ -42,13 +42,12 @@ def run_script_on_robot(script: str) -> str:
     robot.controller.start_program()
     sleep(0.1)
 
-    latest_errors = robot.ssh.read_lines_from_log(2)
+    latest_error = robot.ssh.read_lines_from_log(1)
 
-    if "Compile error" in latest_errors or "Lexer exception" in latest_errors:
+    if "Compile error" in latest_error or "Lexer exception" in latest_error or "Syntax error" in latest_error:
         non_recurring_logger.debug("Compile error or Lexer exception found")
-        recurring_logger.debug(f"Error in script: {latest_errors}")
-        error = latest_errors.split("\n")[1]
-        parts = re.split(r'ERROR\s+-', error, maxsplit=1)
+        non_recurring_logger.debug(f"Error in script: {latest_error}")
+        parts = re.split(r'ERROR\s+-', latest_error, maxsplit=1)
         return parts[1]
 
     #Start thread to check for runtime errors
@@ -77,11 +76,16 @@ async def run_script_finished_error_checker(id: int):
     recurring_logger.debug(f"Program state: {robot.controller.program_state}")
     __wait_for_condition(lambda: "PLAYING" not in robot.controller.program_state)
     
-    latest_errors = robot.ssh.read_lines_from_log(3)
-    recurring_logger.debug(f"Latest errors:\n{latest_errors}")
-    if "Type error" in latest_errors or "Runtime error" in latest_errors:
-        error_line = latest_errors.split("\n")[0]
-        error_text = re.split(r'ERROR\s+-', error_line, maxsplit=1)[1]
+    latest_errors: list[str] = robot.ssh.get_logs_from_last_program_run()
+    non_recurring_logger.debug(f"Latest errors:")
+
+    error = ""
+    for line in latest_errors:
+        if "ERROR" in line:
+            error = line
+    
+    if "Type error" in error or "Runtime error" in error:
+        error_text = re.split(r'ERROR\s+-', error, maxsplit=1)[1]
 
         # Way to add line number to thed error message, but will not work with inspection points
         # error = retrieve_line_number_text(error_text)
@@ -89,7 +93,7 @@ async def run_script_finished_error_checker(id: int):
         __send_error_message_to_web_clients(id, error_text)
         return
     
-    if "New safety mode: SAFETY_MODE_PROTECTIVE_STOP" in latest_errors:
+    if "New safety mode: SAFETY_MODE_PROTECTIVE_STOP" in error:
         error_text = """
         PROTECTIVE STOP: Reconsider how the robot is moving.
         You will not be able to run a program for five seconds.
