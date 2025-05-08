@@ -109,8 +109,8 @@ const sectionStorage = new Map<string, HTMLElement>();
 export function displayMessageData(message: ReportStateMessage): void {
     const data: VariableObject[] = message.data
 
-    const cobotStateDisplay: HTMLElement = document.getElementById("stateVariableDisplay");
-    const codeVariableDisplay: HTMLElement = document.getElementById("codeVariableDisplay");
+    const id: 'codeVariableDisplay' = "codeVariableDisplay"
+    const codeVariableDisplay: HTMLElement = document.getElementById(id);
 
     // console.log("Provided_id from last logged report state", message.id)
 
@@ -119,14 +119,12 @@ export function displayMessageData(message: ReportStateMessage): void {
     });
 
     data.forEach((variable): void => {
-        const targetSection = variable.global ? cobotStateDisplay : codeVariableDisplay;
-
         const oldSection = sectionStorage.get(variable.name);
         const newSection = generateHtmlFromMessageData(variable.name, variable.value)
         if (oldSection) {
             oldSection.replaceWith(newSection);
         }else{
-            targetSection.appendChild(newSection);
+            codeVariableDisplay.appendChild(newSection);
         }
         sectionStorage.set(variable.name, newSection);
     });
