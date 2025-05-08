@@ -270,10 +270,10 @@ p {
 
 .graphContainer{
     /*width: calc(100vw - 2* 2 * 10px);*/
-    /*height: 25vh;*/
+    min-height: 24vh;
     /*padding: 1.5em .75em 1em 0;*/
     /*padding: 1em;*/
-    margin: 2em 0;
+    margin: 2em .5em;
     /*display: flex;*/
 }
 

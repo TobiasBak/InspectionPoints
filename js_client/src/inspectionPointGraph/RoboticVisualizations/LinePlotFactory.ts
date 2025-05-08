@@ -37,13 +37,13 @@ export async function plotLineChart(chartName: string, chartId: string, traceDat
 function generate_traces(traceData: TraceData): Partial<Plotly.Data>[] {
     const traces: Partial<Plotly.Data>[] = []
 
-    if (traceData.length === 0 || traceData.length > 6) {
-        throw new Error("Invalid number of data names. It must be between 1 and 6. Both inclusive")
-    }
+    // if (traceData.length === 0 || traceData.length > 6) {
+    //     throw new Error("Invalid number of data names. It must be between 1 and 6. Both inclusive")
+    // }
 
     // Generate the traces for the data lines
     for (let i = 0; i < traceData.length; i++) {
-        traces.push(generateTrace(traceData[i].xs, traceData[i].ys, traceData[i].customDatas, `Line ${traceData[i].ys}`, i))
+        traces.push(generateTrace(traceData[i].xs, traceData[i].ys, traceData[i].customDatas, `Line ${traceData[i].ys}`, i % 6))
     }
 
     return traces
