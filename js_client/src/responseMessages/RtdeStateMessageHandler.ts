@@ -1,4 +1,3 @@
-import {generateVariableSelection, listOfVariablesToDisplay} from "../cobotVariableSelection";
 import { isStopButtonDisabled, setStopButtonDisabled } from "../interaction/stopProgram";
 import {
     ResponseMessage,
@@ -21,7 +20,6 @@ export function handleRtdeStateMessage(message: ResponseMessage): void {
     showRobotReady(message);
     showSafetyStatus(message);
 
-    generateVariableSelection(message.data, replayRtdeStateMessage);
     // iterateMessageData(message.data);
 }
 
