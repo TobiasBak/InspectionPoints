@@ -1,4 +1,5 @@
 import {generateVariableSelection, listOfVariablesToDisplay} from "../cobotVariableSelection";
+import { isStopButtonDisabled, setStopButtonDisabled } from "../interaction/stopProgram";
 import {
     ResponseMessage,
     ResponseMessageType,
@@ -15,10 +16,22 @@ export function handleRtdeStateMessage(message: ResponseMessage): void {
     }
 
     lastRtdeStateMessage = message;
+    switchStopButtonState(message);
 
     generateVariableSelection(message.data, replayRtdeStateMessage);
     iterateMessageData(message.data);
 }
+
+function switchStopButtonState(rtdeState: RtdeStateMessage): void {
+    const program_state = rtdeState.data.runtime_state;
+    console.log('program_state', program_state);
+    if (program_state === 'playing' && isStopButtonDisabled() === true) {
+        setStopButtonDisabled(true);
+    } else if (program_state === 'stopped' && isStopButtonDisabled() === false) {
+        setStopButtonDisabled(false);
+    }
+}
+    
 
 function replayRtdeStateMessage(): void {
     if (lastRtdeStateMessage) {
