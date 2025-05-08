@@ -28,6 +28,7 @@ p {
     text-align: center;
     margin: auto;
 }
+
 .opacity {
     opacity: 0;
 }
@@ -268,10 +269,16 @@ p {
 }
 
 .graphContainer{
-    width: 100%;
+    /*width: calc(100vw - 2* 2 * 10px);*/
     /*height: 25vh;*/
-    padding: 1.5em .75em 1em 0;
+    /*padding: 1.5em .75em 1em 0;*/
+    /*padding: 1em;*/
     margin: 2em 0;
+    /*display: flex;*/
+}
+
+.vis-placeholder{
+    height: 25vh;
 }
 
 

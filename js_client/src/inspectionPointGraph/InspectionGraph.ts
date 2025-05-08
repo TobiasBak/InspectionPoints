@@ -3,6 +3,7 @@ import {Datum} from "plotly.js";
 import {getIndexFromClick, getTimestampFromClick} from "./toolbox";
 import {plotLineChart, TraceData} from "./RoboticVisualizations/LinePlotFactory";
 import {displayMessageData, getStoredMessages} from "../responseMessages/displayReportStateMessage";
+import {getLineNumberFromInspectionPointId} from "../interaction/inspectionPoints";
 
 
 export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
@@ -24,6 +25,7 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
         const x = index + 1
         const y = message.id
 
+
         if (!dataCollections.has(y)){
             dataCollections.set(y, [])
         }
@@ -43,12 +45,12 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
         }
         traceData.push({
             xs: dataCollection.map((dotInfo) => dotInfo.x),
-            ys: yValue,
+            ys: getLineNumberFromInspectionPointId(yValue),
             customDatas: dataCollection.map((dotInfo) => dotInfo.customdata),
         })
     }
 
-    const chart = await plotLineChart("Hello-world", "newChart", traceData, "lineNumber");
+    const chart = await plotLineChart("Inspection points logged", "newChart", traceData, "lineNumber");
 
     chart.removeAllListeners('plotly_click')
 

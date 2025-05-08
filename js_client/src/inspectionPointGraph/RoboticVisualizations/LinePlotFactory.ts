@@ -16,6 +16,7 @@ export async function plotLineChart(chartName: string, chartId: string, traceDat
     const chartDiv = await createDivForPlotlyChart(chartId)
 
     // Generate the layout. This is necessary for generating the frames
+    console.log(`Generating layout for ${chartName} with height: ${chartDiv.clientHeight} and width: ${chartDiv.clientWidth}`, chartDiv.clientHeight, chartDiv)
     const layout = get2dLayout(chartName, chartDiv.clientHeight, chartDiv.clientWidth - 50, false)
 
     layout.yaxis.ticksuffix = ` ${yUnit}`
@@ -24,7 +25,8 @@ export async function plotLineChart(chartName: string, chartId: string, traceDat
     layout.legend.bordercolor = getColorMap().plot_colors.gridColor
     layout.legend.borderwidth = 1
 
-    layout.xaxis.tickprefix = `Time (s)`
+    layout.xaxis.tickprefix = `Time `
+    layout.xaxis.ticksuffix = ` (s)`
 
     const traces = generate_traces(traceData);
 

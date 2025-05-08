@@ -50,6 +50,12 @@ editor.onMouseDown((event) => {
     }
 });
 
+const idMap = new Map<number, number>();
+
+export function getLineNumberFromInspectionPointId(id: number): number{
+    return idMap.get(id) ?? -1;
+}
+
 // Function to collect decorated lines and create a BeginDebugEvent
 function createDebugEvent(): BeginDebugEvent {
     const inspectionPointsMap = new Map<number, InspectionPointFormat>();
@@ -63,6 +69,8 @@ function createDebugEvent(): BeginDebugEvent {
 
 
             const additionalVariables: InspectionVariable[] = [];
+
+            idMap.set(idCounter, currentLineNumber);
 
             inspectionPointsMap.set(
                 currentLineNumber,
