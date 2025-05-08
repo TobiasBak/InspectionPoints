@@ -1,11 +1,5 @@
 import { InspectionVariable } from "./userMessages/userMessageDefinitions";
 
-const RTDE_LISTEN_KEYS: string[] = ["safety_status", "runtime_state", "robot_mode"];
-
-export function listOfVariablesToDisplay(): string[] {
-    return RTDE_LISTEN_KEYS;
-}
-
 const GLOBAL_DEBUG_VARIABLES: InspectionVariable[] = [
     { name: "joints", readCommand: "get_actual_joint_positions()" },
     { name: "pose", readCommand: "get_actual_tcp_pose()" },

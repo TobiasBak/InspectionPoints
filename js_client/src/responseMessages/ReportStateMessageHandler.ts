@@ -110,8 +110,6 @@ const sectionStorage = new Map<string, HTMLElement>();
 export function displayMessageData(message: ReportStateMessage): void {
     const data: VariableObject[] = message.data
 
-    
-
     const cobotStateDisplay: HTMLElement = document.getElementById("stateVariableDisplay");
     const codeVariableDisplay: HTMLElement = document.getElementById("codeVariableDisplay");
 
