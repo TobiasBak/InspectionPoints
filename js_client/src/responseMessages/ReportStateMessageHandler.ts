@@ -50,7 +50,6 @@ export function handleReportStateMessage(message: ResponseMessage): void {
 
     storage.push(message);
 
-    updateMessagePoints();
     displayMessageData(message);
 }
 
@@ -180,33 +179,4 @@ function prettyPrint(information: URDataType): string {
     if (typeof information === 'boolean') {
         return information ? 'True' : 'False';
     }
-}
-
-/**
- * Update the message points in the HTML.
- * This function will create a button for each message in the storage.
- * When the button is clicked, it will display the message data in the HTML.
- */
-function updateMessagePoints(): void {
-    const container = document.getElementById('inspectionPointsMessageSelector');
-    container.innerHTML = '';
-
-    storage.forEach((message, index) => {
-        const point = document.createElement('button');
-        point.textContent = `${message.id}`;
-        point.classList.add('messageSelectionPoint');
-        point.setAttribute('data-index', index.toString());
-
-        point.addEventListener('click', () => {
-            const allPoints = container.querySelectorAll('.messageSelectionPoint');
-            allPoints.forEach((p) => p.classList.remove('active'));
-
-            point.classList.add('active');
-
-            const message = storage[index];
-            displayMessageData(message);
-        });
-
-        container.appendChild(point);
-    });
 }

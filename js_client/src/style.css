@@ -57,9 +57,6 @@ p {
     width: 70%;
     max-width: 70%;
 }
-.vh90{
-    height: 90vh;
-}
 
 .hidden {
     display: none;
@@ -112,6 +109,7 @@ p {
 }
 
 .variableView {
+    height: 90vh;
     width: 100%;
     box-sizing: border-box;
     padding: .8em;
@@ -341,34 +339,4 @@ p {
 .inspectionpoint-popup-box .popup-body ul li .delete-variable {
     background-color: var(--error-color);
     padding: 2px;
-}
-
-/* Inspectionpoint messages selector */
-.inspectionPointsMessageSelector {
-    margin: 10px 0;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.messageSelectionPoint {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #0066ff;
-    color: white;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.messageSelectionPoint:hover {
-    background-color: #0033bb;
-}
-
-.messageSelectionPoint.active {
-    background-color: var(--error-color); /* Active point color */
 }
