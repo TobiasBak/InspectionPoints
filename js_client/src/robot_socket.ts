@@ -3,12 +3,12 @@ import {ResponseMessage, ResponseMessageType} from "./responseMessages/responseM
 import {handleAckResponseMessage} from "./responseMessages/AckResponseHandler";
 import {handleFeedbackMessage} from "./responseMessages/FeedbackMessageHandler";
 import {handleRtdeStateMessage} from "./responseMessages/RtdeStateMessageHandler";
-import {BeginDebugEvent, CommandEnteredEvent, EventList} from "./interaction/EventList";
+import {BeginDebugEvent, CommandEnteredEvent, EventList, StopProgramEvent} from "./interaction/EventList";
 import {
     createCommandMessage,
     createDebugMessage,
     createDebugMessageData,
-    createInspectionPointFormat
+    createInspectionPointFormat, createStopCommandMessage
 } from "./userMessages/userMessageFactory";
 import {InspectionPointFormat, UserMessage} from "./userMessages/userMessageDefinitions";
 import {handleReportStateMessage} from "./responseMessages/ReportStateMessageHandler";
@@ -80,17 +80,23 @@ async function testCommands() {
         send(proxyServer, createDebugMessage(e.detail));
     };
 
+    const sendStopCommandToServer = function (e: StopProgramEvent) {
+        const stopCommand = createStopCommandMessage(e.detail.id, e.detail.text);
+        send(proxyServer, stopCommand);
+    };
 
     proxyServer.onopen = () => {
         console.log("Connected to the server");
         document.addEventListener(EventList.CommandEntered, sendCommandToServer);
         document.addEventListener(EventList.BeginDebug, sendDebugCommandToServer);
+        document.addEventListener(EventList.StopProgram, sendStopCommandToServer);
     };
 
     proxyServer.onclose = () => {
         console.log(`Connection closed. Starting a new connection in ${timeoutSleepTime}ms...`);
         document.removeEventListener(EventList.CommandEntered, sendCommandToServer);
         document.removeEventListener(EventList.BeginDebug, sendDebugCommandToServer);
+        document.removeEventListener(EventList.StopProgram, sendStopCommandToServer);
         setTimeout(() => {
             testCommands().then();
         }, timeoutSleepTime);

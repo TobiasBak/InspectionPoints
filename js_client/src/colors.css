@@ -7,13 +7,13 @@
     --ungrouped-color: hsl(182, 95%, 8%);
     --connecting-line-color: rgb(82, 146, 222);
 
-    --error-color-dark: hsl(0, 81%, 50%);
+    --error-color-dark: hsl(0, 55%, 52%);
     --error-color-light: hsl(0, 92%, 67%);
 
-    --warning-color-dark: hsl(60, 100%, 50%);
+    --warning-color-dark: hsl(60, 76%, 54%);
     --warning-color-light: hsl(60, 100%, 46%);
 
-    --success-color-dark: hsl(120, 100%, 63%);
+    --success-color-dark: hsl(120, 42%, 53%);
     --success-color-light: hsl(120, 89%, 35%);
 
 

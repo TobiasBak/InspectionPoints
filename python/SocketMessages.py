@@ -18,6 +18,7 @@ class MessageType(Enum):
     Feedback = auto()
     Robot_state = auto()
     Debug = auto()
+    StopCommand = auto()
 
 
 class Status(Enum):
@@ -33,6 +34,31 @@ class Status(Enum):
         else:
             raise ValueError(f"Unknown status message: '{message}'")
 
+class StopProgramData:
+    def __init__(self, id: int, message: str):
+        self.id = id
+        self.message = message
+
+
+class StopProgramMessage:
+    def __init__(self, id: int, message: str):
+        self.type = MessageType.StopCommand
+        self.data: StopProgramData = StopProgramData(id, message)
+
+    def get_id(self):
+        return self.data.id
+
+    def __str__(self):
+        return json.dumps({
+            "type": self.type.name,
+            "data": {
+                "id": self.data.id,
+                "message": self.data.message
+            }
+        })
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class CommandMessageData:
@@ -322,5 +348,13 @@ def parse_message(message: str) -> CommandMessage | InspectionPointMessage:
             }
         }:
             return InspectionPointMessage(scriptText, inspectionPoints, globalVariables)
+        case {
+            'type': MessageType.StopCommand.name,
+            'data': {
+                'id': id,
+                'message': message
+            }
+        }:
+            return StopProgramMessage(id, message)
         case _:
             raise ValueError(f"Unknown message structure: {parsed}")
