@@ -1,4 +1,3 @@
-import {listOfVariablesToDisplay} from "../cobotVariableSelection";
 import {
     ResponseMessage,
     ResponseMessageType,
@@ -26,11 +25,6 @@ function iterateMessageData(data: RtdeStateMessageData): void {
     const stateVariableView: HTMLElement = document.createElement('div');
     stateVariableView.id = id;
 
-    Object.entries(data).forEach(([key, value]): void => {
-        if (listOfVariablesToDisplay().includes(key)) {
-            generateHtmlFromMessageData(key, stateVariableView, value);
-        }
-    });
 
     if (oldStateVariableView) {
         oldStateVariableView.replaceWith(stateVariableView);
