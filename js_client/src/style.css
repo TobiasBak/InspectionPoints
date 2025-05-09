@@ -58,9 +58,6 @@ p {
     max-width: 70%;
 }
 
-.hidden {
-    display: none;
-}
 
 .commandArea {
     flex: 1;
@@ -116,7 +113,7 @@ p {
 }
 
 .variableViewColum {
-    width: 45%;
+    width: 100%;
     box-sizing: border-box;
     overflow: auto;
 }
@@ -153,11 +150,36 @@ p {
     margin-bottom: .5em;
 }
 
+.ready-display{
+    display: inline-block;
+    height: 1.1em;
+    width: 1.1em;
+    border: .12em solid var(--border-color);
+    border-radius: 50%;
+}
+
+.readiness-ready{
+    background: var(--success-color);
+    /*border-color: var(--success-color);*/
+}
+
+.readiness-yellow{
+    background: var(--warning-color);
+    /*border-color: var(--warning-color);*/
+}
+
+.readiness-red{
+    background: var(--error-color);
+    /*border-color: var(--error-color);*/
+}
+
+
+
 /* Spinner animation */
 .spinner {
     display: inline-block;
-    height: 2.2em;
-    width: 2.2em;
+    height: 1.7em;
+    width: 1.7em;
     border: .3em solid var(--spinner-color);
     border-radius: 50%;
     border-top-color: var(--text-on-background-color);
@@ -170,6 +192,18 @@ p {
 }
 @-webkit-keyframes spin {
     to { -webkit-transform: rotate(360deg); }
+}
+
+.spinnerWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0 .5em;
+}
+
+.hidden-visibility {
+    visibility: hidden;
 }
 
 
@@ -205,6 +239,12 @@ p {
 
 .vs-like-button:hover{
     background: #3c3c3c;
+}
+
+.vs-like-button:disabled {
+    opacity: 0.2;
+    background: #313131;
+    pointer-events: none; /* Prevent interaction */
 }
 
 
@@ -256,4 +296,8 @@ p {
     border-radius: 50%;
     display: inline-block;
     margin-left: 1em;
+}
+
+.hidden {
+    display: none;
 }

@@ -13,7 +13,7 @@ from RobotControl.RobotSocketMessages import parse_robot_message, ReportState, R
 from RobotControl.RunningWithSSH import run_script_on_robot
 from SocketMessages import AckResponse
 from SocketMessages import InspectionPointFormatFromFrontend, InspectionVariable
-from SocketMessages import parse_message, CommandMessage, InspectionPointMessage
+from SocketMessages import parse_message, CommandMessage, InspectionPointMessage, StopProgramMessage
 from WebsocketNotifier import websocket_notifier
 from constants import ROBOT_FEEDBACK_PORT, FRONTEND_WEBSOCKET_PORT
 from custom_logging import LogConfig
@@ -30,6 +30,8 @@ _EMPTY_BYTE: Final = b''
 _connected_web_clients = set()
 _new_client = False
 
+robot = Robot.get_instance()
+
 def handle_command_message(message: CommandMessage) -> str:
     command_string = message.data.command
     non_recurring_logger.debug(f"Command string: {command_string}")
@@ -43,6 +45,10 @@ def handle_command_message(message: CommandMessage) -> str:
     non_recurring_logger.debug(f"Sending response: {str_response}")
     return str_response
 
+def handle_stop_program_message(message: StopProgramMessage) -> str:
+    robot.controller.stop_program()
+    non_recurring_logger.debug("Stopping program because frontend requested it")
+    return ""
 
 def generate_read_point(inspectionPoint: InspectionPointFormatFromFrontend, globalVariables: list[InspectionVariable])->str:
     registry = InspectionGenerator([v.codeVariable for v in globalVariables])
@@ -93,7 +99,8 @@ def __get_handler() -> callable:
                         str_response = handle_command_message(message)
                     case InspectionPointMessage():
                         str_response = handle_inspection_point_message(message)
-
+                    case StopProgramMessage():
+                        str_response = handle_stop_program_message(message)
                     case _:
                         raise ValueError(f"Unknown message type: {message}")
 
