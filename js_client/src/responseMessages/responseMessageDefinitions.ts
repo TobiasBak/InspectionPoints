@@ -70,9 +70,11 @@ export type RtdeStateMessage = {
 
 /**
  * The id corresponds to the inspectionPoint id, where this was emitted from.
+ * The timestamp is the ms when the message was received on the python backend.
  */
 export type ReportStateMessage = {
     type: ResponseMessageType.ReportState,
     data: VariableObject[],
-    id: number
+    id: number,
+    timestamp: number
 }

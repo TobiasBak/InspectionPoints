@@ -19,12 +19,15 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
      */
     const dataCollections: Map<number, DotInfo[]> = new Map()
 
+    let lowest_x = Number.MAX_VALUE
+
     for (let i = 0; i < storage.length; i++) {
         const index = i
         const message = storage[index]
-        const x = index + 1
+        const x = message.timestamp
         const y = message.id
 
+        lowest_x = x < lowest_x ? x : lowest_x
 
         if (!dataCollections.has(y)){
             dataCollections.set(y, [])
@@ -44,7 +47,7 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
             continue
         }
         traceData.push({
-            xs: dataCollection.map((dotInfo) => dotInfo.x),
+            xs: dataCollection.map((dotInfo) => (dotInfo.x - lowest_x) / 1000),
             ys: getLineNumberFromInspectionPointId(yValue),
             customDatas: dataCollection.map((dotInfo) => dotInfo.customdata),
         })

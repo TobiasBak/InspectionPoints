@@ -94,5 +94,6 @@ function parseReportStateMessage(message: any): ReportStateMessage {
             };
         })],
         id: noneGuard(message.id),
+        timestamp: noneGuard(message.timestamp),
     };
 }

@@ -1,4 +1,6 @@
 import json
+import math
+import time
 from enum import Enum, auto
 
 from URIFY import URIFY_return_string
@@ -42,21 +44,26 @@ class VariableObject:
         return json.dumps(self.dump())
 
 class ReportState:
-    def __init__(self, id: int, variables: list[VariableObject]):
+    def __init__(self, id: int, variables: list[VariableObject], timestamp: int | None = None):
         self.id = id
         self.type = RobotSocketMessageTypes.Report_state
         self.variables: list[VariableObject] = variables
+        local_timestamp = math.floor(time.time_ns() / 1000)
+        self.timestamp = local_timestamp if timestamp is None else timestamp
 
     def __str__(self):
-        return json.dumps(self.dump(True))
+        return json.dumps(self.dump(True, True))
 
-    def dump(self, raw_values=False):
-        return {
+    def dump(self, raw_values=False, with_timestamp=False):
+        out = {
             "type": self.type.name,
             "data": [variable.dump() if raw_values else variable.dump_ur_string_for_report_state()
                      for variable in self.variables],
             "id": self.id,
         }
+        if with_timestamp:
+            out["timestamp"] = self.timestamp
+        return out
 
     def dump_string_pre_urify(self):
         return json.dumps(self.dump())
@@ -81,6 +88,7 @@ def parse_list_to_variable_objects(variable_list: list[dict]) -> list[VariableOb
 
 
 def parse_robot_message(message: str) -> ReportState:
+    timestamp = math.floor(time.time_ns() / 1_000_000)
     parsed = json.loads(message)
 
     match parsed:
@@ -90,6 +98,6 @@ def parse_robot_message(message: str) -> ReportState:
             'id': parsed_id
         }:
             parsed_variable_list = parse_list_to_variable_objects(variable_list)
-            return ReportState(parsed_id, parsed_variable_list)
+            return ReportState(parsed_id, parsed_variable_list, timestamp)
         case _:
             raise ValueError(f"Unknown RobotSocketMessage type: {parsed}")
