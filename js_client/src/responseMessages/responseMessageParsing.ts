@@ -90,7 +90,8 @@ function parseReportStateMessage(message: any): ReportStateMessage {
             return {
                 name: noneGuard(variable.name),
                 type: noneGuard(variable.type),
-                value: noneGuard(variable.value)
+                value: noneGuard(variable.value),
+                global: noneGuard(variable.global),
             };
         })],
         id: noneGuard(message.id),

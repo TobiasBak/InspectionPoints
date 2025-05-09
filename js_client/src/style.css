@@ -296,8 +296,93 @@ p {
     border-radius: 50%;
     display: inline-block;
     margin-left: 1em;
+    height: .9em !important;
+    width: .9em !important;
 }
 
 .hidden {
     display: none;
+}
+
+/* DECORATIONS POPUP */
+/* Using .inspectionpoint-popup-box to avoid possible conflicts with other popups */
+.inspectionpoint-popup-box {
+    background: lightgray;
+    border: 2px solid var(--border-color);
+    color: var(--text-on-background-color);
+    padding: 0.5em;
+    z-index: 100;
+    width: 300px;
+    border-radius: 0.4em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.inspectionpoint-popup-box .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: #333;
+    font-size: 18px;
+}
+.inspectionpoint-popup-box .popup-header .close-popup {
+    background: none;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+}
+.inspectionpoint-popup-box .popup-header .close-popup:hover {
+    color: var(--error-color);
+}
+.inspectionpoint-popup-box .popup-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    color: #333;
+    font-size: 14px;
+}
+.inspectionpoint-popup-box .popup-body input {
+    width: 100%;
+    font-weight: bold;
+    border-radius: 0.3em;
+    background-color: var(--slate-background-color);
+    color: var(--text-on-background-color);
+}
+.inspectionpoint-popup-box .popup-body>label {
+    font-weight: bold;
+    color: #333;
+}
+.inspectionpoint-popup-box .popup-body button {
+    align-self: flex-end;
+    padding: 8px 15px;
+    background-color: var(--group-B-active-color);
+    color: white;
+    border: none;
+    border-radius: 0.3em;
+    cursor: pointer;
+}
+.inspectionpoint-popup-box .popup-body button:hover {
+    background-color: var(--group-A-active-color);
+}
+.inspectionpoint-popup-box .popup-body ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+}
+.inspectionpoint-popup-box .popup-body ul li {
+    background: var(--slate-background-color);
+    color: var(--text-on-background-color);
+    margin: 5px 0;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.inspectionpoint-popup-box .popup-body ul li .delete-variable {
+    background-color: var(--error-color);
+    padding: 2px;
 }
