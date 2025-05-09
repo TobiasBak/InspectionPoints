@@ -296,6 +296,8 @@ p {
     border-radius: 50%;
     display: inline-block;
     margin-left: 1em;
+    height: .9em !important;
+    width: .9em !important;
 }
 
 .hidden {
