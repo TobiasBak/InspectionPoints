@@ -98,7 +98,6 @@ class SSH:
         """
         Reads the last `lines` number of lines from the robot's log file.
         """
-
         try:
             sftp = self.ssh_client.open_sftp()
             recurring_logger.debug("Opened SFTP connection")
@@ -132,3 +131,45 @@ class SSH:
         finally:
             recurring_logger.debug("Closing SFTP connection")
             sftp.close()
+
+    def get_logs_from_last_program_run(self) -> list[str]:
+        """
+        Reads the logs up to the last "Starting program" line.
+        This is used to get the logs from the last program run.
+        """
+        try:
+            sftp = self.ssh_client.open_sftp()
+            recurring_logger.debug("Opened SFTP connection")
+        except Exception as e:
+            non_recurring_logger.error(f"Failed to open SFTP connection: {e}")
+            return []
+
+        try:
+            with sftp.file(self.path_to_error_log, 'rb') as f:
+                # Move to the end of the file
+                f.seek(0, os.SEEK_END)
+                position = f.tell()
+                line = b""
+                logs = []
+                
+                # Read backwards until the "Starting program" line is found
+                while position >= 0:
+                    f.seek(position)
+                    char = f.read(1)
+                    if char == b'\n' and line:
+                        line_decoded = line.decode("utf-8")
+                        if "Starting program" in line_decoded:
+                            break
+                        logs.append(line_decoded)
+                        line = b""
+                    line = char + line
+                    position -= 1
+                
+                return logs  
+        except Exception as e:
+            non_recurring_logger.error(f"Failed to read error log: {e}")
+            return []
+        finally:
+            recurring_logger.debug("Closing SFTP connection")
+            sftp.close()
+

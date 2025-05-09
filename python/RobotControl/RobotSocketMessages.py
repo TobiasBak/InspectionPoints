@@ -18,17 +18,20 @@ class RobotSocketMessageTypes(Enum):
 
 class VariableObject:
     def __init__(self, name: str, variable_type: VariableTypes,
-                 value: str | int | float | bool | list | tuple[float, float, float, float, float, float]):
+                 value: str | int | float | bool | list | tuple[float, float, float, float, float, float],
+                 global_variable: bool = False):
         self.name = name
         self.variable_type = variable_type
         self.value = value
+        self.global_variable = global_variable
 
     def dump(self, ur_prep=False):
         value = self.value if not ur_prep else f'\"\"{self.variable_type.value}{self.name}\"\"'
         return {
             "name": self.name,
             "type": self.variable_type.name,
-            "value": value
+            "value": value,
+            "global": self.global_variable
         }
 
     def dump_ur_string_for_report_state(self):
@@ -36,7 +39,8 @@ class VariableObject:
         return {
             "name": self.name,
             "type": self.variable_type.name,
-            "value": value
+            "value": value,
+            "global": self.global_variable
         }
 
     def __str__(self):
@@ -79,9 +83,10 @@ def parse_list_to_variable_objects(variable_list: list[dict]) -> list[VariableOb
             case {
                 'name': name,
                 'type': variable_type,
-                'value': value
+                'value': value,
+                'global': global_variable
             }:
-                out.append(VariableObject(name, VariableTypes[variable_type], value))
+                out.append(VariableObject(name, VariableTypes[variable_type], value, global_variable))
             case _:
                 raise ValueError(f"Unknown VariableObject type: {variable}")
     return out

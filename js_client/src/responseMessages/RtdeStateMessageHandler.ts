@@ -1,4 +1,3 @@
-import {generateVariableSelection, listOfVariablesToDisplay} from "../cobotVariableSelection";
 import { isStopButtonDisabled, setStopButtonDisabled } from "../interaction/stopProgram";
 import {
     ResponseMessage,
@@ -21,7 +20,6 @@ export function handleRtdeStateMessage(message: ResponseMessage): void {
     showRobotReady(message);
     showSafetyStatus(message);
 
-    generateVariableSelection(message.data, replayRtdeStateMessage);
     // iterateMessageData(message.data);
 }
 
@@ -154,16 +152,11 @@ function replayRtdeStateMessage(): void {
 }
 
 function iterateMessageData(data: RtdeStateMessageData): void {
-    const id: 'stateVariableDisplay' = "stateVariableDisplay"
+    const id: 'statusVariableDisplay' = "statusVariableDisplay"
     const oldStateVariableView: HTMLElement = document.getElementById(id);
     const stateVariableView: HTMLElement = document.createElement('div');
     stateVariableView.id = id;
 
-    Object.entries(data).forEach(([key, value]): void => {
-        if (listOfVariablesToDisplay().includes(key)) {
-            generateHtmlFromMessageData(key, stateVariableView, value);
-        }
-    });
 
     if (oldStateVariableView) {
         oldStateVariableView.replaceWith(stateVariableView);

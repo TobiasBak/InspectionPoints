@@ -46,7 +46,8 @@ export type URDataType = string | number | boolean | any[] | [number, number, nu
 export type VariableObject = {
     name: string,
     type: VariableType,
-    value: URDataType
+    value: URDataType,
+    global: boolean,
 }
 
 export type stateMessageTypes = string | number | [number, number, number, number, number, number] | TCPInformation | [boolean, boolean, boolean, boolean, boolean, boolean, boolean, boolean] | boolean

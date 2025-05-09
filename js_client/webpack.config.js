@@ -12,6 +12,7 @@ module.exports = {
         robot_3d_plot: './src/robot3dplot.png',
         dark_mode: './src/Toolbox/auto_dark_mode.ts',
         inspectionPoints: './src/interaction/inspectionPoints.ts',
+        debugEventHandler: './src/interaction/debugEventHandler.ts',
         runCode: './src/interaction/runCode.ts',
         monacoEditor: './src/monacoExperiment.ts',
         inspectionGraph: './src/inspectionPointGraph/InspectionGraph.ts',

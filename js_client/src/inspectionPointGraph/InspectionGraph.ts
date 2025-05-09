@@ -3,7 +3,7 @@ import {Datum} from "plotly.js";
 import {getIndexFromClick, getTimestampFromClick} from "./toolbox";
 import {plotLineChart, TraceData} from "./RoboticVisualizations/LinePlotFactory";
 import {displayMessageData, getStoredMessages} from "../responseMessages/displayReportStateMessage";
-import {getLineNumberFromInspectionPointId} from "../interaction/inspectionPoints";
+import {getLineNumberFromInspectionPointId} from "../interaction/debugEventHandler";
 
 
 export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
