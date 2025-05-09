@@ -57,7 +57,7 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
         return anumber - bnumber
     })
 
-    const chart = await plotLineChart("Inspection points logged", "newChart", newTraceData, "lineNumber");
+    const chart = await plotLineChart("Inspection points logged", "newChart", newTraceData, "line");
 
     chart.removeAllListeners('plotly_click')
 

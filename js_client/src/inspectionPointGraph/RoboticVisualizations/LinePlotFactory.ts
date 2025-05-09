@@ -17,9 +17,9 @@ export async function plotLineChart(chartName: string, chartId: string, traceDat
 
     // Generate the layout. This is necessary for generating the frames
     console.log(`Generating layout for ${chartName} with height: ${chartDiv.clientHeight} and width: ${chartDiv.clientWidth}`, chartDiv.clientHeight, chartDiv)
-    const layout = get2dLayout(chartName, chartDiv.clientHeight, chartDiv.clientWidth - 50, false)
+    const layout = get2dLayout(chartName, chartDiv.clientHeight, chartDiv.clientWidth - 50, false, false)
 
-    layout.yaxis.ticksuffix = ` ${yUnit}`
+    layout.yaxis.tickprefix = `${yUnit} `
 
     layout.legend.bgcolor = getColorMap().group_colors.A_background
     layout.legend.bordercolor = getColorMap().plot_colors.gridColor
@@ -68,6 +68,9 @@ function generateTrace(x: Datum[], y: Datum | Datum[], customData: Datum[], name
             color: getColorMap().legend_colors_array[color],
             width: lineWeight,
         },
+        marker: {
+            size: 15
+        }
     }
 }
 

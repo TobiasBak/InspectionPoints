@@ -32,9 +32,10 @@ export function createVerticalLine(x: number, lineName: string, thickness: numbe
  * @param height {number}
  * @param width {number}
  * @param forLinePlot {boolean} - If true, the layout will be for a line plot, otherwise it will be for other types of 2d plots
+ * @param showLegend {boolean} - When true the legend will be displayed, when false the legend is hidden
  * @returns Object
  */
-export function get2dLayout(title: string, height: number, width: number, forLinePlot: boolean = true): Partial<Plotly.Layout> {
+export function get2dLayout(title: string, height: number, width: number, forLinePlot: boolean = true, showLegend: boolean = true): Partial<Plotly.Layout> {
     const {plotColor, paperColor, gridColor} = getColorMap().plot_colors
 
     return {
@@ -59,6 +60,7 @@ export function get2dLayout(title: string, height: number, width: number, forLin
             gridcolor: gridColor,
             gridwidth: 1,
             showline: forLinePlot,
+            showgrid: showLegend,
         },
         yaxis: {
             automargin: true,
@@ -66,15 +68,16 @@ export function get2dLayout(title: string, height: number, width: number, forLin
             gridwidth: 1,
             showline: forLinePlot,
             autorange: "reversed",
-            dtick: 1,
-            tick0: 1,
+            // dtick: 1,
+            // tick0: 1,
+            // showgrid: showLegend,
         },
         plot_bgcolor: plotColor,
         paper_bgcolor: paperColor,
         dragmode: "zoom",
         //https://plotly.com/javascript/shapes/
         shapes: [],
-        showlegend: true,
+        showlegend: showLegend,
         legend: {
             //https://plotly.com/javascript/reference/layout/#layout-legend-xanchor
             x: 1, // this is the paper coordinate of the plot
