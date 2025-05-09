@@ -55,6 +55,7 @@ editor.onMouseDown((event) => {
         decorationIds.set(newId, lineNumber);
     }
 });
+
 editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
     localStorage.setItem('urscript', editor.getValue());
 });

@@ -9,9 +9,11 @@
   "author": "Tobias Vittrup Bak, Kevin Mike Torp & Thor Malmby Jørgin",
   "license": "GNU General Public License",
   "devDependencies": {
+    "@types/plotly.js": "^3.0.0",
     "css-loader": "^6.10.0",
     "html-loader": "^5.0.0",
     "html-webpack-plugin": "^5.6.0",
+    "process": "^0.11.10",
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
@@ -20,9 +22,13 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "assert-browserify": "^2.0.0",
+    "buffer-browserify": "^0.2.5",
     "monaco-editor": "^0.52.2",
     "monaco-editor-textmate": "^4.0.0",
     "monaco-textmate": "^3.0.1",
-    "path-browserify": "^1.0.1"
+    "path-browserify": "^1.0.1",
+    "plotly.js": "^3.0.1",
+    "stream-browserify": "^3.0.0"
   }
 }
