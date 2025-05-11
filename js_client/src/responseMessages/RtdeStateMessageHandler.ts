@@ -127,11 +127,18 @@ function handleSpinnerState(rtdeState: RtdeStateMessage): void{
     }
 }
 
+const spinnerStateChangeCallbacks: ((enabled: boolean) => void)[] = [];
+
+export function registerForSpinnerStateChange(callback: (enabled: boolean) => void): void {
+    spinnerStateChangeCallbacks.push(callback);
+}
+
 function switchSpinnerState(enabled: boolean): void {
     if (enabled === spinnerState) {
         return;
     }
     spinnerState = enabled;
+    spinnerStateChangeCallbacks.forEach(callback => callback(enabled));
 
     if (!spinner) {
         console.error('Spinner element not found');
