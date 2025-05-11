@@ -2,7 +2,7 @@ import * as Plotly from 'plotly.js';
 import {Datum} from "plotly.js";
 import {getIndexFromClick, getTimestampFromClick} from "./toolbox";
 import {plotLineChart, TraceData} from "./RoboticVisualizations/LinePlotFactory";
-import {displayMessageData, getStoredMessages} from "../responseMessages/displayReportStateMessage";
+import {displayMessageData, getCurrentId, getStoredMessages} from "../responseMessages/displayReportStateMessage";
 import {getLineNumberFromInspectionPointId} from "../interaction/debugEventHandler";
 
 
@@ -60,7 +60,7 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
         return anumber - bnumber
     })
 
-    const chart = await plotLineChart("Inspection points logged", "newChart", newTraceData, "line");
+    const chart = await plotLineChart(`Run ${getCurrentId()} - Inspection points logged:`, `newchart-${getCurrentId()}`, newTraceData, "line");
 
     chart.removeAllListeners('plotly_click')
 

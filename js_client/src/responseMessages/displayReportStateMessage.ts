@@ -1,7 +1,17 @@
 import {ReportStateMessage, URDataType, VariableObject} from "./responseMessageDefinitions";
+import {BeginDebugEvent, EventList} from "../interaction/EventList";
 
 
-const storage: ReportStateMessage[] = [];
+let storage: ReportStateMessage[] = [];
+
+const coldStorage: Map<number, ReportStateMessage[]> = new Map<number, ReportStateMessage[]>();
+let currentId: number = 0;
+
+document.addEventListener(EventList.BeginDebug, (event: BeginDebugEvent) => {
+    coldStorage.set(currentId, storage);
+    currentId++
+    storage = [];
+})
 
 /**
  * Get the stored messages in the received order.
@@ -19,6 +29,9 @@ export function storeMessage(message: ReportStateMessage): void {
     storage.push(message);
 }
 
+export function getCurrentId(): number {
+    return currentId;
+}
 
 /**
  * Map the variable name to the section element that stores it.
