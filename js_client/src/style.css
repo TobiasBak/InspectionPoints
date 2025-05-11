@@ -314,7 +314,7 @@ p {
 
 /* DECORATIONS */
 .red-circle-decoration {
-    background-color: red;
+    background-color:#C49102;
     border-radius: 50%;
     display: inline-block;
     margin-left: 1em;
