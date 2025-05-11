@@ -68,6 +68,10 @@ function showSafetyStatus(rtdeState: RtdeStateMessage): void {
     } else {
         safetyStatusDisplay.children[1].classList.remove('hidden');
     }
+
+    // Tooltip handling
+    const tooltipId = 'safetyStatusTooltip';
+    setupTooltip(safetyStatusDisplay, tooltipId, () => `Current Safety Status: ${safetyStatus}`);
 }
 
 let currentRobotMode: string = '';
@@ -106,6 +110,10 @@ function showRobotReady(rtdeState: RtdeStateMessage): void {
     } else if (redStates.has(robotMode)) {
         robotModeDisplay.classList.add('readiness-red');
     }
+
+    // Tooltip handling
+    const tooltipId = 'readyStatusTooltip';
+    setupTooltip(robotModeDisplay, tooltipId, () => `Current Robot Mode: ${currentRobotMode}`);
 }
 
 const spinner: HTMLElement | null = document.getElementById('spinner');
@@ -162,6 +170,57 @@ function iterateMessageData(data: RtdeStateMessageData): void {
         oldStateVariableView.replaceWith(stateVariableView);
     } else {
         document.getElementById('stateVariables').appendChild(stateVariableView);
+    }
+}
+
+function setupTooltip(targetElement: HTMLElement | null, tooltipId: string, getContent: () => string): void {
+    if (!targetElement) {
+        console.error(`Target element not found for  the tooltip: ${tooltipId}`);
+        return;
+    }
+
+    targetElement.addEventListener('mouseenter', (event) => {
+        const tooltip = document.getElementById(tooltipId);
+        if (tooltip) {
+            tooltip.textContent = getContent(); //gets the content for the tooltip dynamically
+            tooltip.classList.add('visible');
+            tooltip.classList.remove('hidden');
+            positionTooltip(event, tooltipId);
+        }
+    });
+
+    targetElement.addEventListener('mouseleave', () => {
+        const tooltip = document.getElementById(tooltipId);
+        if (tooltip) {
+            tooltip.classList.remove('visible');
+            tooltip.classList.add('hidden');
+        }
+    });
+}
+
+function positionTooltip(event: MouseEvent, tooltipId: string): void {
+    const tooltip = document.getElementById(tooltipId);
+    const targetElement = event.currentTarget as HTMLElement;
+
+    if (tooltip && targetElement) {
+        const targetRectangle = targetElement.getBoundingClientRect();
+
+        // Calculate position to place just below the targeted element
+        let left = targetRectangle.left;
+        const top = targetRectangle.bottom + 5; // 5px to place it just below the div
+
+        // Get the tooltip width and the viewport width
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+
+        // Ensures the tooltip does not overflow the viewport
+        if (left + tooltipRect.width > viewportWidth) {
+            left = viewportWidth - tooltipRect.width - 10;
+        }
+
+        // Apply the position
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
     }
 }
 

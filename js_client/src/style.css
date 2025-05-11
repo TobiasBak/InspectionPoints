@@ -408,3 +408,21 @@ p {
     background-color: var(--error-color);
     padding: 2px;
 }
+
+/* Cobot tooltip styling */
+.cobotTooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.2em 0.4em;
+    border-radius: .2em;
+    font-size: 14px;
+    z-index: 100;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+
+.cobotTooltip.visible {
+    opacity: 1;
+}
