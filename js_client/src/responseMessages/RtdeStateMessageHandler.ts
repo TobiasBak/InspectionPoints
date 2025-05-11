@@ -71,7 +71,8 @@ function showSafetyStatus(rtdeState: RtdeStateMessage): void {
 
     // Tooltip handling
     const tooltipId = 'safetyStatusTooltip';
-    setupTooltip(safetyStatusDisplay, tooltipId, () => `Current Safety Status: ${safetyStatus}`);
+    const tooltipContent = `Current Safety Status: ${safetyStatus}`;
+    setupTooltip(safetyStatusDisplay, tooltipId, tooltipContent);
 }
 
 let currentRobotMode: string = '';
@@ -113,7 +114,8 @@ function showRobotReady(rtdeState: RtdeStateMessage): void {
 
     // Tooltip handling
     const tooltipId = 'readyStatusTooltip';
-    setupTooltip(robotModeDisplay, tooltipId, () => `Current Robot Mode: ${currentRobotMode}`);
+    const tooltipContent = `Current Robot Mode: ${currentRobotMode}`;
+    setupTooltip(robotModeDisplay, tooltipId, tooltipContent);
 }
 
 const spinner: HTMLElement | null = document.getElementById('spinner');
@@ -173,7 +175,7 @@ function iterateMessageData(data: RtdeStateMessageData): void {
     }
 }
 
-function setupTooltip(targetElement: HTMLElement | null, tooltipId: string, getContent: () => string): void {
+function setupTooltip(targetElement: HTMLElement | null, tooltipId: string, content: string): void {
     if (!targetElement) {
         console.error(`Target element not found for  the tooltip: ${tooltipId}`);
         return;
@@ -182,7 +184,7 @@ function setupTooltip(targetElement: HTMLElement | null, tooltipId: string, getC
     targetElement.addEventListener('mouseenter', (event) => {
         const tooltip = document.getElementById(tooltipId);
         if (tooltip) {
-            tooltip.textContent = getContent(); //gets the content for the tooltip dynamically
+            tooltip.textContent = content;
             tooltip.classList.add('visible');
             tooltip.classList.remove('hidden');
             positionTooltip(event, tooltipId);
