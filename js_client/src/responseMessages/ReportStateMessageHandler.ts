@@ -28,9 +28,7 @@ export function handleReportStateMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.ReportState) {
         throw new Error(`Invalid message type: ${message.type}`);
     }
-
-    console.log(`Received message:`, message);
-
+    
     message.data.forEach((variable: VariableObject) => {
       if (typeof variable.value === 'string'){
         variable.value = parseStringContent(variable.value);
