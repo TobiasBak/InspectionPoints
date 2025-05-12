@@ -1,4 +1,4 @@
-import { isStopButtonDisabled, setStopButtonDisabled } from "../interaction/stopProgram";
+import { isStopButtonDisabled, setDebugButtonDisabled, setStartButtonDisabled, setStopButtonDisabled } from "../interaction/buttonHelper";
 import {
     ResponseMessage,
     ResponseMessageType,
@@ -15,7 +15,7 @@ export function handleRtdeStateMessage(message: ResponseMessage): void {
     }
 
     lastRtdeStateMessage = message;
-    switchStopButtonState(message);
+    updateButtonStates(message);
     handleSpinnerState(message);
     showRobotReady(message);
     showSafetyStatus(message);
@@ -23,13 +23,17 @@ export function handleRtdeStateMessage(message: ResponseMessage): void {
     // iterateMessageData(message.data);
 }
 
-function switchStopButtonState(rtdeState: RtdeStateMessage): void {
+function updateButtonStates(rtdeState: RtdeStateMessage): void {
     const program_state = rtdeState.data.runtime_state;
     console.log('program_state', program_state);
-    if (program_state === 'playing' && isStopButtonDisabled() === true) {
-        setStopButtonDisabled(true);
-    } else if (program_state === 'stopped' && isStopButtonDisabled() === false) {
+    if (program_state === 'playing') {
         setStopButtonDisabled(false);
+        setStartButtonDisabled(true);
+        setDebugButtonDisabled(true);
+    } else if (program_state === 'stopped') {
+        setStopButtonDisabled(true);
+        setStartButtonDisabled(false);
+        setDebugButtonDisabled(false);
     }
 }
 

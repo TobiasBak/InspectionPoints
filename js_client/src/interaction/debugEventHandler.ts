@@ -5,6 +5,7 @@ import { selectedGlobalVariables } from "../cobotVariableSelection";
 import {createInspectionPointFormat, createDebugMessageData} from '../userMessages/userMessageFactory';
 import {InspectionPointFormat, InspectionVariable} from '../userMessages/userMessageDefinitions';
 import { BeginDebugEvent } from "./EventList";
+import { switchButtonStates } from "./buttonHelper";
 
 const idMap = new Map<number, number>();
 
@@ -47,6 +48,8 @@ function createDebugEvent(): BeginDebugEvent {
 }
 
 document.getElementById("debugEditorButton")?.addEventListener("click", () => {
+    switchButtonStates(); // For instant feedback
+    
     const debugEvent = createDebugEvent();
     document.dispatchEvent(debugEvent);
     console.log("Debug event dispatched:", debugEvent);
