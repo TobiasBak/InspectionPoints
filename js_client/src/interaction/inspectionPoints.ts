@@ -80,7 +80,9 @@ function updateDecorationStyle(decorationId: string) {
     }
 }
 
-// Listen for the custom "refreshDecoration" event
+// Listen for the custom "refreshDecoration" event to update the decoration style
+// when the tracked variables are changed
+// This event is dispatched in the inspectionPopupManager when a variable is added or removed
 document.addEventListener("refreshDecoration", (event: Event) => {
     const customEvent = event as CustomEvent<{ decorationId: string }>;
     const { decorationId } = customEvent.detail;
