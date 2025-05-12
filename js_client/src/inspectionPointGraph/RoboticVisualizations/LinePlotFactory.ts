@@ -17,7 +17,7 @@ export async function plotLineChart(chartName: string, chartId: string, traceDat
 
     // Generate the layout. This is necessary for generating the frames
     console.log(`Generating layout for ${chartName} with height: ${chartDiv.clientHeight} and width: ${chartDiv.clientWidth}`, chartDiv.clientHeight, chartDiv)
-    const layout = get2dLayout(chartName, chartDiv.clientHeight, chartDiv.clientWidth - 50, false, false)
+    const layout = get2dLayout(chartName, chartDiv.clientHeight - 50, chartDiv.clientWidth - 50, false, false)
 
     layout.yaxis.tickprefix = `${yUnit} `
 

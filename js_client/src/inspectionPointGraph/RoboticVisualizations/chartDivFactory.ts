@@ -17,7 +17,7 @@ export async function createDivForPlotlyChart(chartId: string): Promise<HTMLElem
     //Add the div to the container that has the visualizations
     const visualizationContainer = document.getElementById("visualization-container")
     console.log(visualizationContainer)
-    visualizationContainer.appendChild(div)
+    visualizationContainer.prepend(div)
 
     return div
 }
@@ -28,7 +28,7 @@ function _createDiv(id: string): HTMLDivElement {
 
     // Add the classes to the div for placeholder text and formatting
     div.id = id
-    div.classList.add("vis-placeholder", "draggable")
+    div.classList.add("vis-placeholder", "draggable", "slate")
     div.draggable = false
 
     return div

@@ -2,9 +2,13 @@ import * as Plotly from 'plotly.js';
 import {Datum} from "plotly.js";
 import {getIndexFromClick, getTimestampFromClick} from "./toolbox";
 import {plotLineChart, TraceData} from "./RoboticVisualizations/LinePlotFactory";
-import {displayMessageData, getStoredMessages} from "../responseMessages/displayReportStateMessage";
+import {displayMessageData, getCurrentId, getStoredMessages} from "../responseMessages/displayReportStateMessage";
 import {getLineNumberFromInspectionPointId} from "../interaction/debugEventHandler";
+import {clone} from "../Toolbox/DomTools";
+import {registerForSpinnerStateChange} from "../responseMessages/RtdeStateMessageHandler";
 
+let activeChart: Plotly.PlotlyHTMLElement | null = null
+let activeButton: HTMLElement | null = null
 
 export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
     const storage = getStoredMessages()
@@ -60,7 +64,13 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
         return anumber - bnumber
     })
 
-    const chart = await plotLineChart("Inspection points logged", "newChart", newTraceData, "line");
+    const chart = await plotLineChart(`Run ${getCurrentId()} - Inspection points logged:`, `newchart-${getCurrentId()}`, newTraceData, "line");
+    if (activeChart && activeChart.id !== chart.id) {
+        activeChart.classList.add("hidden")
+        activeButton?.classList.remove("active")
+    }
+    activeChart = chart
+
 
     chart.removeAllListeners('plotly_click')
 
@@ -74,5 +84,39 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
         displayMessageData(message)
     })
 
+    let showGraphButton = document.getElementById(`graph-button-${getCurrentId()}`)
+    if (!showGraphButton) {
+        const templateButton: HTMLElement = document.getElementById("graph-button-template")
+        showGraphButton = clone(templateButton)
+        showGraphButton.id = `graph-button-${getCurrentId()}`
+        showGraphButton.classList.remove("hidden")
+        const container = document.getElementById("graph-button-container")
+        showGraphButton.textContent = `${getCurrentId()}`
+        container.appendChild(showGraphButton)
+    }
+
+    function showThisGraph() {
+        activeChart?.classList.add("hidden")
+        chart.classList.remove("hidden")
+        activeChart = chart
+        activeButton?.classList.remove("active")
+        showGraphButton?.classList.add("active")
+        activeButton = showGraphButton
+    }
+    activeButton = showGraphButton
+
+    showGraphButton.removeEventListener("click", showThisGraph)
+    showGraphButton.addEventListener("click", showThisGraph)
+
+    if (showGraphButton instanceof HTMLButtonElement) {
+        registerForSpinnerStateChange((enabled: boolean) => {
+            enableButton(showGraphButton, enabled)
+        })
+    }
+
     return chart
+}
+
+function enableButton(button: HTMLButtonElement, enabled: boolean) {
+    button.disabled = enabled
 }
