@@ -426,3 +426,12 @@ p {
 .cobotTooltip.visible {
     opacity: 1;
 }
+
+/* Fixing wierd height difference */
+#safetyStatusDisplay {
+    line-height: 1;
+    height: auto;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
