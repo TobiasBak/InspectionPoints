@@ -88,7 +88,8 @@ def parse_list_to_variable_objects(variable_list: list[dict]) -> list[VariableOb
             }:
                 out.append(VariableObject(name, VariableTypes[variable_type], value, global_variable))
             case _:
-                raise ValueError(f"Unknown VariableObject type: {variable}")
+                non_recurring_logger.error(f"Unknown VariableObject type: {variable}")
+                # raise ValueError(f"Unknown VariableObject type: {variable}")
     return out
 
 
