@@ -61,17 +61,21 @@ function showSafetyStatus(rtdeState: RtdeStateMessage): void {
     safetyStatusDisplay.children[1].classList.add('hidden')
     safetyStatusDisplay.children[2].classList.add('hidden')
 
+    let tooltipContent = '';
+
     if (greenStates.has(safetyStatus)) {
         safetyStatusDisplay.children[2].classList.remove('hidden');
+        tooltipContent = 'The cobot is operating normally.';
     }else if (yellowStates.has(safetyStatus)) {
         safetyStatusDisplay.children[0].classList.remove('hidden');
+        tooltipContent = 'The cobot is operating in reduced mode.';
     } else {
         safetyStatusDisplay.children[1].classList.remove('hidden');
+        tooltipContent = 'The cobot has stopped due to a safety issue.';
     }
 
     // Tooltip handling
     const tooltipId = 'safetyStatusTooltip';
-    const tooltipContent = `Current Safety Status: ${safetyStatus}`;
     setupTooltip(safetyStatusDisplay, tooltipId, tooltipContent);
 }
 
@@ -104,17 +108,21 @@ function showRobotReady(rtdeState: RtdeStateMessage): void {
         'backdrive',
     ]);
 
+    let tooltipContent = '';
+
     if (robotMode === 'running') {
         robotModeDisplay.classList.add('readiness-ready');
+        tooltipContent = 'The cobot is ready to execute programs.';
     } else if (robotMode === 'power_on' || robotMode === 'booting' || robotMode === 'updating_firmware') {
         robotModeDisplay.classList.add('readiness-yellow');
+        tooltipContent = 'The cobot is busy (powering on, booting, or updating firmware). Please wait.';
     } else if (redStates.has(robotMode)) {
         robotModeDisplay.classList.add('readiness-red');
+        tooltipContent = 'The cobot requires action on the Polyscope interface to continue.';
     }
 
     // Tooltip handling
     const tooltipId = 'readyStatusTooltip';
-    const tooltipContent = `Current Robot Mode: ${currentRobotMode}`;
     setupTooltip(robotModeDisplay, tooltipId, tooltipContent);
 }
 
