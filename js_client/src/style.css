@@ -322,6 +322,15 @@ p {
     width: .9em !important;
 }
 
+.tracked-variable-decoration {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23C49102" d="M8 0a8 8 0 100 16A8 8 0 008 0zm.75 12.5h-1.5v-1.5h1.5v1.5zm0-3h-1.5v-6h1.5v6z"/></svg>') no-repeat center center;
+    background-size: contain;
+    display: inline-block;
+    margin-left: 1em;
+    height: .9em !important;
+    width: .9em !important;
+}
+
 .hidden {
     display: none;
 }
