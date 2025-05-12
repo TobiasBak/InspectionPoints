@@ -6,6 +6,12 @@ import {createInspectionPointFormat, createDebugMessageData} from '../userMessag
 import {InspectionPointFormat, InspectionVariable} from '../userMessages/userMessageDefinitions';
 import { BeginDebugEvent } from "./EventList";
 
+const idMap = new Map<number, number>();
+
+export function getLineNumberFromInspectionPointId(id: number): number{
+    return idMap.get(id) ?? -1;
+}
+
 function createDebugEvent(): BeginDebugEvent {
     const inspectionPointsMap = new Map<number, InspectionPointFormat>();
     let idCounter = 1;
@@ -21,6 +27,8 @@ function createDebugEvent(): BeginDebugEvent {
                 name: variableName,
                 readCommand: variableName,
             }));
+
+            idMap.set(idCounter, currentLineNumber);
 
             inspectionPointsMap.set(
                 currentLineNumber,

@@ -28,6 +28,7 @@ p {
     text-align: center;
     margin: auto;
 }
+
 .opacity {
     opacity: 0;
 }
@@ -62,7 +63,8 @@ p {
 .commandArea {
     flex: 1;
     height: 90vh;
-    padding: 0;
+    /*padding: 0;*/
+    /*margin: 0 .5em;*/
 }
 
 .commandArea > * {
@@ -101,15 +103,21 @@ p {
     color: #c52a2a;
 }
 
+.primary-block{
+    height: 60vh;
+    padding: 0;
+    margin: 0 .5em;
+}
+
 .visualizationArea {
     flex: 1;
 }
 
 .variableView {
-    height: 90vh;
     width: 100%;
     box-sizing: border-box;
     padding: .8em;
+    height: 100%;
 }
 
 .variableViewColum {
@@ -259,6 +267,20 @@ p {
 .left-aligned{
     padding-left: 0;
 }
+
+.graphContainer{
+    /*width: calc(100vw - 2* 2 * 10px);*/
+    min-height: 24vh;
+    /*padding: 1.5em .75em 1em 0;*/
+    /*padding: 1em;*/
+    margin: 2em .5em;
+    /*display: flex;*/
+}
+
+.vis-placeholder{
+    height: 25vh;
+}
+
 
 /* POPUP */
 .popup {
