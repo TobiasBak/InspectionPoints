@@ -46,7 +46,7 @@ editor.onMouseDown((event) => {
                 range: new monaco.Range(lineNumber, 1, lineNumber, 1),
                 options: {
                     isWholeLine: true,
-                    glyphMarginClassName: 'red-circle-decoration',
+                    glyphMarginClassName: 'inspection-point-decoration',
                     stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
                 },
             },

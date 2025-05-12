@@ -313,9 +313,9 @@ p {
 }
 
 /* DECORATIONS */
-.red-circle-decoration {
-    background-color:#C49102;
-    border-radius: 50%;
+.inspection-point-decoration {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="%23C49102"/></svg>') no-repeat center center;
+    background-size: contain;
     display: inline-block;
     margin-left: 1em;
     height: .9em !important;
