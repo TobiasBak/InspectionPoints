@@ -67,8 +67,12 @@ def handle_inspection_point_message(message: InspectionPointMessage) -> str:
 
     final_script = "\n".join(message.scriptText)
     response = run_script_on_robot(final_script)
-
-    return response
+    if not response:
+        return ""
+    
+    non_recurring_logger.debug(f"Result of command: {response}")
+    ack_response = AckResponse(0, final_script, response) # 0, because we don't have an id for the script
+    return str(ack_response)
 
 def handle_new_client():
     global _new_client
