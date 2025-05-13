@@ -30,6 +30,8 @@ class RobotController:
         # Initialize sockets
         self.dashboard_socket: Socket = get_socket(ROBOT_IP, DASHBOARD_PORT)
         self.secondary_socket: Socket = get_socket(ROBOT_IP, SECONDARY_PORT)
+
+        #self.reconnect_sockets()
         sleep(0.5)  # Wait for sockets to be ready
 
         # Wait for polyscope to be ready
@@ -99,13 +101,30 @@ class RobotController:
         else:
             return True
 
-    def send_command(self, socket: Socket, command: str) -> str:
+    def send_command(self, socket: Socket, command: str, retry_number: int = 0) -> str:
         """
         Sends a command to the specified socket and returns the response.
         """
         sanitized_command = self.sanitize_command(command)
-        socket.send(sanitized_command.encode())
+        try:
+            socket.send(sanitized_command.encode())
+        except:
+            self.reconnect_sockets()
+            socket = self.refresh_socket(socket)
+            return self.send_command(socket, command, retry_number + 1)
+
         return self.read_from_socket(socket)
+
+    def refresh_socket(self, socket: Socket) -> Socket:
+        port = socket.getpeername()[1]
+        if port == DASHBOARD_PORT:
+            return self.dashboard_socket
+        if port == SECONDARY_PORT:
+            return self.secondary_socket
+
+    def reconnect_sockets(self):
+        self.dashboard_socket = get_socket(ROBOT_IP, DASHBOARD_PORT, True)
+        self.secondary_socket = get_socket(ROBOT_IP, SECONDARY_PORT, True)
 
     def sanitize_command(self, command: str) -> str:
         """
@@ -114,14 +133,19 @@ class RobotController:
         command = command.replace('\n', ' ')
         return command + "\n"
 
-    def read_from_socket(self, socket: Socket) -> str:
+    def read_from_socket(self, socket: Socket, reconnect_count: int = 0) -> str:
         """
         Reads a response from the specified socket.
         """
         import select
         ready_to_read, _, _ = select.select([socket], [], [], 0.1)
         if ready_to_read:
-            message = socket.recv(4096)
+            try:
+                message = socket.recv(4096)
+            except ConnectionResetError:
+                self.reconnect_sockets()
+                socket = self.refresh_socket(socket)
+                message = socket.recv(4096)
             try:
                 return message.decode()
             except UnicodeDecodeError as e:

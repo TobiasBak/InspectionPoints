@@ -59,6 +59,7 @@ def generate_read_point(inspectionPoint: InspectionPointFormatFromFrontend, glob
     return report_state.dump_string_post_urify()
 
 def handle_inspection_point_message(message: InspectionPointMessage) -> str:
+    non_recurring_logger.debug("Received inspection point message from frontend")
     for i in reversed(message.inspectionPoints):
         read_command = generate_read_point(i, message.globalVariables)
         if message.scriptText[i.lineNumber] != i.command:

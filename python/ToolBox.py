@@ -16,11 +16,11 @@ def escape_string(string: str) -> str:
         out = string
     return out
 
-def __create_get_socket_function() -> Callable[[str, int], Socket]:
+def __create_get_socket_function() -> Callable[[str, int, bool], Socket]:
         inner_socket_bank: dict[tuple[str, int], Socket] = dict()
 
-        def inner_get_socket(ip: str, port: int) -> Socket | None:
-            if (ip, port) in inner_socket_bank:
+        def inner_get_socket(ip: str, port: int, reconnect: bool = False) -> Socket | None:
+            if ((ip, port) in inner_socket_bank) and not reconnect:
                 return inner_socket_bank[(ip, port)]
             try:
                 my_socket: Socket = Socket(socket.AF_INET, socket.SOCK_STREAM)

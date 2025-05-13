@@ -16,6 +16,7 @@ module.exports = {
         runCode: './src/interaction/runCode.ts',
         monacoEditor: './src/monacoExperiment.ts',
         inspectionGraph: './src/inspectionPointGraph/InspectionGraph.ts',
+        stopProgram: "./src/interaction/stopProgram.ts"
     },
     devtool: 'inline-source-map',
     devServer: {
