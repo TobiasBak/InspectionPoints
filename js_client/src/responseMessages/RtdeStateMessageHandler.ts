@@ -1,37 +1,21 @@
-import { isStopButtonDisabled, setStopButtonDisabled } from "../interaction/stopProgram";
 import {
     ResponseMessage,
     ResponseMessageType,
     RtdeStateMessage,
-    RtdeStateMessageData, rtdeStateMessageType
 } from "./responseMessageDefinitions";
 
 
-let lastRtdeStateMessage: RtdeStateMessage;
 
 export function handleRtdeStateMessage(message: ResponseMessage): void {
     if (message.type !== ResponseMessageType.RtdeState) {
         throw new Error(`Invalid message type: ${message.type}`);
     }
 
-    lastRtdeStateMessage = message;
-    switchStopButtonState(message);
-    handleSpinnerState(message);
+    handlePlayingState(message);
     showRobotReady(message);
     showSafetyStatus(message);
-
-    // iterateMessageData(message.data);
 }
 
-function switchStopButtonState(rtdeState: RtdeStateMessage): void {
-    const program_state = rtdeState.data.runtime_state;
-    console.log('program_state', program_state);
-    if (program_state === 'playing' && isStopButtonDisabled() === true) {
-        setStopButtonDisabled(true);
-    } else if (program_state === 'stopped' && isStopButtonDisabled() === false) {
-        setStopButtonDisabled(false);
-    }
-}
 
 let currentSafetyStatus: string = '';
 const safetyStatusDisplay: HTMLElement | null = document.getElementById('safetyStatusDisplay');
@@ -130,18 +114,18 @@ const spinner: HTMLElement | null = document.getElementById('spinner');
 let spinnerState: boolean = false;
 
 
-function handleSpinnerState(rtdeState: RtdeStateMessage): void{
+function handlePlayingState(rtdeState: RtdeStateMessage): void{
     const program_state = rtdeState.data.runtime_state;
     let newState = false;
 
     if (program_state === 'playing' || program_state === 'resuming') {
         newState = true;
     }
-    switchSpinnerState(newState);
+    switchPlayState(newState);
 
     if (newState !== spinnerState) {
         spinnerState = newState;
-        switchSpinnerState(spinnerState);
+        switchPlayState(spinnerState);
     }
 }
 
@@ -151,7 +135,7 @@ export function registerForSpinnerStateChange(callback: (enabled: boolean) => vo
     spinnerStateChangeCallbacks.push(callback);
 }
 
-function switchSpinnerState(enabled: boolean): void {
+function switchPlayState(enabled: boolean): void {
     if (enabled === spinnerState) {
         return;
     }
@@ -166,27 +150,6 @@ function switchSpinnerState(enabled: boolean): void {
         spinner.classList.remove('hidden-visibility');
     } else {
         spinner.classList.add('hidden-visibility');
-    }
-}
-    
-
-function replayRtdeStateMessage(): void {
-    if (lastRtdeStateMessage) {
-        handleRtdeStateMessage(lastRtdeStateMessage);
-    }
-}
-
-function iterateMessageData(data: RtdeStateMessageData): void {
-    const id: 'statusVariableDisplay' = "statusVariableDisplay"
-    const oldStateVariableView: HTMLElement = document.getElementById(id);
-    const stateVariableView: HTMLElement = document.createElement('div');
-    stateVariableView.id = id;
-
-
-    if (oldStateVariableView) {
-        oldStateVariableView.replaceWith(stateVariableView);
-    } else {
-        document.getElementById('stateVariables').appendChild(stateVariableView);
     }
 }
 
@@ -238,35 +201,5 @@ function positionTooltip(event: MouseEvent, tooltipId: string): void {
         // Apply the position
         tooltip.style.left = `${left}px`;
         tooltip.style.top = `${top}px`;
-    }
-}
-
-function generateHtmlFromMessageData(messageDataKey: string, stateVariableView: HTMLElement, messageDataValue: rtdeStateMessageType): void {
-
-    const stateVariableSection: HTMLElement = document.createElement('section');
-    stateVariableSection.classList.add('stateVariableSection', 'flex');
-
-    const sectionColumn45: HTMLDivElement = document.createElement('div');
-    sectionColumn45.classList.add('column45');
-
-    const sectionColumn55: HTMLDivElement = document.createElement('div');
-    sectionColumn55.classList.add('column55');
-
-    const column45Text: HTMLParagraphElement = document.createElement('p');
-    column45Text.textContent = messageDataKey;
-
-    const column55Text: HTMLParagraphElement = document.createElement('p');
-    column55Text.textContent = prettyPrint(messageDataValue);
-    
-    sectionColumn45.appendChild(column45Text);
-    sectionColumn55.appendChild(column55Text);
-    stateVariableSection.appendChild(sectionColumn45);
-    stateVariableSection.appendChild(sectionColumn55);
-    stateVariableView.appendChild(stateVariableSection);
-}
-
-function prettyPrint(information: rtdeStateMessageType): string {
-    if (typeof information === 'string') {
-        return information;
     }
 }

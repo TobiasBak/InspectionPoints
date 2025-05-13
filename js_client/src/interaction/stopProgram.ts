@@ -1,3 +1,4 @@
+import { switchButtonStates } from "./buttonHelper";
 import { StopProgramEvent } from "./EventList";
 
 function stopProgram(): void {
@@ -14,29 +15,6 @@ document.getElementById('stopProgramButton')?.addEventListener('click', function
         console.error('Stop Program button not found.');
         return;
     }
+    switchButtonStates(false); // For instant feedback
     stopProgram();
 });
-
-/**
- * Disable or enable the stop button.
- * @param state - True to enable the button, false to disable it.
- */
-export function setStopButtonDisabled(state: boolean): void {
-    const stopButton: HTMLButtonElement | null = document.getElementById('stopProgramButton') as HTMLButtonElement;
-    if (stopButton) {
-        stopButton.disabled = !state;
-    } else {
-        console.error('Stop button not found');
-    }
-    console.log('Stop button state set to:', state);
-}
-
-export function isStopButtonDisabled(): boolean {
-    const stopButton: HTMLButtonElement | null = document.getElementById('stopProgramButton') as HTMLButtonElement;
-    if (stopButton) {
-        return stopButton.disabled;
-    } else {
-        console.error('Stop button not found');
-        return false;
-    }
-}
