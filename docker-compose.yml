@@ -33,12 +33,12 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - ROBOT_IP=polyscope
+      - ROBOT_IP=192.168.5.1
       - ROBOT_FEEDBACK_PORT=8000
-      - ROBOT_FEEDBACK_HOST=proxy
+      - ROBOT_FEEDBACK_HOST=192.168.1.15
       - SSH_USERNAME=root
       - SSH_PASSWORD=easybot
-      - IS_PHYSICAL_ROBOT=False
+      - IS_PHYSICAL_ROBOT=True
     profiles:
         - ""
   

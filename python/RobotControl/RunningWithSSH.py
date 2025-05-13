@@ -36,9 +36,8 @@ def run_script_on_robot(script: str) -> str:
     robot.ssh.write_script(augmented_script)
     sleep(0.2)
     
-    if not IS_PHYSICAL_ROBOT: 
-        robot.controller.load_program()
-        sleep(1)
+    robot.controller.load_program(robot.program_name)
+    sleep(1)
     
     robot.controller.start_program()
     sleep(0.1)

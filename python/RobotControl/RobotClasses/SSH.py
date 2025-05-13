@@ -33,7 +33,7 @@ class SSH:
 
         self.path_to_error_log = "../ursim/URControl.log"
         if IS_PHYSICAL_ROBOT:
-            self.path_to_error_log = "/root/polyscope.log"
+            self.path_to_error_log = "/tmp/log/urcontrol/current"
 
     def close(self):
         """
