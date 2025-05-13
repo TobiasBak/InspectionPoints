@@ -36,9 +36,6 @@ def run_script_on_robot(script: str) -> str:
     robot.ssh.write_script(augmented_script)
     sleep(0.2)
     
-    robot.controller.load_program(robot.program_name)
-    sleep(1)
-    
     robot.controller.start_program()
     sleep(0.1)
 
@@ -77,7 +74,6 @@ async def run_script_finished_error_checker(id: int):
     __wait_for_condition(lambda: "PLAYING" not in robot.controller.program_state)
     
     latest_errors: list[str] = robot.ssh.get_logs_from_last_program_run()
-    non_recurring_logger.debug(f"Latest errors:")
 
     error = ""
     for line in latest_errors:
@@ -137,7 +133,7 @@ def __send_error_message_to_web_clients(id: int, message: str):
     """
     response = AckResponse(id, "Error", message, Status.Error)
     str_response = str(response)
-    recurring_logger.debug(f"Sending error to web clients: {str_response}")
+    recurring_logger.info(f"Sending error to web clients: {str_response}")
     websocket_notifier.notify_observers(str_response)
 
 def __wait_for_condition(condition: Callable[[], bool]):

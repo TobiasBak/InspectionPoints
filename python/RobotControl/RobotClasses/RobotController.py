@@ -5,11 +5,12 @@ from time import sleep
 
 from ToolBox import get_socket
 from URIFY import SOCKET_NAME
-from constants import ROBOT_IP, DASHBOARD_PORT, SECONDARY_PORT, ROBOT_FEEDBACK_PORT, ROBOT_FEEDBACK_HOST
+from constants import ROBOT_IP, DASHBOARD_PORT, ROBOT_FEEDBACK_PORT, ROBOT_FEEDBACK_HOST
 from custom_logging import LogConfig
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
 non_recurring_logger = LogConfig.get_non_recurring_logger(__name__)
+
 
 class RobotController:
     _instance = None
@@ -26,23 +27,15 @@ class RobotController:
             cls._instance = cls(*args, **kwargs)
         return cls._instance
 
-    def __initialize(self, *args, **kwargs):      
+    def __initialize(self, *args, **kwargs):
         # Initialize sockets
-        self.dashboard_socket: Socket = get_socket(ROBOT_IP, DASHBOARD_PORT)
-        self.secondary_socket: Socket = get_socket(ROBOT_IP, SECONDARY_PORT)
-
-        #self.reconnect_sockets()
-        sleep(0.5)  # Wait for sockets to be ready
+        get_socket(ROBOT_IP, DASHBOARD_PORT)
 
         # Wait for polyscope to be ready
         while not self.is_polyscope_ready:
             recurring_logger.info("Waiting for Polyscope to be ready...")
             sleep(0.1)
 
-        # Initialize the robot
-        self.power_on()
-        self.brake_release()
-        sleep(0.5) # Wait for the robot to be ready
 
     @property
     def robot_mode(self) -> str:
@@ -101,30 +94,30 @@ class RobotController:
         else:
             return True
 
-    def send_command(self, socket: Socket, command: str, retry_number: int = 0) -> str:
+    def send_command_to_dashboard(self, command: str) -> str:
+        """
+        Sends a command to the dashboard socket and returns the response.
+        """
+        recurring_logger.info(f"Sending command to dashboard: {command}")
+        try:
+            return self.send_command(get_socket(ROBOT_IP, DASHBOARD_PORT), command)
+        except socket.error as e:
+            non_recurring_logger.error(f"Socket error: {e}")
+            get_socket(ROBOT_IP, DASHBOARD_PORT, True)
+            sleep(0.5)
+            return self.send_command_to_dashboard(command)
+        except Exception as e:
+            non_recurring_logger.error(f"Unexpected error: {e}")
+            return ""
+
+    def send_command(self, socket: Socket, command: str) -> str:
         """
         Sends a command to the specified socket and returns the response.
         """
         sanitized_command = self.sanitize_command(command)
-        try:
-            socket.send(sanitized_command.encode())
-        except:
-            self.reconnect_sockets()
-            socket = self.refresh_socket(socket)
-            return self.send_command(socket, command, retry_number + 1)
+        socket.send(sanitized_command.encode())
 
         return self.read_from_socket(socket)
-
-    def refresh_socket(self, socket: Socket) -> Socket:
-        port = socket.getpeername()[1]
-        if port == DASHBOARD_PORT:
-            return self.dashboard_socket
-        if port == SECONDARY_PORT:
-            return self.secondary_socket
-
-    def reconnect_sockets(self):
-        self.dashboard_socket = get_socket(ROBOT_IP, DASHBOARD_PORT, True)
-        self.secondary_socket = get_socket(ROBOT_IP, SECONDARY_PORT, True)
 
     def sanitize_command(self, command: str) -> str:
         """
@@ -143,47 +136,35 @@ class RobotController:
             try:
                 message = socket.recv(4096)
             except ConnectionResetError:
-                self.reconnect_sockets()
-                socket = self.refresh_socket(socket)
-                message = socket.recv(4096)
+                non_recurring_logger.error(f"Socket connection reset by peer: {socket.getpeername()}")
+                return "nothing"
             try:
                 return message.decode()
             except UnicodeDecodeError as e:
                 non_recurring_logger.error(f"Error decoding message: {e}")
         return "nothing"
-    
-    def read_from_socket_till_end(self, socket: Socket) -> str:
-        """
-        Reads from the socket and returns last message.
-        """
-        out = ""
-        message = self.read_from_socket(socket)
-        while message != "nothing":
-            out = message
-            message = self.read_from_socket(socket)
-        return out
 
     def power_on(self):
-        return self.send_command(self.dashboard_socket, "power on")
+        return self.send_command_to_dashboard("power on")
 
     def power_off(self):
-        return self.send_command(self.dashboard_socket, "power off")
+        return self.send_command_to_dashboard("power off")
 
     def brake_release(self):
-        return self.send_command(self.dashboard_socket, "brake release")
+        return self.send_command_to_dashboard("brake release")
 
     def restart_safety(self):
-        return self.send_command(self.dashboard_socket, "restart safety")
+        return self.send_command_to_dashboard("restart safety")
 
     def stop_program(self):
-        return self.send_command(self.dashboard_socket, "stop")
-    
+        return self.send_command_to_dashboard("stop")
+
     def load_program(self, program_name: str = "program.urp"):
         assert program_name.endswith(".urp"), "Program name must end with .urp"
-        return self.send_command(self.dashboard_socket, f"load {program_name}")
-    
+        return self.send_command_to_dashboard(f"load {program_name}")
+
     def start_program(self):
-        return self.send_command(self.dashboard_socket, "play")
+        return self.send_command_to_dashboard("play")
 
     def unlock_protective_stop(self):
         sleep(5)  # Wait for 5 seconds before attempting to unlock
@@ -196,7 +177,7 @@ class RobotController:
             self.unlock_protective_stop()  # Retry if release fails
 
     def __get_value_from_dashboard(self, command: str) -> str:
-        response = self.send_command(self.dashboard_socket, command)
+        response = self.send_command_to_dashboard(command)
         return self.__sanitize_dashboard_reads(response)
 
     def __sanitize_dashboard_reads(self, response: str) -> str:
@@ -206,17 +187,15 @@ class RobotController:
 
     def close_popup(self):
         sleep(1)
-        result = self.send_command(self.dashboard_socket, "close popup")
+        result = self.send_command_to_dashboard("close popup")
         non_recurring_logger.debug(f"Popup closed: {result}")
 
     def close_safety_popup(self):
         sleep(1)
-        result = self.send_command(self.dashboard_socket, "close safety popup")
+        result = self.send_command_to_dashboard("close safety popup")
         non_recurring_logger.debug(f"Safety popup closed: {result}")
 
     def send_popup(self, message: str):
         command = f"popup {message}"
-        result = self.send_command(self.dashboard_socket, command)
+        result = self.send_command_to_dashboard(command)
         non_recurring_logger.debug(f"Popup: {result}")
-    
-

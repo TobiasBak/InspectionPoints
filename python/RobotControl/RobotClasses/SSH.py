@@ -24,10 +24,7 @@ class SSH:
 
     def __init__(self):
         self.controller: RobotController = RobotController.get_instance()
-        self.ssh_client = paramiko.SSHClient()
-        self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        non_recurring_logger.debug(f"SSH: Connecting to {ROBOT_IP} with username {SSH_USERNAME}")
-        self.ssh_client.connect(ROBOT_IP, username=SSH_USERNAME, password=SSH_PASSWORD)
+        self.ssh_client = self.get_ssh_client()
 
         self.path_to_programs_dir = "/programs"
 
@@ -35,11 +32,43 @@ class SSH:
         if IS_PHYSICAL_ROBOT:
             self.path_to_error_log = "/tmp/log/urcontrol/current"
 
+    def get_ssh_client(self):
+        ssh_client = paramiko.SSHClient()
+        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        non_recurring_logger.debug(f"SSH: Connecting to {ROBOT_IP} with username {SSH_USERNAME}")
+        ssh_client.connect(ROBOT_IP, username=SSH_USERNAME, password=SSH_PASSWORD)
+
+        return ssh_client
+
     def close(self):
         """
         Closes the SSH connection.
         """
         self.ssh_client.close()
+
+
+    def get_sftp(self, recurse_counter: int = 0) -> paramiko.SFTPClient | None:
+        """
+        Returns an SFTP client for file transfer.
+        """
+        if recurse_counter >=10:
+            non_recurring_logger.error("Max recursion depth reached while trying to get SFTP client.")
+            return None
+
+        try:
+            sftp = self.ssh_client.open_sftp()
+            recurring_logger.debug("Opened SFTP connection")
+        except paramiko.ssh_exception.SSHException as e:
+            non_recurring_logger.error(f"Failed to open SFTP connection with SSHException: {e}")
+            self.ssh_client.close()
+            self.ssh_client = self.get_ssh_client()
+            return self.get_sftp(recurse_counter + 1)
+
+        except Exception as e:
+            non_recurring_logger.error(f"Failed to open SFTP connection: {e}")
+            return None
+
+        return sftp
 
     def write_script(self, content: str, filename: str = "script_code.script"):
         """
@@ -47,11 +76,9 @@ class SSH:
         """
         filepath = os.path.join(self.path_to_programs_dir, filename)
 
-        try:
-            sftp = self.ssh_client.open_sftp()
-            recurring_logger.debug("Opened SFTP connection")
-        except Exception as e:
-            non_recurring_logger.error(f"Failed to open SFTP connection: {e}")
+        sftp = self.get_sftp()
+        if sftp is None:
+            non_recurring_logger.error("Failed to get SFTP client.")
             return
 
         try:

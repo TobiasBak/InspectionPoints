@@ -3,7 +3,6 @@ from time import sleep
 from custom_logging import LogConfig
 from RobotControl.RobotClasses.RobotController import RobotController
 from RobotControl.RobotClasses.SSH import SSH
-from RobotControl.RobotClasses.InterpreterMode import InterpreterMode
 from constants import IS_PHYSICAL_ROBOT
 
 recurring_logger = LogConfig.get_recurring_logger(__name__)
@@ -27,16 +26,17 @@ class Robot:
     def __initialize(self):
         self.controller: RobotController = RobotController.get_instance()
         self.ssh: SSH = SSH.get_instance()
-        self.interpreter_mode: InterpreterMode = InterpreterMode.get_instance()
 
-        self.program_name= "eris_v3.urp"
+        self.program_name= "eris_v2.urp"
         # Write program.urp to the robot
-        self.ssh.write_file(f"RobotControl/{self.program_name}", f"/programs/{self.program_name}")
+        self.ssh.write_file(f"urprograms/{self.program_name}", f"/programs/{self.program_name}")
 
-        self.controller.load_program(self.program_name)
+        # self.controller.load_program(self.program_name)
+        # disabled because loading the program does not seem to be necessary,
+        # and can possibly make the robot reboot with new safety settings
 
         non_recurring_logger.info("Waiting for program to load")
-        sleep(5)
+        sleep(1)
         self.controller.power_on()
         non_recurring_logger.info("Waiting for robot to power on")
         sleep(5)

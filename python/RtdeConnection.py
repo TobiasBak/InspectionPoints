@@ -23,12 +23,13 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import asyncio
 import sys
+import time
 from typing import Callable, Coroutine
 
 from rtde import rtde_config, rtde
 from rtde.serialize import DataObject
 
-from SocketMessages import RtdeState
+from SocketMessages import RtdeState, non_recurring_logger
 from WebsocketNotifier import websocket_notifier
 from WebsocketProxy import has_new_client
 from constants import ROBOT_IP, RTDE_PORT, RTDE_CONFIG_FILE
@@ -47,16 +48,7 @@ recurring_logger = LogConfig.get_recurring_logger(__name__)
 
 
 async def start_rtde_loop():
-    con = rtde.RTDE(ROBOT_IP, RTDE_PORT)
-    con.connect()
-    # get controller version
-    con.get_controller_version()
-    # setup recipes
-    con.send_output_setup(state_names, state_types)
-    # start data synchronization
-    if not con.send_start():
-        recurring_logger.error("Unable to start synchronization")
-        sys.exit()
+    con = get_rtde_connection()
 
     register_listener(send_state_through_websocket)
 
@@ -71,8 +63,34 @@ async def start_rtde_loop():
                 await call_listeners(new_state)
                 previous_state = new_state
         except Exception as e:
-            recurring_logger.error(f"Error in recieve_rtde_data: {e}")
+            recurring_logger.error(f"Error in recieve_rtde_data. Will retry again: {e}")
+            con = get_rtde_connection()
         await asyncio.sleep(SLEEP_TIME)
+
+
+def get_rtde_connection():
+    con = None
+    try:
+        con = rtde.RTDE(ROBOT_IP, RTDE_PORT)
+    except Exception as e:
+        non_recurring_logger.error(f"Error in creating RTDE object")
+
+    try:
+        con.connect()
+    except Exception as e:
+        non_recurring_logger.error(f"Error in connecting RTDE object: {e}")
+
+    # get controller version
+    con.get_controller_version()
+    # setup recipes
+    con.send_output_setup(state_names, state_types)
+
+    # start data synchronization
+    if not con.send_start():
+        recurring_logger.error("Unable to start synchronization")
+        time.sleep(1)
+        return get_rtde_connection()
+    return con
 
 
 def states_are_equal(obj1: DataObject, obj2: DataObject):
@@ -91,7 +109,6 @@ def state_is_new(new_state: DataObject | None, old_state: DataObject | None):
         return False
     if states_are_equal(old_state, new_state):
         return False
-
     return True
 
 
