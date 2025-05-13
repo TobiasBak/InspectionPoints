@@ -55,6 +55,8 @@ export function displayMessageData(message: ReportStateMessage): void {
         section.classList.add("inactive-section")
     });
 
+    data.sort((a, b) => (Number(b.global) - Number(a.global)) || a.name.localeCompare(b.name));
+    
     data.forEach((variable): void => {
         const oldSection = sectionStorage.get(variable.name);
         const newSection = generateHtmlFromMessageData(variable.name, variable.value)
