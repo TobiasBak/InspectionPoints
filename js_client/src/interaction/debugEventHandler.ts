@@ -48,7 +48,7 @@ function createDebugEvent(): BeginDebugEvent {
 }
 
 document.getElementById("debugEditorButton")?.addEventListener("click", () => {
-    switchButtonStates(); // For instant feedback
+    switchButtonStates(true); // For instant feedback
     
     const debugEvent = createDebugEvent();
     document.dispatchEvent(debugEvent);

@@ -15,7 +15,7 @@ function sendCommand(command: string): void {
 }
 
 document.getElementById('runEditorContentButton')?.addEventListener('click', function () {
-    switchButtonStates(); // For instant feedback
+    switchButtonStates(true); // For instant feedback
     
     const command = editor.getValue();
     console.log(`Command: ${command}`);

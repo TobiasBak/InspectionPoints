@@ -15,6 +15,6 @@ document.getElementById('stopProgramButton')?.addEventListener('click', function
         console.error('Stop Program button not found.');
         return;
     }
-    switchButtonStates(); // For instant feedback
+    switchButtonStates(false); // For instant feedback
     stopProgram();
 });
