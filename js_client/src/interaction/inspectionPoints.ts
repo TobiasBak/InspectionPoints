@@ -1,6 +1,6 @@
 import * as monaco from 'monaco-editor';
 import {editor} from "../monacoExperiment";
-import {openPopup} from "./inspectionPopupManager";
+import {openPopup, inspectionVariables} from "./inspectionPopupManager";
 
 export const model = editor.getModel();
 if (!model) {
@@ -46,7 +46,7 @@ editor.onMouseDown((event) => {
                 range: new monaco.Range(lineNumber, 1, lineNumber, 1),
                 options: {
                     isWholeLine: true,
-                    glyphMarginClassName: 'red-circle-decoration',
+                    glyphMarginClassName: 'inspection-point-decoration',
                     stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
                 },
             },
@@ -58,4 +58,33 @@ editor.onMouseDown((event) => {
 
 editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
     localStorage.setItem('urscript', editor.getValue());
+});
+
+function updateDecorationStyle(decorationId: string) {
+    const hasTrackedVariables = inspectionVariables.has(decorationId) && inspectionVariables.get(decorationId)!.length > 0;
+
+    const range = model.getDecorationRange(decorationId);
+    if (range) {
+        model.deltaDecorations([decorationId], [
+            {
+                range,
+                options: {
+                    isWholeLine: true,
+                    glyphMarginClassName: hasTrackedVariables
+                        ? 'tracked-variable-decoration'
+                        : 'inspection-point-decoration',
+                    stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
+                },
+            },
+        ]);
+    }
+}
+
+// Listen for the custom "refreshDecoration" event to update the decoration style
+// when the tracked variables are changed
+// This event is dispatched in the inspectionPopupManager when a variable is added or removed
+document.addEventListener("refreshDecoration", (event: Event) => {
+    const customEvent = event as CustomEvent<{ decorationId: string }>;
+    const { decorationId } = customEvent.detail;
+    updateDecorationStyle(decorationId);
 });

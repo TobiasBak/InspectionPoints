@@ -59,6 +59,9 @@ export function openPopup(decorationId: string, x: number, y: number) {
             deleteTrackedVariable(newVariableItem, decorationId);
 
             input.value = "";
+
+            // Emit event to refresh decoration
+            document.dispatchEvent(new CustomEvent("refreshDecoration", { detail: { decorationId } }));
         }
     });
 
@@ -90,6 +93,9 @@ function deleteTrackedVariable(variableItem: HTMLElement, decorationId: string) 
         if (trackedVariables) {
             trackedVariables.splice(index, 1);
             variableItem.remove();
+
+            // Emit event to refresh decoration
+            document.dispatchEvent(new CustomEvent("refreshDecoration", { detail: { decorationId } }));
         }
     });
 }
