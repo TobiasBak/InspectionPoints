@@ -61,13 +61,22 @@ function showSafetyStatus(rtdeState: RtdeStateMessage): void {
     safetyStatusDisplay.children[1].classList.add('hidden')
     safetyStatusDisplay.children[2].classList.add('hidden')
 
+    let tooltipContent = '';
+
     if (greenStates.has(safetyStatus)) {
         safetyStatusDisplay.children[2].classList.remove('hidden');
+        tooltipContent = 'The cobot is operating normally.';
     }else if (yellowStates.has(safetyStatus)) {
         safetyStatusDisplay.children[0].classList.remove('hidden');
+        tooltipContent = 'The cobot is operating in reduced mode.';
     } else {
         safetyStatusDisplay.children[1].classList.remove('hidden');
+        tooltipContent = 'The cobot has stopped due to a safety issue.';
     }
+
+    // Tooltip handling
+    const tooltipId = 'safetyStatusTooltip';
+    setupTooltip(safetyStatusDisplay, tooltipId, tooltipContent);
 }
 
 let currentRobotMode: string = '';
@@ -99,13 +108,22 @@ function showRobotReady(rtdeState: RtdeStateMessage): void {
         'backdrive',
     ]);
 
+    let tooltipContent = '';
+
     if (robotMode === 'running') {
         robotModeDisplay.classList.add('readiness-ready');
+        tooltipContent = 'The cobot is ready to execute programs.';
     } else if (robotMode === 'power_on' || robotMode === 'booting' || robotMode === 'updating_firmware') {
         robotModeDisplay.classList.add('readiness-yellow');
+        tooltipContent = 'The cobot is busy (powering on, booting, or updating firmware). Please wait.';
     } else if (redStates.has(robotMode)) {
         robotModeDisplay.classList.add('readiness-red');
+        tooltipContent = 'The cobot requires action on the Polyscope interface to continue.';
     }
+
+    // Tooltip handling
+    const tooltipId = 'readyStatusTooltip';
+    setupTooltip(robotModeDisplay, tooltipId, tooltipContent);
 }
 
 const spinner: HTMLElement | null = document.getElementById('spinner');
@@ -169,6 +187,57 @@ function iterateMessageData(data: RtdeStateMessageData): void {
         oldStateVariableView.replaceWith(stateVariableView);
     } else {
         document.getElementById('stateVariables').appendChild(stateVariableView);
+    }
+}
+
+function setupTooltip(targetElement: HTMLElement | null, tooltipId: string, content: string): void {
+    if (!targetElement) {
+        console.error(`Target element not found for  the tooltip: ${tooltipId}`);
+        return;
+    }
+
+    targetElement.addEventListener('mouseenter', (event) => {
+        const tooltip = document.getElementById(tooltipId);
+        if (tooltip) {
+            tooltip.textContent = content;
+            tooltip.classList.add('visible');
+            tooltip.classList.remove('hidden');
+            positionTooltip(event, tooltipId);
+        }
+    });
+
+    targetElement.addEventListener('mouseleave', () => {
+        const tooltip = document.getElementById(tooltipId);
+        if (tooltip) {
+            tooltip.classList.remove('visible');
+            tooltip.classList.add('hidden');
+        }
+    });
+}
+
+function positionTooltip(event: MouseEvent, tooltipId: string): void {
+    const tooltip = document.getElementById(tooltipId);
+    const targetElement = event.currentTarget as HTMLElement;
+
+    if (tooltip && targetElement) {
+        const targetRectangle = targetElement.getBoundingClientRect();
+
+        // Calculate position to place just below the targeted element
+        let left = targetRectangle.left;
+        const top = targetRectangle.bottom + 5; // 5px to place it just below the div
+
+        // Get the tooltip width and the viewport width
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+
+        // Ensures the tooltip does not overflow the viewport
+        if (left + tooltipRect.width > viewportWidth) {
+            left = viewportWidth - tooltipRect.width - 10;
+        }
+
+        // Apply the position
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
     }
 }
 

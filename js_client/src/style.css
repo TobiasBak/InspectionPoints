@@ -325,9 +325,18 @@ p {
 }
 
 /* DECORATIONS */
-.red-circle-decoration {
-    background-color: red;
-    border-radius: 50%;
+.inspection-point-decoration {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="%23C49102"/></svg>') no-repeat center center;
+    background-size: contain;
+    display: inline-block;
+    margin-left: 1em;
+    height: .9em !important;
+    width: .9em !important;
+}
+
+.tracked-variable-decoration {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23C49102" d="M8 0a8 8 0 100 16A8 8 0 008 0zm.75 12.5h-1.5v-1.5h1.5v1.5zm0-3h-1.5v-6h1.5v6z"/></svg>') no-repeat center center;
+    background-size: contain;
     display: inline-block;
     margin-left: 1em;
     height: .9em !important;
@@ -419,4 +428,31 @@ p {
 .inspectionpoint-popup-box .popup-body ul li .delete-variable {
     background-color: var(--error-color);
     padding: 2px;
+}
+
+/* Cobot tooltip styling */
+.cobotTooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.2em 0.4em;
+    border-radius: .2em;
+    font-size: 14px;
+    z-index: 100;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+
+.cobotTooltip.visible {
+    opacity: 1;
+}
+
+/* Fixing wierd height difference */
+#safetyStatusDisplay {
+    line-height: 1;
+    height: auto;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
 }
