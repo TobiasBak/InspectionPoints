@@ -1,5 +1,5 @@
 import * as Plotly from 'plotly.js';
-import {Datum} from "plotly.js";
+import {Data, Datum, PlotData, PlotlyHTMLElement, PlotMouseEvent} from "plotly.js";
 import {getIndexFromClick, getTimestampFromClick} from "./toolbox";
 import {plotLineChart, TraceData} from "./RoboticVisualizations/LinePlotFactory";
 import {displayMessageData, getCurrentId, getStoredMessages} from "../responseMessages/displayReportStateMessage";
@@ -33,7 +33,7 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
 
         lowest_x = x < lowest_x ? x : lowest_x
 
-        if (!dataCollections.has(y)){
+        if (!dataCollections.has(y)) {
             dataCollections.set(y, [])
         }
         const dataCollection = dataCollections.get(y)
@@ -64,13 +64,25 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
         return anumber - bnumber
     })
 
-    const chart = await plotLineChart(`Run ${getCurrentId()} - Inspection points logged:`, `newchart-${getCurrentId()}`, newTraceData, "line");
+    const [chart, traces] = await plotLineChart(`Run ${getCurrentId()} - Inspection points logged:`, `newchart-${getCurrentId()}`, newTraceData, "line");
+
     if (activeChart && activeChart.id !== chart.id) {
         activeChart.classList.add("hidden")
+        resetGraph(activeChart);
         activeButton?.classList.remove("active")
     }
     activeChart = chart
 
+    const sizes: number[][] = []
+    traces.forEach((trace: PlotData, index) => {
+        sizes.push([])
+        const size = Array.isArray(trace.marker.size) ? trace.marker.size[0] : trace.marker.size
+        trace.x.forEach((x) => {
+            sizes[index].push(size)
+        })
+    })
+
+    replaceSizeStorage(sizes, chart)
 
     chart.removeAllListeners('plotly_click')
 
@@ -78,10 +90,32 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
         const index = getIndexFromClick(data)
         const timestamp = getTimestampFromClick(data)
         const customData = data.points[0].customdata
-        console.log("plotly_click", data, index, timestamp, customData)
 
         const message = storage[index]
         displayMessageData(message)
+
+        resetGraph(chart);
+
+        const tn = data.points[0].curveNumber
+        const pn = data.points[0].pointNumber
+        const size = data.points[0].data.marker.size
+        const symbol = data.points[0].data.marker.symbol
+
+        if (Array.isArray(size)) {
+            size[pn] = 30
+        }
+        if (Array.isArray(symbol)) {
+            symbol[pn] = 'hexagon2'
+        }
+
+        const updatedInfo = {
+            "marker": {
+                size: size,
+                symbol: symbol
+            }
+        }
+
+        Plotly.restyle(chart, updatedInfo, [tn])
     })
 
     let showGraphButton = document.getElementById(`graph-button-${getCurrentId()}`)
@@ -97,21 +131,21 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
 
     function showThisGraph() {
         activeChart?.classList.add("hidden")
+        resetGraph(activeChart);
         chart.classList.remove("hidden")
         activeChart = chart
         activeButton?.classList.remove("active")
         showGraphButton?.classList.add("active")
         activeButton = showGraphButton
     }
-    activeButton = showGraphButton
 
-    showGraphButton.removeEventListener("click", showThisGraph)
-    showGraphButton.addEventListener("click", showThisGraph)
+    activeButton = showGraphButton
 
     if (showGraphButton instanceof HTMLButtonElement) {
         registerForSpinnerStateChange((enabled: boolean) => {
             enableButton(showGraphButton, enabled)
         })
+        showGraphButton.onclick = showThisGraph
     }
 
     return chart
@@ -120,3 +154,30 @@ export async function refreshGraph(): Promise<Plotly.PlotlyHTMLElement> {
 function enableButton(button: HTMLButtonElement, enabled: boolean) {
     button.disabled = enabled
 }
+
+
+const sizeStorage: Map<PlotlyHTMLElement, number[][]> = new Map()
+
+function replaceSizeStorage(sizes: number[][], chart: PlotlyHTMLElement) {
+    sizeStorage.set(chart, sizes)
+}
+
+function resetGraph(chart: PlotlyHTMLElement) {
+    const sizes = sizeStorage.get(chart)
+    const sizesArray = JSON.parse(JSON.stringify(sizes))
+
+    for (let i = 0; i < sizesArray.length; i++) {
+        const symbols: string[] = sizesArray[i].map((size: number): string => {
+            return 'circle'
+        })
+        const updatedInfo = {
+            "marker": {
+                size: sizesArray[i],
+                symbol: symbols
+            }
+        }
+
+        Plotly.restyle(chart, updatedInfo, [i])
+    }
+}
+

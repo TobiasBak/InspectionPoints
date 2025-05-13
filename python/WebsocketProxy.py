@@ -242,7 +242,7 @@ async def search_for_report_state(mangled_data: str) -> bool:
     # If match is found, extract the values
     if match:
         message_type = match.group(1)
-        data_value = int(match.group(2))
+        # data_value = int(match.group(2))
         match message_type:
             case RobotSocketMessageTypes.Report_state.name:
                 recurring_logger.warning("Found a match for report state in mangled data")

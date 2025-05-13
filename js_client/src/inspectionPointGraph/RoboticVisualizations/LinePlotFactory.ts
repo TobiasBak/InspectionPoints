@@ -4,7 +4,7 @@ import {createDivForPlotlyChart} from "./chartDivFactory";
 import * as Plotly from 'plotly.js';
 import {Datum} from 'plotly.js';
 
-const lineWeight = 3
+const dotSize = 15
 
 export type TraceData = {
     xs: number[]
@@ -12,11 +12,11 @@ export type TraceData = {
     customDatas: number[]
 }[]
 
-export async function plotLineChart(chartName: string, chartId: string, traceData: TraceData, yUnit: string): Promise<Plotly.PlotlyHTMLElement> {
+export async function plotLineChart(chartName: string, chartId: string, traceData: TraceData, yUnit: string): Promise<[Plotly.PlotlyHTMLElement, Partial<Plotly.Data>[]]> {
     const chartDiv = await createDivForPlotlyChart(chartId)
 
     // Generate the layout. This is necessary for generating the frames
-    console.log(`Generating layout for ${chartName} with height: ${chartDiv.clientHeight} and width: ${chartDiv.clientWidth}`, chartDiv.clientHeight, chartDiv)
+    // console.log(`Generating layout for ${chartName} with height: ${chartDiv.clientHeight} and width: ${chartDiv.clientWidth}`, chartDiv.clientHeight, chartDiv)
     const layout = get2dLayout(chartName, chartDiv.clientHeight - 50, chartDiv.clientWidth - 50, false, false)
 
     layout.yaxis.tickprefix = `${yUnit} `
@@ -30,7 +30,8 @@ export async function plotLineChart(chartName: string, chartId: string, traceDat
 
     const traces = generate_traces(traceData);
 
-    return await Plotly.react(chartDiv, traces, layout)
+    const chart = await Plotly.react(chartDiv, traces, layout)
+    return [chart, traces]
 }
 
 
@@ -57,6 +58,9 @@ function generateTrace(x: Datum[], y: Datum | Datum[], customData: Datum[], name
         newY = y
     }
 
+
+    const sizeArray = x.map(() => dotSize)
+
     return {
         x: x,
         y: newY,
@@ -66,10 +70,11 @@ function generateTrace(x: Datum[], y: Datum | Datum[], customData: Datum[], name
         name: name,
         line: {
             color: getColorMap().legend_colors_array[color],
-            width: lineWeight,
+            width: dotSize,
         },
         marker: {
-            size: 15
+            size: sizeArray,
+            symbol: 'circle'
         }
     }
 }
